@@ -1,0 +1,32 @@
+import { useMemo } from 'react';
+import { schedule } from '../data/schedule';
+
+export const useProgressTracking = (completedWorkouts) => {
+  const stats = useMemo(() => {
+    const totalWorkouts = schedule.filter(day => !day.rest && !day.isDeload).length;
+    const completed = completedWorkouts.filter(day => {
+      const scheduleDay = schedule.find(s => s.day === day);
+      return scheduleDay && !scheduleDay.rest && !scheduleDay.isDeload;
+    }).length;
+
+    const nextWorkout = schedule.find(day => !day.rest && !completedWorkouts.includes(day.day));
+    const nextDay = nextWorkout ? nextWorkout.day : null;
+
+    const currentWeek = schedule.find(day => !day.rest && !completedWorkouts.includes(day.day))?.week || 1;
+
+    const percentage = totalWorkouts > 0 ? Math.round((completed / totalWorkouts) * 100) : 0;
+
+    const allCompleted = completed === totalWorkouts && totalWorkouts > 0;
+
+    return {
+      totalWorkouts,
+      completed,
+      percentage,
+      nextDay,
+      currentWeek,
+      allCompleted
+    };
+  }, [completedWorkouts]);
+
+  return stats;
+};
