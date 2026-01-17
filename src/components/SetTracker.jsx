@@ -32,25 +32,30 @@ const SetTracker = ({ setNumber, weight, reps, targetReps, completed, onChange }
 
   return (
     <div
-      className={`bg-slate-700/50 rounded-lg p-4 transition-colors ${
-        localCompleted ? 'border-2 border-green-500' : 'border-2 border-slate-600'
-      }`}
-      style={{ border: '2px solid', backgroundColor: '#1e293b' }}
+      style={{
+        backgroundColor: localCompleted ? '#134e4a' : '#1e293b',
+        borderRadius: '8px',
+        padding: '16px',
+        border: localCompleted ? '2px solid #22c55e' : '2px solid #475569',
+        marginBottom: '16px'
+      }}
     >
       <div style={{ marginBottom: '12px' }}>
-        <span className="text-sm text-slate-400">Set {setNumber}</span>
+        <span style={{ color: '#94a3b8', fontSize: '14px' }}>
+          Set {setNumber}
+        </span>
         {targetReps && (
-          <span className="text-xs text-slate-500 ml-2">
+          <span style={{ color: '#64748b', fontSize: '12px', marginLeft: '8px' }}>
             (Target: {targetReps} reps)
           </span>
         )}
       </div>
 
-      <div className="grid grid-cols-2 gap-3 mb-3">
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
         <div>
-          <label className="text-xs text-slate-400 block mb-1">
+          <div style={{ color: '#94a3b8', fontSize: '12px', marginBottom: '4px' }}>
             Weight Used
-          </label>
+          </div>
           <input
             type="number"
             value={localWeight}
@@ -65,17 +70,20 @@ const SetTracker = ({ setNumber, weight, reps, targetReps, completed, onChange }
               fontWeight: '600',
               textAlign: 'center',
               border: '2px solid #334155',
-              borderRadius: '8px'
+              borderRadius: '8px',
+              boxSizing: 'border-box'
             }}
             inputMode="decimal"
           />
-          <div className="text-xs text-slate-500 text-center mt-1">kg</div>
+          <div style={{ color: '#64748b', fontSize: '12px', textAlign: 'center', marginTop: '4px' }}>
+            kg
+          </div>
         </div>
 
         <div>
-          <label className="text-xs text-slate-400 block mb-1">
+          <div style={{ color: '#94a3b8', fontSize: '12px', marginBottom: '4px' }}>
             Reps Done
-          </label>
+          </div>
           <input
             type="number"
             value={localReps}
@@ -90,11 +98,14 @@ const SetTracker = ({ setNumber, weight, reps, targetReps, completed, onChange }
               fontWeight: '600',
               textAlign: 'center',
               border: '2px solid #334155',
-              borderRadius: '8px'
+              borderRadius: '8px',
+              boxSizing: 'border-box'
             }}
             inputMode="decimal"
           />
-          <div className="text-xs text-slate-500 text-center mt-1">reps</div>
+          <div style={{ color: '#64748b', fontSize: '12px', textAlign: 'center', marginTop: '4px' }}>
+            reps
+          </div>
         </div>
       </div>
 
@@ -107,26 +118,28 @@ const SetTracker = ({ setNumber, weight, reps, targetReps, completed, onChange }
           fontWeight: '600',
           backgroundColor: localCompleted ? '#22c55e' : '#475569',
           color: localCompleted ? '#ffffff' : '#94a3b8',
+          border: 'none',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: '8px'
+          gap: '8px',
+          cursor: 'pointer'
         }}
       >
         {localCompleted ? (
-          <>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="20 6 9 17 4 12" />
             </svg>
             Completed
-          </>
+          </span>
         ) : (
-          <>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
             </svg>
             Mark Complete
-          </>
+          </span>
         )}
       </button>
     </div>
