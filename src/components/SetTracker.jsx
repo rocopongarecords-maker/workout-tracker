@@ -54,13 +54,11 @@ const SetTracker = ({ setNumber, weight, reps, targetReps, completed, onChange }
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
         <div>
           <div style={{ color: '#94a3b8', fontSize: '12px', marginBottom: '4px' }}>
-            Weight Used
+            Weight Used (kg)
           </div>
-          <input
-            type="number"
+          <select
             value={localWeight}
             onChange={handleWeightChange}
-            placeholder="0"
             style={{
               width: '100%',
               backgroundColor: '#0f172a',
@@ -71,24 +69,27 @@ const SetTracker = ({ setNumber, weight, reps, targetReps, completed, onChange }
               textAlign: 'center',
               border: '2px solid #334155',
               borderRadius: '8px',
-              boxSizing: 'border-box'
+              boxSizing: 'border-box',
+              appearance: 'menulist',
+              cursor: 'pointer'
             }}
-            inputMode="decimal"
-          />
-          <div style={{ color: '#64748b', fontSize: '12px', textAlign: 'center', marginTop: '4px' }}>
-            kg
-          </div>
+          >
+            <option value="">Select weight</option>
+            {weightOptions.map(w => (
+              <option key={w} value={w}>
+                {w} kg
+              </option>
+            ))}
+          </select>
         </div>
 
         <div>
           <div style={{ color: '#94a3b8', fontSize: '12px', marginBottom: '4px' }}>
             Reps Done
           </div>
-          <input
-            type="number"
+          <select
             value={localReps}
             onChange={handleRepsChange}
-            placeholder="0"
             style={{
               width: '100%',
               backgroundColor: '#0f172a',
@@ -99,13 +100,18 @@ const SetTracker = ({ setNumber, weight, reps, targetReps, completed, onChange }
               textAlign: 'center',
               border: '2px solid #334155',
               borderRadius: '8px',
-              boxSizing: 'border-box'
+              boxSizing: 'border-box',
+              appearance: 'menulist',
+              cursor: 'pointer'
             }}
-            inputMode="decimal"
-          />
-          <div style={{ color: '#64748b', fontSize: '12px', textAlign: 'center', marginTop: '4px' }}>
-            reps
-          </div>
+          >
+            <option value="">Select reps</option>
+            {repOptions.map(r => (
+              <option key={r} value={r}>
+                {r} reps
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 
