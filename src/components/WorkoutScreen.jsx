@@ -69,7 +69,7 @@ const WorkoutScreen = ({ dayNumber, workoutType, block, onSave, onComplete, onCa
   const isComplete = exercises.every(ex => ex.completed);
 
   // Calculate overall workout progress
-  const totalSets = exercises.reduce((sum, ex) => sum + ex.sets, 0);
+  const totalSets = exercises.reduce((sum, ex) => sum + ex.sets.length, 0);
   const completedSets = exercises.reduce((sum, ex) =>
     sum + ex.sets.filter(s => s.completed).length, 0
   );
