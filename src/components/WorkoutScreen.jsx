@@ -135,14 +135,22 @@ const WorkoutScreen = ({ dayNumber, workoutType, block, onSave, onComplete, onCa
       </div>
 
       <div className="space-y-4">
-        {exercises.map((exercise, index) => (
-          <ExerciseCard
-            key={index}
-            exercise={exercise}
-            onChange={handleExerciseChange}
-            previousWorkout={getPreviousWorkoutDetails(exercise.name)}
-          />
-        ))}
+        {exercises.map((exercise, index) => {
+          console.log('WorkoutScreen rendering ExerciseCard:', {
+            index,
+            exerciseName: exercise.name,
+            exerciseSets: exercise.sets,
+            exerciseType: exercise.type
+          });
+          return (
+            <ExerciseCard
+              key={index}
+              exercise={exercise}
+              onChange={handleExerciseChange}
+              previousWorkout={getPreviousWorkoutDetails(exercise.name)}
+            />
+          );
+        })}
       </div>
 
       <div className="fixed bottom-0 left-0 right-0 bg-slate-900 border-t border-slate-800 p-4 safe-area-bottom">

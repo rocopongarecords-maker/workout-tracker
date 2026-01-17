@@ -2,10 +2,25 @@ import { useState } from 'react';
 import SetTracker from './SetTracker';
 
 const ExerciseCard = ({ exercise, onChange, previousWorkout }) => {
+  console.log('ExerciseCard START:', {
+    exerciseName: exercise.name,
+    exerciseSets: exercise.sets,
+    typeofSets: typeof exercise.sets,
+    previousWorkout
+  });
+
   // Initialize sets directly in useState callback - runs only once on mount
   const [sets, setSets] = useState(() => {
     const initialSets = [];
-    for (let i = 1; i <= exercise.sets; i++) {
+    const setsCount = Number(exercise.sets) || 0;
+    
+    console.log('ExerciseCard useState initializing:', {
+      exerciseName: exercise.name,
+      setsCount,
+      exerciseSets: exercise.sets
+    });
+
+    for (let i = 1; i <= setsCount; i++) {
       initialSets.push({
         setNumber: i,
         weight: previousWorkout?.weight || '',
@@ -13,6 +28,8 @@ const ExerciseCard = ({ exercise, onChange, previousWorkout }) => {
         completed: false
       });
     }
+    
+    console.log('ExerciseCard initialSets created:', initialSets);
     return initialSets;
   });
 
@@ -77,6 +94,11 @@ const ExerciseCard = ({ exercise, onChange, previousWorkout }) => {
 
       {/* Set Trackers */}
       <div className="space-y-3">
+        {/* Debug box to see if sets exist */}
+        <div style={{ backgroundColor: '#dc2626', color: 'white', padding: '8px', fontSize: '12px', marginBottom: '8px' }}>
+          DEBUG: Sets length = {sets.length} | Total sets: {exercise.sets}
+        </div>
+
         {sets.map(set => (
           <SetTracker
             key={set.setNumber}

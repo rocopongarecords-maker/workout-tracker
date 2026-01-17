@@ -3,6 +3,12 @@ import { useState } from 'react';
 const SetTracker = ({ setNumber, weight, reps, targetReps, completed, onChange }) => {
   console.log('SetTracker render:', { setNumber, weight, reps, targetReps, completed });
 
+  // Generate weight options (increments of 5kg)
+  const weightOptions = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250, 260, 280, 300];
+
+  // Generate rep options (1-30)
+  const repOptions = Array.from({ length: 30 }, (_, i) => i + 1);
+
   const [localWeight, setLocalWeight] = useState(weight || '');
   const [localReps, setLocalReps] = useState(() => {
     return targetReps || '';
