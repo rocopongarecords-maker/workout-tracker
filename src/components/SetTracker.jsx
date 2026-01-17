@@ -51,7 +51,7 @@ const SetTracker = ({ setNumber, weight, reps, targetReps, completed, onChange }
             value={localWeight}
             onChange={handleWeightChange}
             placeholder="0"
-            className="w-full bg-slate-800 border-0 rounded-lg px-3 py-2 text-white text-center text-lg font-semibold placeholder-slate-600 focus:ring-2 focus:ring-blue-500 transition-all"
+            className="w-full bg-slate-900 border-2 border-slate-600 rounded-lg px-3 py-2 text-white text-center text-lg font-semibold placeholder-slate-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
             inputMode="decimal"
           />
           <div className="text-xs text-slate-500 text-center mt-1">kg</div>
@@ -67,7 +67,7 @@ const SetTracker = ({ setNumber, weight, reps, targetReps, completed, onChange }
             value={localReps}
             onChange={handleRepsChange}
             placeholder="0"
-            className="w-full bg-slate-800 border-0 rounded-lg px-3 py-2 text-white text-center text-lg font-semibold placeholder-slate-600 focus:ring-2 focus:ring-blue-500 transition-all"
+            className="w-full bg-slate-900 border-2 border-slate-600 rounded-lg px-3 py-2 text-white text-center text-lg font-semibold placeholder-slate-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
             inputMode="decimal"
           />
           <div className="text-xs text-slate-500 text-center mt-1">reps</div>
