@@ -1,8 +1,20 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import SetTracker from './SetTracker';
 
 const ExerciseCard = ({ exercise, onChange, previousWorkout }) => {
-  const [sets, setSets] = useState([]);
+  // Initialize sets directly in useState callback - runs only once on mount
+  const [sets, setSets] = useState(() => {
+    const initialSets = [];
+    for (let i = 1; i <= exercise.sets; i++) {
+      initialSets.push({
+        setNumber: i,
+        weight: previousWorkout?.weight || '',
+        reps: '',
+        completed: false
+      });
+    }
+    return initialSets;
+  });
 
   // Helper function to parse target reps for pre-filling
   const getTargetReps = () => {
@@ -14,19 +26,6 @@ const ExerciseCard = ({ exercise, onChange, previousWorkout }) => {
   };
 
   const targetReps = getTargetReps();
-
-  useEffect(() => {
-    const initialSets = [];
-    for (let i = 1; i <= exercise.sets; i++) {
-      initialSets.push({
-        setNumber: i,
-        weight: previousWorkout?.weight || '',
-        reps: '',
-        completed: false
-      });
-    }
-    setSets(initialSets);
-  }, [exercise.sets, previousWorkout]);
 
   const handleSetChange = (setNumber, field, value) => {
     setSets(prev => prev.map(set =>
@@ -40,12 +39,6 @@ const ExerciseCard = ({ exercise, onChange, previousWorkout }) => {
         ? { ...set, [field]: value }
         : set
     ));
-  };
-
-  const getRestTimeColor = () => {
-    if (exercise.type === 'primary') return 'text-yellow-400';
-    if (exercise.type === 'secondary') return 'text-blue-400';
-    return 'text-slate-400';
   };
 
   const completedSetsCount = sets.filter(set => set.completed).length;
