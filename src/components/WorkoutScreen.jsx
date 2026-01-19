@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { workoutData } from '../data/workoutData';
 import { getWorkoutByDay } from '../utils/getNextWorkout';
 import { getLastCompletedWorkoutForType } from '../utils/getPreviousWorkout';
@@ -7,6 +7,21 @@ import ExerciseCard from './ExerciseCard';
 const WorkoutScreen = ({ dayNumber, workoutType, block, onSave, onComplete, onCancel, workoutHistory, completedWorkouts }) => {
   const [exercises, setExercises] = useState([]);
   const [lastWorkout, setLastWorkout] = useState(null);
+  const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
+  const exerciseRefs = useRef([]);
+
+  const scrollToNext = () => {
+    const nextIndex = currentExerciseIndex + 1;
+    if (nextIndex < exercises.length) {
+      setCurrentExerciseIndex(nextIndex);
+      setTimeout(() => {
+        const nextElement = exerciseRefs.current[nextIndex];
+        if (nextElement) {
+          nextElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
+    }
+  };
 
   useEffect(() => {
     const dayData = getWorkoutByDay(dayNumber);
@@ -16,7 +31,7 @@ const WorkoutScreen = ({ dayNumber, workoutType, block, onSave, onComplete, onCa
 
       const initialExercises = workoutInfo.exercises.map(ex => ({
         ...ex,
-        sets: [],
+        userSets: [],
         completed: false
       }));
 
@@ -30,7 +45,7 @@ const WorkoutScreen = ({ dayNumber, workoutType, block, onSave, onComplete, onCa
   const handleExerciseChange = (exerciseName, newSets) => {
     setExercises(prev => prev.map(ex =>
       ex.name === exerciseName
-        ? { ...ex, sets: newSets }
+        ? { ...ex, userSets: newSets }
         : ex
     ));
   };
@@ -39,9 +54,9 @@ const WorkoutScreen = ({ dayNumber, workoutType, block, onSave, onComplete, onCa
     if (!lastWorkout) return null;
 
     const exercise = lastWorkout.exercises?.find(ex => ex.name === exerciseName);
-    if (!exercise || !exercise.sets || exercise.sets.length === 0) return null;
+    if (!exercise || !exercise.userSets || exercise.userSets.length === 0) return null;
 
-    const lastSet = exercise.sets[exercise.sets.length - 1];
+    const lastSet = exercise.userSets[exercise.userSets.length - 1];
 
     return {
       weight: lastSet?.weight || null,
@@ -56,7 +71,7 @@ const WorkoutScreen = ({ dayNumber, workoutType, block, onSave, onComplete, onCa
       block,
       exercises: exercises.map(ex => ({
         name: ex.name,
-        sets: ex.sets
+        userSets: ex.userSets
       }))
     });
   };
@@ -68,18 +83,16 @@ const WorkoutScreen = ({ dayNumber, workoutType, block, onSave, onComplete, onCa
 
   const isComplete = exercises.every(ex => ex.completed);
 
-  // Calculate overall workout progress
   const totalSets = exercises.reduce((sum, ex) => sum + ex.sets.length, 0);
   const completedSets = exercises.reduce((sum, ex) =>
-    sum + ex.sets.filter(s => s.completed).length, 0
+    sum + ex.userSets.filter(s => s.completed).length, 0
   );
   const completedExercises = exercises.filter(ex =>
-    ex.sets.every(s => s.completed)
+    ex.userSets.length === Number(ex.sets) && ex.userSets.every(s => s.completed)
   ).length;
 
   return (
     <div className="space-y-6 pb-24">
-      {/* Overall Workout Progress Header */}
       {totalSets > 0 && (
         <div className="bg-gradient-to-r from-blue-900/50 to-purple-900/50 rounded-xl p-4">
           <div className="text-sm text-slate-400 mb-2">
@@ -135,22 +148,26 @@ const WorkoutScreen = ({ dayNumber, workoutType, block, onSave, onComplete, onCa
       </div>
 
       <div className="space-y-4">
-        {exercises.map((exercise, index) => {
-          console.log('WorkoutScreen rendering ExerciseCard:', {
-            index,
-            exerciseName: exercise.name,
-            exerciseSets: exercise.sets,
-            exerciseType: exercise.type
-          });
-          return (
+        {exercises.map((exercise, index) => (
+          <div
+            key={index}
+            ref={(el) => (exerciseRefs.current[index] = el)}
+          >
             <ExerciseCard
-              key={index}
               exercise={exercise}
               onChange={handleExerciseChange}
               previousWorkout={getPreviousWorkoutDetails(exercise.name)}
+              onSave={(exerciseName, sets) => {
+                setExercises(prev => prev.map(ex =>
+                  ex.name === exerciseName
+                    ? { ...ex, userSets: sets }
+                    : ex
+                ));
+              }}
+              scrollToNext={scrollToNext}
             />
-          );
-        })}
+          </div>
+        ))}
       </div>
 
       <div className="fixed bottom-0 left-0 right-0 bg-slate-900 border-t border-slate-800 p-4 safe-area-bottom">

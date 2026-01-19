@@ -1,80 +1,132 @@
-import { useState } from 'react';
-import SetTracker from './SetTracker';
+import { useState, useEffect, useRef } from 'react';
+import { calculate1RM } from '../utils/calculate1RM';
 
-const ExerciseCard = ({ exercise, onChange, previousWorkout }) => {
-  console.log('ExerciseCard START:', {
-    exerciseName: exercise.name,
-    exerciseSets: exercise.sets,
-    typeofSets: typeof exercise.sets,
-    previousWorkout
-  });
+const ExerciseCard = ({ exercise, onChange, previousWorkout, onSave, scrollToNext }) => {
+  const setsCount = Number(exercise.sets) || 0;
+  const oneRM = previousWorkout ? calculate1RM(previousWorkout.weight, previousWorkout.reps) : null;
+  const timerIntervals = useRef({});
 
-  // Initialize sets directly in useState callback - runs only once on mount
-  const [sets, setSets] = useState(() => {
-    const initialSets = [];
-    const setsCount = Number(exercise.sets) || 0;
-    
-    console.log('ExerciseCard useState initializing:', {
-      exerciseName: exercise.name,
-      setsCount,
-      exerciseSets: exercise.sets
-    });
-
-    for (let i = 1; i <= setsCount; i++) {
-      initialSets.push({
-        setNumber: i,
-        weight: previousWorkout?.weight || '',
-        reps: '',
-        completed: false
-      });
-    }
-    
-    console.log('ExerciseCard initialSets created:', initialSets);
-    return initialSets;
-  });
-
-  // Helper function to parse target reps for pre-filling
   const getTargetReps = () => {
     const repsStr = exercise.reps;
-    // If it's a single number (e.g., "5"), return it
     if (!repsStr.includes('-')) return repsStr;
-    // If it's a range (e.g., "6-8"), return first number
     return repsStr.split('-')[0];
   };
 
-  const targetReps = getTargetReps();
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
 
-  const handleSetChange = (setNumber, field, value) => {
-    setSets(prev => prev.map(set =>
+  const targetReps = getTargetReps();
+  const [userSets, setUserSets] = useState(() => {
+    return Array.from({ length: setsCount }, (_, i) => ({
+      setNumber: i + 1,
+      weight: '',
+      reps: '',
+      completed: false,
+      restTime: 0,
+      timerRunning: false
+    }));
+  });
+
+  useEffect(() => {
+    return () => {
+      Object.values(timerIntervals.current).forEach(clearInterval);
+    };
+  }, []);
+
+  const startTimer = (setNumber) => {
+    if (timerIntervals.current[setNumber]) return;
+
+    setUserSets(prev => prev.map(set =>
       set.setNumber === setNumber
-        ? { ...set, [field]: value }
+        ? { ...set, timerRunning: true }
         : set
     ));
 
-    onChange(exercise.name, sets.map(set =>
+    timerIntervals.current[setNumber] = setInterval(() => {
+      setUserSets(prev => prev.map(set =>
+        set.setNumber === setNumber
+          ? { ...set, restTime: set.restTime + 1 }
+          : set
+      ));
+    }, 1000);
+  };
+
+  const stopTimer = (setNumber) => {
+    if (timerIntervals.current[setNumber]) {
+      clearInterval(timerIntervals.current[setNumber]);
+      delete timerIntervals.current[setNumber];
+    }
+
+    setUserSets(prev => prev.map(set =>
       set.setNumber === setNumber
-        ? { ...set, [field]: value }
+        ? { ...set, timerRunning: false }
         : set
     ));
   };
 
-  const completedSetsCount = sets.filter(set => set.completed).length;
-  const totalSets = exercise.sets;
+  const resetTimer = (setNumber) => {
+    stopTimer(setNumber);
+    setUserSets(prev => prev.map(set =>
+      set.setNumber === setNumber
+        ? { ...set, restTime: 0 }
+        : set
+    ));
+  };
+
+  const handleSetChange = (setNumber, field, value) => {
+    setUserSets(prev => {
+      const updatedSets = prev.map(set =>
+        set.setNumber === setNumber
+          ? { ...set, [field]: value }
+          : set
+      );
+      onChange(exercise.name, updatedSets);
+      return updatedSets;
+    });
+  };
+
+  const handleSaveAndNext = (setNumber) => {
+    stopTimer(setNumber);
+
+    const updatedSets = userSets.map(set =>
+      set.setNumber === setNumber
+        ? { ...set, completed: true, timerRunning: false }
+        : set
+    );
+
+    setUserSets(updatedSets);
+    onChange(exercise.name, updatedSets);
+    onSave(exercise.name, updatedSets);
+
+    setTimeout(() => {
+      scrollToNext();
+    }, 300);
+  };
+
+  const weightOptions = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250, 260, 280, 300];
+  const repOptions = Array.from({ length: 30 }, (_, i) => i + 1);
 
   return (
-    <div className="bg-slate-800 rounded-xl p-4 mb-4">
-      {/* Exercise Name */}
+    <div className="bg-slate-800 rounded-xl p-4 mb-4" id={`exercise-${exercise.name.replace(/\s+/g, '-')}`}>
       <h3 className="text-lg font-semibold text-white mb-3">
-        {exercise.superset && <span className="text-purple-400 mr-2">A1</span>}
         {exercise.name}
       </h3>
 
-      {/* Target Section */}
-      <div className="bg-slate-900/50 rounded-lg p-3 mb-3">
-        <div className="text-sm text-slate-400">
-          <strong className="text-white">Target:</strong> {exercise.sets} sets × {exercise.reps} reps
+      <div className="bg-slate-900/50 rounded-lg p-3 mb-4">
+        <div className="flex items-center justify-between mb-2">
+          <div className="text-sm text-slate-400">
+            <strong className="text-white">Target:</strong> {exercise.sets} sets × {exercise.reps} reps
+          </div>
+          {oneRM && (
+            <div className="text-sm text-slate-400">
+              <strong className="text-white">1RM:</strong> {oneRM} kg
+            </div>
+          )}
         </div>
-        <div className="text-xs text-slate-500 mt-1">
+        <div className="text-xs text-slate-500">
           Rest: {exercise.restTime}
         </div>
         {previousWorkout && previousWorkout.weight && (
@@ -84,53 +136,164 @@ const ExerciseCard = ({ exercise, onChange, previousWorkout }) => {
         )}
       </div>
 
-      {/* Separator */}
-      <div className="border-t border-slate-700 my-4"></div>
-
-      {/* Completed Section */}
-      <div className="text-sm font-semibold text-blue-400 mb-3">
-        What You Completed
-      </div>
-
-      {/* Set Trackers */}
       <div className="space-y-3">
-        {/* Debug box to see if sets exist */}
-        <div style={{ backgroundColor: '#dc2626', color: 'white', padding: '8px', fontSize: '12px', marginBottom: '8px' }}>
-          DEBUG: Sets length = {sets.length} | Total sets: {exercise.sets}
-        </div>
-
-        {sets.map(set => (
-          <SetTracker
+        {userSets.map((set) => (
+          <div
             key={set.setNumber}
-            setNumber={set.setNumber}
-            weight={set.weight}
-            reps={set.reps}
-            targetReps={targetReps}
-            completed={set.completed}
-            onChange={handleSetChange}
-          />
+            className={`rounded-lg p-4 border-2 transition-all ${
+              set.completed
+                ? 'bg-teal-900/50 border-green-500'
+                : 'bg-slate-700/50 border-slate-600'
+            }`}
+          >
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-slate-400 text-sm">Set {set.setNumber}</span>
+              {targetReps && (
+                <span className="text-slate-500 text-xs">(Target: {targetReps} reps)</span>
+              )}
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 mb-3">
+              <div>
+                <div className="text-slate-400 text-xs mb-1">Weight (kg)</div>
+                <select
+                  value={set.weight}
+                  onChange={(e) => handleSetChange(set.setNumber, 'weight', e.target.value)}
+                  disabled={set.completed}
+                  className={`w-full bg-slate-900 text-white p-2 rounded-lg text-center font-semibold border-2 ${
+                    set.completed ? 'border-green-500 opacity-70' : 'border-slate-600'
+                  }`}
+                >
+                  <option value="">Select</option>
+                  {weightOptions.map(w => (
+                    <option key={w} value={w}>{w} kg</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <div className="text-slate-400 text-xs mb-1">Reps Done</div>
+                <select
+                  value={set.reps}
+                  onChange={(e) => handleSetChange(set.setNumber, 'reps', e.target.value)}
+                  disabled={set.completed}
+                  className={`w-full bg-slate-900 text-white p-2 rounded-lg text-center font-semibold border-2 ${
+                    set.completed ? 'border-green-500 opacity-70' : 'border-slate-600'
+                  }`}
+                >
+                  <option value="">Select</option>
+                  {repOptions.map(r => (
+                    <option key={r} value={r}>{r}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="bg-slate-800/50 rounded-lg p-3 mb-3">
+              <div className="flex items-center justify-between mb-2">
+                <div className="text-slate-400 text-xs">Rest Timer</div>
+                {set.timerRunning && (
+                  <div className="flex items-center gap-1">
+                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                    <div className="text-green-400 text-xs">Resting...</div>
+                  </div>
+                )}
+              </div>
+
+              <div className={`text-2xl font-bold text-center mb-3 ${
+                set.timerRunning ? 'text-green-400' : set.restTime > 0 ? 'text-blue-400' : 'text-slate-500'
+              }`}>
+                {formatTime(set.restTime)}
+              </div>
+
+              <div className="flex gap-2">
+                {!set.timerRunning && set.restTime === 0 && (
+                  <button
+                    onClick={() => startTimer(set.setNumber)}
+                    disabled={set.completed}
+                    className="flex-1 py-2 bg-blue-500 hover:bg-blue-600 disabled:bg-slate-600 disabled:text-slate-400 disabled:cursor-not-allowed text-white rounded-lg font-semibold transition-all"
+                  >
+                    Start
+                  </button>
+                )}
+
+                {!set.timerRunning && set.restTime > 0 && (
+                  <button
+                    onClick={() => startTimer(set.setNumber)}
+                    disabled={set.completed}
+                    className="flex-1 py-2 bg-green-500 hover:bg-green-600 disabled:bg-slate-600 disabled:text-slate-400 disabled:cursor-not-allowed text-white rounded-lg font-semibold transition-all"
+                  >
+                    Resume
+                  </button>
+                )}
+
+                {set.timerRunning && (
+                  <button
+                    onClick={() => stopTimer(set.setNumber)}
+                    disabled={set.completed}
+                    className="flex-1 py-2 bg-orange-500 hover:bg-orange-600 disabled:bg-slate-600 disabled:text-slate-400 disabled:cursor-not-allowed text-white rounded-lg font-semibold transition-all"
+                  >
+                    Stop
+                  </button>
+                )}
+
+                {!set.timerRunning && set.restTime > 0 && (
+                  <button
+                    onClick={() => resetTimer(set.setNumber)}
+                    disabled={set.completed}
+                    className="flex-1 py-2 bg-slate-600 hover:bg-slate-500 disabled:bg-slate-700 disabled:text-slate-500 disabled:cursor-not-allowed text-slate-300 rounded-lg font-semibold transition-all"
+                  >
+                    Reset
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {!set.completed && (
+              <button
+                onClick={() => handleSaveAndNext(set.setNumber)}
+                disabled={!set.weight || !set.reps}
+                className={`w-full py-2 rounded-lg font-semibold transition-all ${
+                  set.weight && set.reps
+                    ? 'bg-blue-500 hover:bg-blue-600 text-white'
+                    : 'bg-slate-600 text-slate-400 cursor-not-allowed'
+                }`}
+              >
+                Save & Next Exercise
+              </button>
+            )}
+
+            {set.completed && (
+              <div className="flex flex-col items-center justify-center gap-2 text-green-400">
+                <div className="flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                  <span className="text-sm font-semibold">Saved</span>
+                </div>
+                {set.restTime > 0 && (
+                  <span className="text-xs text-slate-400">Rest: {formatTime(set.restTime)}</span>
+                )}
+              </div>
+            )}
+          </div>
         ))}
       </div>
 
-      {/* Exercise Progress Bar */}
-      {totalSets > 0 && (
-        <div className="mt-4 pt-3 border-t border-slate-700">
-          <div className="flex items-center justify-between text-sm mb-2">
-            <span className="text-slate-400">
-              Sets Completed
-            </span>
-            <span className="text-white font-semibold">
-              {completedSetsCount}/{totalSets}
-            </span>
-          </div>
-          <div className="w-full bg-slate-700 rounded-full h-2">
-            <div
-              className="bg-green-500 h-2 rounded-full transition-all"
-              style={{ width: `${(completedSetsCount / totalSets) * 100}%` }}
-            />
-          </div>
+      <div className="mt-4 pt-3 border-t border-slate-700">
+        <div className="flex items-center justify-between text-sm">
+          <span className="text-slate-400">Sets Completed</span>
+          <span className="text-white font-semibold">
+            {userSets.filter(s => s.completed).length}/{setsCount}
+          </span>
         </div>
-      )}
+        <div className="w-full bg-slate-700 rounded-full h-2 mt-2">
+          <div
+            className="bg-green-500 h-2 rounded-full transition-all"
+            style={{ width: `${(userSets.filter(s => s.completed).length / setsCount) * 100}%` }}
+          />
+        </div>
+      </div>
     </div>
   );
 };
