@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { calculate1RM } from '../utils/calculate1RM';
 
-const ExerciseCard = ({ exercise, onChange, previousWorkout, onSave, scrollToNext }) => {
+const ExerciseCard = ({ exercise, onChange, previousWorkout, onSave, scrollToNext, currentSet, totalSets }) => {
   const setsCount = Number(exercise.sets) || 0;
   const oneRM = previousWorkout ? calculate1RM(previousWorkout.weight, previousWorkout.reps) : null;
   const timerIntervals = useRef({});
@@ -102,7 +102,7 @@ const ExerciseCard = ({ exercise, onChange, previousWorkout, onSave, scrollToNex
     onSave(exercise.name, updatedSets);
 
     setTimeout(() => {
-      scrollToNext();
+      scrollToNext(setNumber, setsCount);
     }, 300);
   };
 

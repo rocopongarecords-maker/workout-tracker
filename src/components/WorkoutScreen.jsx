@@ -8,18 +8,31 @@ const WorkoutScreen = ({ dayNumber, workoutType, block, onSave, onComplete, onCa
   const [exercises, setExercises] = useState([]);
   const [lastWorkout, setLastWorkout] = useState(null);
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
+  const [currentSet, setCurrentSet] = useState(0);
   const exerciseRefs = useRef([]);
 
-  const scrollToNext = () => {
-    const nextIndex = currentExerciseIndex + 1;
-    if (nextIndex < exercises.length) {
-      setCurrentExerciseIndex(nextIndex);
+  const scrollToNext = (currentSet, totalSets) => {
+    const nextSet = currentSet + 1;
+    if (nextSet < totalSets) {
+      setCurrentSet(nextSet);
       setTimeout(() => {
-        const nextElement = exerciseRefs.current[nextIndex];
+        const nextElement = exerciseRefs.current[currentExerciseIndex];
         if (nextElement) {
           nextElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
       }, 100);
+    } else {
+      const nextIndex = currentExerciseIndex + 1;
+      if (nextIndex < exercises.length) {
+        setCurrentExerciseIndex(nextIndex);
+        setCurrentSet(0);
+        setTimeout(() => {
+          const nextElement = exerciseRefs.current[nextIndex];
+          if (nextElement) {
+            nextElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }, 100);
+      }
     }
   };
 
