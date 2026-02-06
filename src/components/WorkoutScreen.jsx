@@ -15,25 +15,29 @@ const WorkoutScreen = ({ dayNumber, workoutType, block, onSave, onComplete, onCa
     const nextSet = currentSet + 1;
     if (nextSet < totalSets) {
       setCurrentSet(nextSet);
-      setTimeout(() => {
-        const nextElement = exerciseRefs.current[currentExerciseIndex];
-        if (nextElement) {
-          nextElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-      }, 100);
     } else {
       const nextIndex = currentExerciseIndex + 1;
       if (nextIndex < exercises.length) {
         setCurrentExerciseIndex(nextIndex);
         setCurrentSet(0);
-        setTimeout(() => {
+      }
+    }
+    setTimeout(() => {
+      if (nextSet < totalSets) {
+        const nextElement = exerciseRefs.current[currentExerciseIndex];
+        if (nextElement) {
+          nextElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      } else {
+        const nextIndex = currentExerciseIndex + 1;
+        if (nextIndex < exercises.length) {
           const nextElement = exerciseRefs.current[nextIndex];
           if (nextElement) {
             nextElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
           }
-        }, 100);
+        }
       }
-    }
+    }, 100);
   };
 
   useEffect(() => {

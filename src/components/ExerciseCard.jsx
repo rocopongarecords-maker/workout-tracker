@@ -45,13 +45,14 @@ const ExerciseCard = ({ exercise, onChange, previousWorkout, onSave, scrollToNex
         : set
     ));
 
+    const startTime = performance.now();
     timerIntervals.current[setNumber] = setInterval(() => {
       setUserSets(prev => prev.map(set =>
         set.setNumber === setNumber
-          ? { ...set, restTime: set.restTime + 1 }
+          ? { ...set, restTime: Math.floor((performance.now() - startTime) / 1000) }
           : set
       ));
-    }, 1000);
+    }, 100);
   };
 
   const stopTimer = (setNumber) => {
