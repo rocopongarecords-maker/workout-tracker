@@ -12,6 +12,25 @@ const ExerciseCard = ({ exercise, onChange, previousWorkout, onSave, scrollToNex
     return repsStr.split('-')[0];
   };
 
+  const parseRestRange = (restTimeStr) => {
+    if (!restTimeStr) return { min: 0, max: 0 };
+    const match = restTimeStr.match(/(\d+)-(\d+)/);
+    if (match) return { min: parseInt(match[1]) * 60, max: parseInt(match[2]) * 60 };
+    const single = restTimeStr.match(/(\d+)/);
+    if (single) return { min: parseInt(single[1]) * 60, max: parseInt(single[1]) * 60 };
+    return { min: 0, max: 0 };
+  };
+
+  const restRange = parseRestRange(exercise.restTime);
+
+  const getTimerColor = (seconds, timerRunning) => {
+    if (seconds === 0 && !timerRunning) return 'text-slate-500';
+    if (restRange.max === 0) return timerRunning ? 'text-green-400' : 'text-blue-400';
+    if (seconds < restRange.min) return 'text-blue-400';
+    if (seconds <= restRange.max) return 'text-green-400';
+    return 'text-yellow-400';
+  };
+
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -20,10 +39,12 @@ const ExerciseCard = ({ exercise, onChange, previousWorkout, onSave, scrollToNex
 
   const targetReps = getTargetReps();
   const [userSets, setUserSets] = useState(() => {
+    const prefillWeight = previousWorkout?.weight ? String(previousWorkout.weight) : '';
+    const prefillReps = previousWorkout?.reps ? String(previousWorkout.reps) : '';
     return Array.from({ length: setsCount }, (_, i) => ({
       setNumber: i + 1,
-      weight: '',
-      reps: '',
+      weight: prefillWeight,
+      reps: prefillReps,
       completed: false,
       restTime: 0,
       timerRunning: false
@@ -201,9 +222,7 @@ const ExerciseCard = ({ exercise, onChange, previousWorkout, onSave, scrollToNex
                 )}
               </div>
 
-              <div className={`text-2xl font-bold text-center mb-3 ${
-                set.timerRunning ? 'text-green-400' : set.restTime > 0 ? 'text-blue-400' : 'text-slate-500'
-              }`}>
+              <div className={`text-2xl font-bold text-center mb-3 ${getTimerColor(set.restTime, set.timerRunning)}`}>
                 {formatTime(set.restTime)}
               </div>
 
@@ -260,7 +279,7 @@ const ExerciseCard = ({ exercise, onChange, previousWorkout, onSave, scrollToNex
                     : 'bg-slate-600 text-slate-400 cursor-not-allowed'
                 }`}
               >
-                Save & Next Exercise
+                Save Set
               </button>
             )}
 

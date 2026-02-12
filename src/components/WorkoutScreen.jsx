@@ -165,26 +165,76 @@ const WorkoutScreen = ({ dayNumber, workoutType, block, onSave, onComplete, onCa
       </div>
 
       <div className="space-y-4">
-        {exercises.map((exercise, index) => (
-          <div
-            key={index}
-            ref={(el) => (exerciseRefs.current[index] = el)}
-          >
-            <ExerciseCard
-              exercise={exercise}
-              onChange={handleExerciseChange}
-              previousWorkout={getPreviousWorkoutDetails(exercise.name)}
-              onSave={(exerciseName, sets) => {
-                setExercises(prev => prev.map(ex =>
-                  ex.name === exerciseName
-                    ? { ...ex, userSets: sets }
-                    : ex
-                ));
-              }}
-              scrollToNext={scrollToNext}
-            />
-          </div>
-        ))}
+        {(() => {
+          const groups = [];
+          let i = 0;
+          while (i < exercises.length) {
+            if (exercises[i].superset) {
+              const group = [];
+              while (i < exercises.length && exercises[i].superset) {
+                group.push({ exercise: exercises[i], originalIndex: i });
+                i++;
+              }
+              groups.push({ type: 'superset', items: group });
+            } else {
+              groups.push({ type: 'single', exercise: exercises[i], originalIndex: i });
+              i++;
+            }
+          }
+
+          return groups.map((group, gIdx) => {
+            if (group.type === 'superset') {
+              return (
+                <div key={`superset-${gIdx}`} className="border-2 border-purple-500/40 rounded-xl p-3 space-y-2">
+                  <div className="text-xs font-semibold text-purple-400 uppercase tracking-wide">
+                    Superset
+                  </div>
+                  {group.items.map(({ exercise, originalIndex }) => (
+                    <div
+                      key={originalIndex}
+                      ref={(el) => (exerciseRefs.current[originalIndex] = el)}
+                    >
+                      <ExerciseCard
+                        exercise={exercise}
+                        onChange={handleExerciseChange}
+                        previousWorkout={getPreviousWorkoutDetails(exercise.name)}
+                        onSave={(exerciseName, sets) => {
+                          setExercises(prev => prev.map(ex =>
+                            ex.name === exerciseName
+                              ? { ...ex, userSets: sets }
+                              : ex
+                          ));
+                        }}
+                        scrollToNext={scrollToNext}
+                      />
+                    </div>
+                  ))}
+                </div>
+              );
+            }
+
+            return (
+              <div
+                key={group.originalIndex}
+                ref={(el) => (exerciseRefs.current[group.originalIndex] = el)}
+              >
+                <ExerciseCard
+                  exercise={group.exercise}
+                  onChange={handleExerciseChange}
+                  previousWorkout={getPreviousWorkoutDetails(group.exercise.name)}
+                  onSave={(exerciseName, sets) => {
+                    setExercises(prev => prev.map(ex =>
+                      ex.name === exerciseName
+                        ? { ...ex, userSets: sets }
+                        : ex
+                    ));
+                  }}
+                  scrollToNext={scrollToNext}
+                />
+              </div>
+            );
+          });
+        })()}
       </div>
 
       <div className="fixed bottom-0 left-0 right-0 bg-slate-900 border-t border-slate-800 p-4 safe-area-bottom">
