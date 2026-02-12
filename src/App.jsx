@@ -21,7 +21,7 @@ function App() {
 
   const handleSelectDay = (dayNumber) => {
     const dayData = schedule.find(day => day.day === dayNumber);
-    if (dayData && !dayData.rest && !dayData.isDeload) {
+    if (dayData && !dayData.rest) {
       setSelectedWorkout({ dayNumber, workoutType: dayData.type, block: dayData.block });
       setCurrentView('workout');
     }

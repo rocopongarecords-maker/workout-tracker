@@ -1,6 +1,7 @@
-import { Dumbbell, Calendar, TrendingUp } from 'lucide-react';
+import { Dumbbell, Calendar } from 'lucide-react';
 import { getNextWorkout } from '../utils/getNextWorkout';
 import { workoutData } from '../data/workoutData';
+import ProgressIndicator from './ProgressIndicator';
 
 const Dashboard = ({ stats, completedWorkouts, onStartWorkout, onViewAllWorkouts, currentView, setCurrentView }) => {
   const nextWorkout = getNextWorkout(completedWorkouts);
@@ -75,32 +76,12 @@ const Dashboard = ({ stats, completedWorkouts, onStartWorkout, onViewAllWorkouts
             )}
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-slate-800 rounded-2xl p-6">
-              <div className="flex items-center gap-3 mb-3">
-                <TrendingUp size={24} className="text-green-500" />
-                <span className="text-sm text-slate-400">Progress</span>
-              </div>
-              <p className="text-3xl font-bold text-white">
-                {stats.percentage}%
-              </p>
-              <p className="text-sm text-slate-400 mt-1">
-                {stats.completed} / {stats.totalWorkouts}
-              </p>
-            </div>
-
-            <div className="bg-slate-800 rounded-2xl p-6">
-              <div className="flex items-center gap-3 mb-3">
-                <Calendar size={24} className="text-yellow-500" />
-                <span className="text-sm text-slate-400">Current</span>
-              </div>
-              <p className="text-3xl font-bold text-white">
-                Week {stats.currentWeek}
-              </p>
-              <p className="text-sm text-slate-400 mt-1">
-                of 16 weeks
-              </p>
-            </div>
+          <div className="bg-slate-800 rounded-2xl p-6">
+            <ProgressIndicator
+              percentage={stats.percentage}
+              completed={stats.completed}
+              total={stats.totalWorkouts}
+            />
           </div>
         </>
       )}

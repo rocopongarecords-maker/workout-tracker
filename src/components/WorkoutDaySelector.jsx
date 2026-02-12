@@ -1,7 +1,6 @@
 const WorkoutDaySelector = ({ schedule, completedWorkouts, nextDay, onSelectDay, currentView, setCurrentView }) => {
   const getStatusColor = (day) => {
     if (day.rest) return 'bg-slate-700/30 text-slate-500';
-    if (day.isDeload) return 'bg-purple-900/30 text-purple-400 border-2 border-purple-500';
     if (completedWorkouts.includes(day.day)) return 'bg-green-500/20 text-green-400';
     if (day.day === nextDay) return 'bg-yellow-500/20 text-yellow-400 border-2 border-yellow-500';
     return 'bg-slate-700/50 text-slate-400';
@@ -15,8 +14,7 @@ const WorkoutDaySelector = ({ schedule, completedWorkouts, nextDay, onSelectDay,
       push2: 'P2',
       pull1: 'U1',
       pull2: 'U2',
-      rest: 'Rest',
-      deload: 'Deload'
+      rest: 'Rest'
     };
     return labels[type] || type;
   };
@@ -62,8 +60,8 @@ const WorkoutDaySelector = ({ schedule, completedWorkouts, nextDay, onSelectDay,
             {week.map((day, dayIndex) => (
               <button
                 key={`${weekIndex}-${dayIndex}`}
-                onClick={() => !day.rest && !day.isDeload && onSelectDay(day.day)}
-                disabled={day.rest || day.isDeload}
+                onClick={() => !day.rest && onSelectDay(day.day)}
+                disabled={day.rest}
                 className={`
                   aspect-square rounded-lg flex items-center justify-center
                   text-xs font-semibold transition-all
@@ -94,10 +92,6 @@ const WorkoutDaySelector = ({ schedule, completedWorkouts, nextDay, onSelectDay,
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 bg-slate-700/50 rounded"></div>
           <span className="text-slate-400">Upcoming</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-purple-900/30 rounded border-2 border-purple-500"></div>
-          <span className="text-slate-400">Deload</span>
         </div>
       </div>
     </div>

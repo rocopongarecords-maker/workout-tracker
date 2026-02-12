@@ -3,10 +3,10 @@ import { schedule } from '../data/schedule';
 
 export const useProgressTracking = (completedWorkouts) => {
   const stats = useMemo(() => {
-    const totalWorkouts = schedule.filter(day => !day.rest && !day.isDeload).length;
+    const totalWorkouts = schedule.filter(day => !day.rest).length;
     const completed = completedWorkouts.filter(day => {
       const scheduleDay = schedule.find(s => s.day === day);
-      return scheduleDay && !scheduleDay.rest && !scheduleDay.isDeload;
+      return scheduleDay && !scheduleDay.rest;
     }).length;
 
     const nextWorkout = schedule.find(day => !day.rest && !completedWorkouts.includes(day.day));
