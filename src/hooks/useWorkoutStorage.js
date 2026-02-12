@@ -56,12 +56,22 @@ export const useWorkoutStorage = () => {
     setData(initialData);
   };
 
+  const importData = (imported) => {
+    const merged = {
+      completedWorkouts: imported.completedWorkouts || [],
+      workoutHistory: imported.workoutHistory || {},
+      startDate: imported.startDate || null
+    };
+    setData(merged);
+  };
+
   return {
     data,
     saveWorkout,
     markComplete,
     isCompleted,
     getWorkoutHistory,
-    resetData
+    resetData,
+    importData
   };
 };

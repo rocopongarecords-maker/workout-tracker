@@ -1,4 +1,4 @@
-const WorkoutDaySelector = ({ schedule, completedWorkouts, nextDay, onSelectDay, currentView, setCurrentView }) => {
+const WorkoutDaySelector = ({ schedule, completedWorkouts, nextDay, onSelectDay, onReviewDay, currentView, setCurrentView }) => {
   const getStatusColor = (day) => {
     if (day.rest) return 'bg-slate-700/30 text-slate-500';
     if (completedWorkouts.includes(day.day)) return 'bg-green-500/20 text-green-400';
@@ -60,13 +60,20 @@ const WorkoutDaySelector = ({ schedule, completedWorkouts, nextDay, onSelectDay,
             {week.map((day, dayIndex) => (
               <button
                 key={`${weekIndex}-${dayIndex}`}
-                onClick={() => !day.rest && onSelectDay(day.day)}
+                onClick={() => {
+                  if (day.rest) return;
+                  if (completedWorkouts.includes(day.day) && onReviewDay) {
+                    onReviewDay(day.day);
+                  } else {
+                    onSelectDay(day.day);
+                  }
+                }}
                 disabled={day.rest}
                 className={`
                   aspect-square rounded-lg flex items-center justify-center
                   text-xs font-semibold transition-all
                   ${getStatusColor(day)}
-                  ${!day.rest && !day.isDeload ? 'hover:scale-105 active:scale-95 cursor-pointer' : 'cursor-not-allowed'}
+                  ${!day.rest ? 'hover:scale-105 active:scale-95 cursor-pointer' : 'cursor-not-allowed'}
                 `}
                 title={`Day ${day.day} - ${day.type}`}
               >
