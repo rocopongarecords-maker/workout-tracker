@@ -100,7 +100,7 @@ const WorkoutScreen = ({ dayNumber, workoutType, block, onSave, onComplete, onCa
 
   const isComplete = exercises.every(ex => ex.completed);
 
-  const totalSets = exercises.reduce((sum, ex) => sum + ex.sets.length, 0);
+  const totalSets = exercises.reduce((sum, ex) => sum + Number(ex.sets), 0);
   const completedSets = exercises.reduce((sum, ex) =>
     sum + ex.userSets.filter(s => s.completed).length, 0
   );

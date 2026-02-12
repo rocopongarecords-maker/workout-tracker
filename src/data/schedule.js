@@ -70,4 +70,76 @@ export const schedule = [
   { day: 54, type: "push2", block: 1, rest: false, week: 8 },
   { day: 55, type: "pull2", block: 1, rest: false, week: 8 },
   { day: 56, type: "rest", block: 1, rest: true, week: 8 },
+
+  // Block 2 - Week 9
+  { day: 57, type: "legs1", block: 2, rest: false, week: 9 },
+  { day: 58, type: "push1", block: 2, rest: false, week: 9 },
+  { day: 59, type: "pull1", block: 2, rest: false, week: 9 },
+  { day: 60, type: "legs2", block: 2, rest: false, week: 9 },
+  { day: 61, type: "push2", block: 2, rest: false, week: 9 },
+  { day: 62, type: "pull2", block: 2, rest: false, week: 9 },
+  { day: 63, type: "rest", block: 2, rest: true, week: 9 },
+
+  // Block 2 - Week 10
+  { day: 64, type: "legs1", block: 2, rest: false, week: 10 },
+  { day: 65, type: "push1", block: 2, rest: false, week: 10 },
+  { day: 66, type: "pull1", block: 2, rest: false, week: 10 },
+  { day: 67, type: "legs2", block: 2, rest: false, week: 10 },
+  { day: 68, type: "push2", block: 2, rest: false, week: 10 },
+  { day: 69, type: "pull2", block: 2, rest: false, week: 10 },
+  { day: 70, type: "rest", block: 2, rest: true, week: 10 },
+
+  // Block 2 - Week 11
+  { day: 71, type: "legs1", block: 2, rest: false, week: 11 },
+  { day: 72, type: "push1", block: 2, rest: false, week: 11 },
+  { day: 73, type: "pull1", block: 2, rest: false, week: 11 },
+  { day: 74, type: "legs2", block: 2, rest: false, week: 11 },
+  { day: 75, type: "push2", block: 2, rest: false, week: 11 },
+  { day: 76, type: "pull2", block: 2, rest: false, week: 11 },
+  { day: 77, type: "rest", block: 2, rest: true, week: 11 },
+
+  // Block 2 - Week 12
+  { day: 78, type: "legs1", block: 2, rest: false, week: 12 },
+  { day: 79, type: "push1", block: 2, rest: false, week: 12 },
+  { day: 80, type: "pull1", block: 2, rest: false, week: 12 },
+  { day: 81, type: "legs2", block: 2, rest: false, week: 12 },
+  { day: 82, type: "push2", block: 2, rest: false, week: 12 },
+  { day: 83, type: "pull2", block: 2, rest: false, week: 12 },
+  { day: 84, type: "rest", block: 2, rest: true, week: 12 },
+
+  // Block 2 - Week 13
+  { day: 85, type: "legs1", block: 2, rest: false, week: 13 },
+  { day: 86, type: "push1", block: 2, rest: false, week: 13 },
+  { day: 87, type: "pull1", block: 2, rest: false, week: 13 },
+  { day: 88, type: "legs2", block: 2, rest: false, week: 13 },
+  { day: 89, type: "push2", block: 2, rest: false, week: 13 },
+  { day: 90, type: "pull2", block: 2, rest: false, week: 13 },
+  { day: 91, type: "rest", block: 2, rest: true, week: 13 },
+
+  // Block 2 - Week 14
+  { day: 92, type: "legs1", block: 2, rest: false, week: 14 },
+  { day: 93, type: "push1", block: 2, rest: false, week: 14 },
+  { day: 94, type: "pull1", block: 2, rest: false, week: 14 },
+  { day: 95, type: "legs2", block: 2, rest: false, week: 14 },
+  { day: 96, type: "push2", block: 2, rest: false, week: 14 },
+  { day: 97, type: "pull2", block: 2, rest: false, week: 14 },
+  { day: 98, type: "rest", block: 2, rest: true, week: 14 },
+
+  // Block 2 - Week 15
+  { day: 99, type: "legs1", block: 2, rest: false, week: 15 },
+  { day: 100, type: "push1", block: 2, rest: false, week: 15 },
+  { day: 101, type: "pull1", block: 2, rest: false, week: 15 },
+  { day: 102, type: "legs2", block: 2, rest: false, week: 15 },
+  { day: 103, type: "push2", block: 2, rest: false, week: 15 },
+  { day: 104, type: "pull2", block: 2, rest: false, week: 15 },
+  { day: 105, type: "rest", block: 2, rest: true, week: 15 },
+
+  // Block 2 - Week 16
+  { day: 106, type: "legs1", block: 2, rest: false, week: 16 },
+  { day: 107, type: "push1", block: 2, rest: false, week: 16 },
+  { day: 108, type: "pull1", block: 2, rest: false, week: 16 },
+  { day: 109, type: "legs2", block: 2, rest: false, week: 16 },
+  { day: 110, type: "push2", block: 2, rest: false, week: 16 },
+  { day: 111, type: "pull2", block: 2, rest: false, week: 16 },
+  { day: 112, type: "rest", block: 2, rest: true, week: 16 },
 ];

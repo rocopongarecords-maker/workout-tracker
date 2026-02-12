@@ -5,8 +5,8 @@ export const getPreviousWorkout = (exerciseName, workoutHistory, completedWorkou
     const workout = workoutHistory[dayNumber];
     if (workout && workout.exercises) {
       const exercise = workout.exercises.find(ex => ex.name === exerciseName);
-      if (exercise && exercise.sets && exercise.sets.length > 0) {
-        return exercise.sets[exercise.sets.length - 1].weight;
+      if (exercise && exercise.userSets && exercise.userSets.length > 0) {
+        return exercise.userSets[exercise.userSets.length - 1].weight;
       }
     }
   }
