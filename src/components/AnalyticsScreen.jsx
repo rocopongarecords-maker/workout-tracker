@@ -117,6 +117,26 @@ const AnalyticsScreen = ({ workoutHistory, completedWorkouts, onBack, schedule }
     };
   }, [completedWorkouts]);
 
+  // ── Calendar Heatmap ──
+  const heatmapData = useMemo(() => {
+    // Build a per-day status map from the schedule
+    return schedule.map(day => ({
+      day: day.day,
+      week: day.week,
+      rest: day.rest,
+      completed: completedWorkouts.includes(day.day),
+      type: day.type
+    }));
+  }, [schedule, completedWorkouts]);
+
+  const heatmapWeeks = useMemo(() => {
+    const weeks = [];
+    for (let i = 0; i < heatmapData.length; i += 7) {
+      weeks.push(heatmapData.slice(i, i + 7));
+    }
+    return weeks;
+  }, [heatmapData]);
+
   const activeLift = TRACKED_LIFTS.find(l => rmTrends[l.name].length >= 2) || TRACKED_LIFTS[0];
 
   return (
@@ -155,6 +175,43 @@ const AnalyticsScreen = ({ workoutHistory, completedWorkouts, onBack, schedule }
         <div className="bg-slate-800 rounded-xl p-4 text-center">
           <div className="text-2xl font-bold text-white">{consistency.totalWorkouts}</div>
           <div className="text-xs text-slate-400 mt-1">Total Workouts</div>
+        </div>
+      </div>
+
+      {/* Calendar Heatmap */}
+      <div className="bg-slate-800 rounded-xl p-4">
+        <h2 className="text-sm font-semibold text-white mb-3">Activity Map</h2>
+        <div className="overflow-x-auto">
+          <div className="flex gap-[3px]">
+            {heatmapWeeks.map((week, wIdx) => (
+              <div key={wIdx} className="flex flex-col gap-[3px]">
+                {week.map((day) => {
+                  let color = 'bg-slate-700/30'; // rest
+                  if (!day.rest) {
+                    color = day.completed ? 'bg-green-500' : 'bg-slate-700/60';
+                  }
+                  return (
+                    <div
+                      key={day.day}
+                      className={`w-3 h-3 rounded-sm ${color}`}
+                      title={`Day ${day.day} — ${day.rest ? 'Rest' : day.type}${day.completed ? ' (done)' : ''}`}
+                    />
+                  );
+                })}
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="flex items-center gap-4 mt-3 text-xs text-slate-500">
+          <span className="flex items-center gap-1">
+            <div className="w-3 h-3 rounded-sm bg-green-500" /> Done
+          </span>
+          <span className="flex items-center gap-1">
+            <div className="w-3 h-3 rounded-sm bg-slate-700/60" /> Pending
+          </span>
+          <span className="flex items-center gap-1">
+            <div className="w-3 h-3 rounded-sm bg-slate-700/30" /> Rest
+          </span>
         </div>
       </div>
 

@@ -117,6 +117,24 @@ export const badges = [
     tier: 'gold'
   },
 
+  // ── Bodyweight Badges ──
+  {
+    id: 'bw_squat',
+    name: 'BW Squat',
+    description: 'Squat your bodyweight for reps',
+    icon: '🦵',
+    category: 'strength',
+    tier: 'silver'
+  },
+  {
+    id: 'bw_deadlift_1_5x',
+    name: '1.5x BW Deadlift',
+    description: 'Deadlift 1.5x your bodyweight for reps',
+    icon: '🏗️',
+    category: 'strength',
+    tier: 'gold'
+  },
+
   // ── Volume Badges ──
   {
     id: 'volume_10k',

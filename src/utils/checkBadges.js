@@ -78,6 +78,30 @@ export const checkBadges = ({ completedWorkouts, workoutHistory, earnedBadges, t
   check('prs_10', () => (totalPRs || 0) >= 10);
   check('prs_25', () => (totalPRs || 0) >= 25);
 
+  // ── Bodyweight-Relative Strength ──
+  const latestBW = (weightLog || []).length > 0
+    ? weightLog[weightLog.length - 1].weight
+    : null;
+
+  if (latestBW) {
+    // Check best squat weight across all workouts
+    let bestSquatWeight = 0;
+    let bestDeadliftWeight = 0;
+    for (const dayKey of Object.keys(workoutHistory)) {
+      const workout = workoutHistory[dayKey];
+      if (!workout?.exercises) continue;
+      for (const ex of workout.exercises) {
+        const maxWeight = (ex.userSets || [])
+          .filter(s => s.completed)
+          .reduce((max, s) => Math.max(max, Number(s.weight) || 0), 0);
+        if (ex.name === 'Back Squat') bestSquatWeight = Math.max(bestSquatWeight, maxWeight);
+        if (ex.name === 'Deadlift') bestDeadliftWeight = Math.max(bestDeadliftWeight, maxWeight);
+      }
+    }
+    check('bw_squat', () => bestSquatWeight >= latestBW);
+    check('bw_deadlift_1_5x', () => bestDeadliftWeight >= latestBW * 1.5);
+  }
+
   // ── Volume ──
   let totalVolume = 0;
   for (const dayKey of Object.keys(workoutHistory)) {
