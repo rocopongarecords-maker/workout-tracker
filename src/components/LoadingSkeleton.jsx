@@ -1,5 +1,5 @@
 const Bone = ({ className = '' }) => (
-  <div className={`bg-slate-800 rounded-lg animate-pulse ${className}`} />
+  <div className={`bg-white/5 rounded-lg animate-shimmer ${className}`} />
 );
 
 const LoadingSkeleton = () => {
@@ -12,10 +12,10 @@ const LoadingSkeleton = () => {
       </div>
 
       {/* Next workout card */}
-      <div className="bg-slate-800/50 rounded-2xl p-6 space-y-4">
+      <div className="glass-card p-6 space-y-4">
         <Bone className="h-5 w-36" />
         <div className="flex items-start gap-4">
-          <Bone className="w-16 h-16 rounded-xl flex-shrink-0" />
+          <Bone className="w-14 h-14 rounded-xl flex-shrink-0" />
           <div className="flex-1 space-y-2">
             <Bone className="h-6 w-40" />
             <Bone className="h-4 w-52" />
@@ -25,14 +25,16 @@ const LoadingSkeleton = () => {
       </div>
 
       {/* Progress */}
-      <div className="bg-slate-800/50 rounded-2xl p-6 space-y-3">
+      <div className="glass-card p-6 space-y-3">
         <Bone className="h-4 w-32" />
-        <Bone className="h-3 w-full rounded-full" />
+        <Bone className="h-2 w-full rounded-full" />
         <Bone className="h-4 w-20" />
       </div>
 
       {/* Nav grid */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-3 gap-3">
+        <Bone className="h-14 rounded-xl" />
+        <Bone className="h-14 rounded-xl" />
         <Bone className="h-14 rounded-xl" />
         <Bone className="h-14 rounded-xl" />
         <Bone className="h-14 rounded-xl" />

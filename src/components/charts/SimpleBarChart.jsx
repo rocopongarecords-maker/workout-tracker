@@ -25,6 +25,18 @@ const SimpleBarChart = ({ data, width = 320, height = 160, label }) => {
 
   return (
     <svg viewBox={`0 0 ${width} ${height}`} className="w-full" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        {data.map((d, i) => {
+          const barColor = d.color || '#3b82f6';
+          return (
+            <linearGradient key={i} id={`bar-grad-${i}`} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={barColor} stopOpacity="1" />
+              <stop offset="100%" stopColor={barColor} stopOpacity="0.5" />
+            </linearGradient>
+          );
+        })}
+      </defs>
+
       {/* Grid lines */}
       {yTicks.map((tick, i) => {
         const y = padding.top + chartH - (tick / maxVal) * chartH;
@@ -33,7 +45,7 @@ const SimpleBarChart = ({ data, width = 320, height = 160, label }) => {
             <line
               x1={padding.left} y1={y}
               x2={width - padding.right} y2={y}
-              stroke="#334155" strokeWidth="1" strokeDasharray="4 4"
+              stroke="rgba(255,255,255,0.06)" strokeWidth="1"
             />
             <text x={padding.left - 5} y={y + 4} textAnchor="end" fill="#64748b" fontSize="9">
               {tick >= 1000 ? `${(tick / 1000).toFixed(0)}k` : tick}
@@ -51,9 +63,8 @@ const SimpleBarChart = ({ data, width = 320, height = 160, label }) => {
             <rect
               x={barX(i)} y={y}
               width={barWidth} height={h}
-              rx="3"
-              fill={d.color || '#3b82f6'}
-              opacity="0.85"
+              rx="4"
+              fill={`url(#bar-grad-${i})`}
             />
             <text
               x={barX(i) + barWidth / 2} y={height - 5}

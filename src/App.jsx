@@ -188,6 +188,9 @@ function App() {
             getWorkoutName={getWorkoutName}
             programName={program.programName}
             totalWeeks={program.totalWeeks}
+            getExercisesForDay={getExercisesForDay}
+            totalPRs={data.totalPRs}
+            workoutHistory={data.workoutHistory}
           />
         )}
 
@@ -259,6 +262,7 @@ function App() {
             completedWorkouts={data.completedWorkouts}
             onBack={handleBackToDashboard}
             schedule={schedule}
+            weightLog={data.weightLog}
           />
         )}
 

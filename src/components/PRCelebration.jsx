@@ -41,7 +41,7 @@ const PRCelebration = ({ show, type, value, onDone }) => {
         {particles.map(p => (
           <div
             key={p.id}
-            className="absolute rounded-sm"
+            className="absolute rounded-sm animate-confetti-fall"
             style={{
               left: `${p.x}%`,
               top: '-2%',
@@ -49,7 +49,8 @@ const PRCelebration = ({ show, type, value, onDone }) => {
               height: `${p.size * 1.5}px`,
               backgroundColor: p.color,
               transform: `rotate(${p.rotation}deg)`,
-              animation: `confetti-fall ${p.duration}s ease-in ${p.delay}s forwards`,
+              animationDuration: `${p.duration}s`,
+              animationDelay: `${p.delay}s`,
               '--drift': `${p.drift}px`,
             }}
           />
@@ -58,7 +59,7 @@ const PRCelebration = ({ show, type, value, onDone }) => {
 
       {/* Banner */}
       <div className="relative animate-pr-pop">
-        <div className="bg-gradient-to-r from-yellow-500 via-amber-500 to-yellow-500 rounded-2xl px-8 py-5 shadow-2xl shadow-amber-500/30">
+        <div className="bg-gradient-to-r from-yellow-500 via-amber-500 to-yellow-500 rounded-2xl px-8 py-5 shadow-2xl shadow-amber-500/30 backdrop-blur-xl">
           <div className="text-center">
             <div className="text-3xl font-black text-white tracking-tight">
               NEW PR!
@@ -76,28 +77,6 @@ const PRCelebration = ({ show, type, value, onDone }) => {
           </div>
         </div>
       </div>
-
-      <style>{`
-        @keyframes confetti-fall {
-          0% {
-            transform: translateY(0) translateX(0) rotate(0deg);
-            opacity: 1;
-          }
-          100% {
-            transform: translateY(100vh) translateX(var(--drift)) rotate(720deg);
-            opacity: 0;
-          }
-        }
-        @keyframes pr-pop {
-          0% { transform: scale(0.3); opacity: 0; }
-          50% { transform: scale(1.1); opacity: 1; }
-          70% { transform: scale(0.95); }
-          100% { transform: scale(1); opacity: 1; }
-        }
-        .animate-pr-pop {
-          animation: pr-pop 0.5s ease-out forwards;
-        }
-      `}</style>
     </div>
   );
 };

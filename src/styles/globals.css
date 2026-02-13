@@ -21,3 +21,86 @@ input[type="number"]::-webkit-outer-spin-button {
 input[type="number"] {
   -moz-appearance: textfield;
 }
+
+/* ─── Design System: Glass Dark ─── */
+
+@layer components {
+  /* Glass Cards */
+  .glass-card {
+    @apply bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl;
+  }
+  .glass-card-elevated {
+    @apply bg-white/[0.08] backdrop-blur-xl border border-white/10 rounded-2xl shadow-lg shadow-black/20;
+  }
+  .glass-card-interactive {
+    @apply bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl
+           hover:bg-white/[0.08] hover:border-white/[0.15] active:scale-[0.98] transition-all duration-200;
+  }
+
+  /* Buttons */
+  .btn-primary {
+    @apply bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold
+           shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:from-blue-400 hover:to-blue-500
+           active:scale-[0.98] transition-all duration-200;
+  }
+  .btn-secondary {
+    @apply bg-white/5 border border-white/10 text-white rounded-xl font-semibold
+           hover:bg-white/10 active:scale-[0.98] transition-all duration-200;
+  }
+  .btn-danger {
+    @apply bg-red-500/20 border border-red-500/30 text-red-400 rounded-xl font-semibold
+           hover:bg-red-500/30 shadow-lg shadow-red-500/10 active:scale-[0.98] transition-all duration-200;
+  }
+  .btn-back {
+    @apply flex items-center gap-2 text-slate-400 hover:text-white transition-colors
+           px-2 py-1 -ml-2 rounded-lg hover:bg-white/5;
+  }
+
+  /* Typography */
+  .stat-number {
+    @apply font-bold text-white;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* ─── Shimmer animation for loading skeletons ─── */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.04) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* ─── Stagger delays for entrance animations ─── */
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.1s; }
+.stagger-3 { animation-delay: 0.15s; }
+.stagger-4 { animation-delay: 0.2s; }
+.stagger-5 { animation-delay: 0.25s; }
+.stagger-6 { animation-delay: 0.3s; }
+.stagger-7 { animation-delay: 0.35s; }
+.stagger-8 { animation-delay: 0.4s; }
+.stagger-9 { animation-delay: 0.45s; }
+.stagger-10 { animation-delay: 0.5s; }
+
+/* ─── Backdrop-blur fallback for older devices ─── */
+@supports not (backdrop-filter: blur(1px)) {
+  .glass-card {
+    @apply bg-slate-800/90 border-slate-700;
+  }
+  .glass-card-elevated {
+    @apply bg-slate-800/95 border-slate-700 shadow-lg shadow-black/30;
+  }
+  .glass-card-interactive {
+    @apply bg-slate-800/90 border-slate-700 hover:bg-slate-700/90;
+  }
+}

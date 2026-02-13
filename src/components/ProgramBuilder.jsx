@@ -5,14 +5,12 @@ const DAYS_OF_WEEK = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const DEFAULT_REST = { compound: '3-4 min', isolation: '1-2 min' };
 
 const ProgramBuilder = ({ onSave, onBack, existingProgram }) => {
-  const [step, setStep] = useState(1); // 1=name, 2=schedule, 3=exercises, 4=review
+  const [step, setStep] = useState(1);
   const [name, setName] = useState(existingProgram?.name || '');
   const [weeks, setWeeks] = useState(existingProgram?.weeks || 8);
   const [workoutDays, setWorkoutDays] = useState(existingProgram?.workoutDays || []);
   const [currentDayIndex, setCurrentDayIndex] = useState(0);
   const [showExerciseLibrary, setShowExerciseLibrary] = useState(false);
-
-  // workoutDays: [{ name: 'Push Day', dayOfWeek: 0, exercises: [{ name, sets, reps, type, restTime }] }]
 
   const toggleDayOfWeek = (dayIdx) => {
     const existing = workoutDays.find(d => d.dayOfWeek === dayIdx);
@@ -107,15 +105,16 @@ const ProgramBuilder = ({ onSave, onBack, existingProgram }) => {
   return (
     <div className="space-y-6 pb-8">
       <div className="flex items-center justify-between">
+        <button onClick={onBack} className="btn-back">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="m15 18-6-6 6-6" />
+          </svg>
+          Cancel
+        </button>
         <h2 className="text-xl font-bold text-white">
           {existingProgram ? 'Edit Program' : 'Create Program'}
         </h2>
-        <button
-          onClick={onBack}
-          className="px-4 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-600 transition-colors"
-        >
-          Cancel
-        </button>
+        <div className="w-16" />
       </div>
 
       {/* Step indicator */}
@@ -123,15 +122,17 @@ const ProgramBuilder = ({ onSave, onBack, existingProgram }) => {
         {[1, 2, 3, 4].map(s => (
           <div
             key={s}
-            className={`h-1 flex-1 rounded-full ${s <= step ? 'bg-blue-500' : 'bg-slate-700'}`}
+            className={`h-1 flex-1 rounded-full transition-all ${
+              s <= step ? 'bg-gradient-to-r from-blue-500 to-blue-600' : 'bg-white/10'
+            }`}
           />
         ))}
       </div>
 
       {/* Step 1: Name & Duration */}
       {step === 1 && (
-        <div className="space-y-4">
-          <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wide">
+        <div className="space-y-4 animate-fade-in-up">
+          <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
             Program Details
           </h3>
           <div>
@@ -141,7 +142,7 @@ const ProgramBuilder = ({ onSave, onBack, existingProgram }) => {
               placeholder="e.g., Upper/Lower Split"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-3 bg-slate-800 text-white rounded-xl border border-slate-700 focus:border-blue-500 focus:outline-none"
+              className="w-full px-4 py-3 bg-black/20 text-white rounded-xl border border-white/10 focus:border-blue-500/50 outline-none"
             />
           </div>
           <div>
@@ -149,7 +150,7 @@ const ProgramBuilder = ({ onSave, onBack, existingProgram }) => {
             <select
               value={weeks}
               onChange={(e) => setWeeks(Number(e.target.value))}
-              className="w-full px-4 py-3 bg-slate-800 text-white rounded-xl border border-slate-700 focus:border-blue-500 focus:outline-none"
+              className="w-full px-4 py-3 bg-black/20 text-white rounded-xl border border-white/10 focus:border-blue-500/50 outline-none"
             >
               {[4, 6, 8, 10, 12, 16, 20, 24].map(w => (
                 <option key={w} value={w}>{w} weeks</option>
@@ -161,8 +162,8 @@ const ProgramBuilder = ({ onSave, onBack, existingProgram }) => {
 
       {/* Step 2: Schedule */}
       {step === 2 && (
-        <div className="space-y-4">
-          <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wide">
+        <div className="space-y-4 animate-fade-in-up">
+          <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
             Training Days
           </h3>
           <p className="text-xs text-slate-500">
@@ -175,10 +176,10 @@ const ProgramBuilder = ({ onSave, onBack, existingProgram }) => {
                 <button
                   key={day}
                   onClick={() => toggleDayOfWeek(i)}
-                  className={`py-3 rounded-xl text-sm font-semibold transition-colors ${
+                  className={`py-3 rounded-xl text-sm font-semibold transition-all ${
                     isSelected
-                      ? 'bg-blue-500 text-white'
-                      : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                      ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/25'
+                      : 'bg-white/5 text-slate-400 hover:bg-white/10'
                   }`}
                 >
                   {day}
@@ -187,7 +188,6 @@ const ProgramBuilder = ({ onSave, onBack, existingProgram }) => {
             })}
           </div>
 
-          {/* Name each day */}
           {workoutDays.length > 0 && (
             <div className="space-y-2">
               <p className="text-xs text-slate-500 mt-4">Name your training days:</p>
@@ -198,7 +198,7 @@ const ProgramBuilder = ({ onSave, onBack, existingProgram }) => {
                     type="text"
                     value={d.name}
                     onChange={(e) => updateDayName(d.dayOfWeek, e.target.value)}
-                    className="flex-1 px-3 py-2 bg-slate-800 text-white rounded-lg border border-slate-700 text-sm focus:border-blue-500 focus:outline-none"
+                    className="flex-1 px-3 py-2 bg-black/20 text-white rounded-lg border border-white/10 text-sm focus:border-blue-500/50 outline-none"
                   />
                 </div>
               ))}
@@ -209,8 +209,8 @@ const ProgramBuilder = ({ onSave, onBack, existingProgram }) => {
 
       {/* Step 3: Exercises */}
       {step === 3 && (
-        <div className="space-y-4">
-          <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wide">
+        <div className="space-y-4 animate-fade-in-up">
+          <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
             Exercises
           </h3>
 
@@ -220,10 +220,10 @@ const ProgramBuilder = ({ onSave, onBack, existingProgram }) => {
               <button
                 key={d.dayOfWeek}
                 onClick={() => setCurrentDayIndex(i)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
                   currentDayIndex === i
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/25'
+                    : 'bg-white/5 text-slate-400 hover:bg-white/10'
                 }`}
               >
                 {d.name}
@@ -234,11 +234,10 @@ const ProgramBuilder = ({ onSave, onBack, existingProgram }) => {
             ))}
           </div>
 
-          {/* Current day's exercises */}
           {workoutDays[currentDayIndex] && (
             <div className="space-y-2">
               {workoutDays[currentDayIndex].exercises.map((ex, exIdx) => (
-                <div key={exIdx} className="bg-slate-800 rounded-xl p-3 space-y-2">
+                <div key={exIdx} className="glass-card p-3 space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-semibold text-white truncate flex-1">{ex.name}</span>
                     <button
@@ -257,7 +256,7 @@ const ProgramBuilder = ({ onSave, onBack, existingProgram }) => {
                       <select
                         value={ex.sets}
                         onChange={(e) => updateExercise(currentDayIndex, exIdx, 'sets', Number(e.target.value))}
-                        className="w-full px-2 py-1.5 bg-slate-700 text-white rounded-lg text-sm focus:outline-none"
+                        className="w-full px-2 py-1.5 bg-black/20 text-white rounded-lg text-sm border border-white/10 outline-none"
                       >
                         {[1, 2, 3, 4, 5, 6].map(s => (
                           <option key={s} value={s}>{s}</option>
@@ -270,7 +269,7 @@ const ProgramBuilder = ({ onSave, onBack, existingProgram }) => {
                         type="text"
                         value={ex.reps}
                         onChange={(e) => updateExercise(currentDayIndex, exIdx, 'reps', e.target.value)}
-                        className="w-full px-2 py-1.5 bg-slate-700 text-white rounded-lg text-sm focus:outline-none"
+                        className="w-full px-2 py-1.5 bg-black/20 text-white rounded-lg text-sm border border-white/10 outline-none"
                         placeholder="e.g., 8-12"
                       />
                     </div>
@@ -279,10 +278,8 @@ const ProgramBuilder = ({ onSave, onBack, existingProgram }) => {
               ))}
 
               <button
-                onClick={() => {
-                  setShowExerciseLibrary(true);
-                }}
-                className="w-full py-3 bg-slate-700 text-blue-400 rounded-xl font-semibold hover:bg-slate-600 transition-colors flex items-center justify-center gap-2 border-2 border-dashed border-slate-600"
+                onClick={() => setShowExerciseLibrary(true)}
+                className="w-full py-3 glass-card-interactive text-blue-400 font-semibold flex items-center justify-center gap-2 border-2 border-dashed border-white/10"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="12" y1="5" x2="12" y2="19" />
@@ -297,11 +294,11 @@ const ProgramBuilder = ({ onSave, onBack, existingProgram }) => {
 
       {/* Step 4: Review */}
       {step === 4 && (
-        <div className="space-y-4">
-          <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wide">
+        <div className="space-y-4 animate-fade-in-up">
+          <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
             Review Your Program
           </h3>
-          <div className="bg-slate-800 rounded-xl p-4 space-y-3">
+          <div className="glass-card p-4 space-y-3">
             <div className="flex justify-between">
               <span className="text-sm text-slate-400">Name</span>
               <span className="text-sm text-white font-semibold">{name}</span>
@@ -323,7 +320,7 @@ const ProgramBuilder = ({ onSave, onBack, existingProgram }) => {
           </div>
 
           {workoutDays.map((d, i) => (
-            <div key={i} className="bg-slate-800 rounded-xl p-4">
+            <div key={i} className="glass-card p-4">
               <div className="text-sm font-semibold text-white mb-2">
                 {DAYS_OF_WEEK[d.dayOfWeek]} — {d.name}
               </div>
@@ -345,7 +342,7 @@ const ProgramBuilder = ({ onSave, onBack, existingProgram }) => {
         {step > 1 && (
           <button
             onClick={() => setStep(step - 1)}
-            className="flex-1 py-3 bg-slate-700 text-white rounded-xl font-semibold hover:bg-slate-600 transition-colors"
+            className="flex-1 py-3 btn-secondary"
           >
             Back
           </button>
@@ -354,14 +351,14 @@ const ProgramBuilder = ({ onSave, onBack, existingProgram }) => {
           <button
             onClick={() => setStep(step + 1)}
             disabled={!canProceed()}
-            className="flex-1 py-3 bg-blue-500 text-white rounded-xl font-semibold hover:bg-blue-600 disabled:bg-slate-600 disabled:text-slate-400 transition-colors"
+            className="flex-1 py-3 btn-primary disabled:bg-slate-600 disabled:text-slate-400 disabled:shadow-none"
           >
             Next
           </button>
         ) : (
           <button
             onClick={handleSave}
-            className="flex-1 py-3 bg-green-500 text-white rounded-xl font-semibold hover:bg-green-600 transition-colors"
+            className="flex-1 py-3 bg-gradient-to-r from-emerald-500 to-green-500 text-white rounded-xl font-semibold shadow-lg shadow-emerald-500/25 active:scale-[0.98] transition-transform"
           >
             Save Program
           </button>

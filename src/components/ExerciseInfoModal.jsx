@@ -5,9 +5,9 @@ const ExerciseInfoModal = ({ exerciseName, onClose }) => {
 
   return (
     <div className="fixed inset-0 z-40 flex items-end justify-center" onClick={onClose}>
-      <div className="absolute inset-0 bg-black/60" />
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
       <div
-        className="relative w-full max-w-lg bg-slate-800 rounded-t-2xl p-6 pb-8 max-h-[80vh] overflow-y-auto animate-slide-up"
+        className="relative w-full max-w-lg bg-slate-900/95 backdrop-blur-xl border-t border-white/10 rounded-t-2xl p-6 pb-8 max-h-[80vh] overflow-y-auto animate-slide-up"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-4">
@@ -26,12 +26,12 @@ const ExerciseInfoModal = ({ exerciseName, onClose }) => {
         {info ? (
           <div className="space-y-5">
             <div>
-              <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">Muscle Groups</h4>
+              <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Muscle Groups</h4>
               <div className="flex flex-wrap gap-2">
                 {info.muscles.map((muscle, i) => (
                   <span
                     key={i}
-                    className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-xs font-semibold"
+                    className="px-3 py-1 bg-blue-500/15 text-blue-400 rounded-full text-xs font-semibold border border-blue-500/20"
                   >
                     {muscle}
                   </span>
@@ -40,7 +40,7 @@ const ExerciseInfoModal = ({ exerciseName, onClose }) => {
             </div>
 
             <div>
-              <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">Form Tips</h4>
+              <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Form Tips</h4>
               <div className="space-y-2">
                 {info.tips.map((tip, i) => (
                   <div key={i} className="flex gap-2 text-sm text-slate-300">
@@ -56,7 +56,7 @@ const ExerciseInfoModal = ({ exerciseName, onClose }) => {
             </div>
 
             <div>
-              <h4 className="text-xs font-semibold text-red-400 uppercase tracking-wide mb-2">Common Mistakes</h4>
+              <h4 className="text-xs font-semibold text-red-400 uppercase tracking-wider mb-2">Common Mistakes</h4>
               <div className="space-y-2">
                 {info.mistakes.map((mistake, i) => (
                   <div key={i} className="flex gap-2 text-sm text-slate-300">
@@ -75,16 +75,6 @@ const ExerciseInfoModal = ({ exerciseName, onClose }) => {
         ) : (
           <p className="text-slate-400 text-sm">No information available for this exercise yet.</p>
         )}
-
-        <style>{`
-          @keyframes slide-up {
-            from { transform: translateY(100%); }
-            to { transform: translateY(0); }
-          }
-          .animate-slide-up {
-            animation: slide-up 0.3s ease-out forwards;
-          }
-        `}</style>
       </div>
     </div>
   );

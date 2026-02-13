@@ -45,27 +45,27 @@ const WorkoutSummary = ({ dayNumber, workoutHistory, completedWorkouts, prsHit, 
 
       <div className={`grid gap-3 ${durationStr ? 'grid-cols-4' : 'grid-cols-3'}`}>
         {durationStr && (
-          <div className="bg-slate-800 rounded-xl p-4 text-center">
-            <div className="text-2xl font-bold text-white">{durationStr}</div>
-            <div className="text-xs text-slate-400 mt-1">Duration</div>
+          <div className="glass-card p-4 text-center animate-fade-in-up">
+            <div className="stat-number text-2xl">{durationStr}</div>
+            <div className="text-[10px] text-slate-500 uppercase tracking-wider mt-1">Duration</div>
           </div>
         )}
-        <div className="bg-slate-800 rounded-xl p-4 text-center">
-          <div className="text-2xl font-bold text-white">{totalExercises}</div>
-          <div className="text-xs text-slate-400 mt-1">Exercises</div>
+        <div className="glass-card p-4 text-center animate-fade-in-up stagger-1">
+          <div className="stat-number text-2xl">{totalExercises}</div>
+          <div className="text-[10px] text-slate-500 uppercase tracking-wider mt-1">Exercises</div>
         </div>
-        <div className="bg-slate-800 rounded-xl p-4 text-center">
-          <div className="text-2xl font-bold text-white">{totalSetsCompleted}</div>
-          <div className="text-xs text-slate-400 mt-1">Sets</div>
+        <div className="glass-card p-4 text-center animate-fade-in-up stagger-2">
+          <div className="stat-number text-2xl">{totalSetsCompleted}</div>
+          <div className="text-[10px] text-slate-500 uppercase tracking-wider mt-1">Sets</div>
         </div>
-        <div className="bg-slate-800 rounded-xl p-4 text-center">
-          <div className="text-2xl font-bold text-white">{totalVolume.toLocaleString()}</div>
-          <div className="text-xs text-slate-400 mt-1">Volume (kg)</div>
+        <div className="glass-card p-4 text-center animate-fade-in-up stagger-3">
+          <div className="stat-number text-2xl">{totalVolume.toLocaleString()}</div>
+          <div className="text-[10px] text-slate-500 uppercase tracking-wider mt-1">Volume (kg)</div>
         </div>
       </div>
 
       {volumeDiff !== null && (
-        <div className={`rounded-xl p-4 text-center ${volumeDiff >= 0 ? 'bg-green-900/20' : 'bg-red-900/20'}`}>
+        <div className={`glass-card p-4 text-center ${volumeDiff >= 0 ? 'border-green-500/20 shadow-glow-green' : 'border-red-500/20'}`}>
           <div className={`text-lg font-bold ${volumeDiff >= 0 ? 'text-green-400' : 'text-red-400'}`}>
             {volumeDiff >= 0 ? '+' : ''}{volumeDiff.toLocaleString()} kg ({volumePct >= 0 ? '+' : ''}{volumePct}%)
           </div>
@@ -74,7 +74,7 @@ const WorkoutSummary = ({ dayNumber, workoutHistory, completedWorkouts, prsHit, 
       )}
 
       {(prsHit || 0) > 0 && (
-        <div className="bg-amber-900/20 border border-amber-500/30 rounded-xl p-4 text-center">
+        <div className="glass-card border-amber-500/30 p-4 text-center shadow-glow-amber">
           <div className="text-lg font-bold text-amber-400">
             🏆 {prsHit} Personal Record{prsHit > 1 ? 's' : ''} Today!
           </div>
@@ -82,14 +82,14 @@ const WorkoutSummary = ({ dayNumber, workoutHistory, completedWorkouts, prsHit, 
       )}
 
       {(newBadges || []).length > 0 && (
-        <div className="bg-amber-900/20 border border-amber-500/30 rounded-xl p-4">
+        <div className="glass-card border-amber-500/30 p-4 shadow-glow-amber">
           <div className="text-sm font-bold text-amber-400 mb-3 text-center">Badges Earned!</div>
           <div className="flex flex-wrap justify-center gap-3">
             {newBadges.map(id => {
               const badge = getBadge(id);
               if (!badge) return null;
               return (
-                <div key={id} className="flex items-center gap-2 bg-slate-800 rounded-lg px-3 py-2">
+                <div key={id} className="flex items-center gap-2 bg-white/5 rounded-lg px-3 py-2 border border-white/10">
                   <span className="text-xl">{badge.icon}</span>
                   <span className="text-sm font-semibold text-white">{badge.name}</span>
                 </div>
@@ -99,9 +99,17 @@ const WorkoutSummary = ({ dayNumber, workoutHistory, completedWorkouts, prsHit, 
         </div>
       )}
 
+      {/* Show workout notes if present */}
+      {history.notes && (
+        <div className="glass-card p-4">
+          <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Notes</div>
+          <p className="text-sm text-slate-300">{history.notes}</p>
+        </div>
+      )}
+
       <button
         onClick={onContinue}
-        className="w-full py-4 bg-blue-500 text-white rounded-xl font-semibold hover:bg-blue-600 transition-colors"
+        className="w-full py-4 btn-primary"
       >
         Back to Dashboard
       </button>

@@ -20,7 +20,7 @@ const BadgeAward = ({ badgeIds, onDone }) => {
       className="fixed inset-0 z-50 flex items-center justify-center"
       onClick={onDone}
     >
-      <div className="absolute inset-0 bg-black/70" />
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
       <div className="relative text-center animate-badge-pop">
         <div className="text-6xl mb-4">
           {badgesToShow[0].icon}
@@ -41,18 +41,6 @@ const BadgeAward = ({ badgeIds, onDone }) => {
         )}
         <div className="mt-6 text-xs text-slate-600">Tap to dismiss</div>
       </div>
-
-      <style>{`
-        @keyframes badge-pop {
-          0% { transform: scale(0.3); opacity: 0; }
-          50% { transform: scale(1.1); opacity: 1; }
-          70% { transform: scale(0.95); }
-          100% { transform: scale(1); opacity: 1; }
-        }
-        .animate-badge-pop {
-          animation: badge-pop 0.6s ease-out forwards;
-        }
-      `}</style>
     </div>
   );
 };

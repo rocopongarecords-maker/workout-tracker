@@ -1,21 +1,50 @@
 import { useMemo } from 'react';
 import { calculate1RM } from '../utils/calculate1RM';
 import { calculateWorkoutVolume } from '../utils/calculateVolume';
+import { calculateStreakWithFreeze } from '../utils/checkBadges';
 import SimpleLineChart from './charts/SimpleLineChart';
 import SimpleBarChart from './charts/SimpleBarChart';
 
-const TRACKED_LIFTS = [
-  { name: 'Back Squat', color: '#ef4444' },
-  { name: 'Barbell Bench Press', color: '#3b82f6' },
-  { name: 'Deadlift', color: '#22c55e' },
-  { name: 'Military Press', color: '#a855f7' }
-];
+const LIFT_COLORS = ['#ef4444', '#3b82f6', '#22c55e', '#a855f7', '#f59e0b', '#ec4899', '#14b8a6', '#f97316'];
 
-const AnalyticsScreen = ({ workoutHistory, completedWorkouts, onBack, schedule }) => {
+const AnalyticsScreen = ({ workoutHistory, completedWorkouts, onBack, schedule, weightLog }) => {
+  // ── Dynamic Lift Detection ──
+  const trackedLifts = useMemo(() => {
+    const exerciseCounts = {};
+
+    for (const day of completedWorkouts) {
+      const workout = workoutHistory[day];
+      if (!workout?.exercises) continue;
+
+      for (const ex of workout.exercises) {
+        const bestSet = (ex.userSets || [])
+          .filter(s => s.completed)
+          .reduce((best, set) => {
+            const rm = calculate1RM(set.weight, set.reps);
+            const bestRm = best ? calculate1RM(best.weight, best.reps) : 0;
+            return rm > bestRm ? set : best;
+          }, null);
+
+        if (bestSet) {
+          const rm = calculate1RM(bestSet.weight, bestSet.reps);
+          if (rm > 0) {
+            exerciseCounts[ex.name] = (exerciseCounts[ex.name] || 0) + 1;
+          }
+        }
+      }
+    }
+
+    return Object.entries(exerciseCounts)
+      .filter(([_, count]) => count >= 2)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 8)
+      .map(([name], i) => ({ name, color: LIFT_COLORS[i % LIFT_COLORS.length] }));
+  }, [workoutHistory, completedWorkouts]);
+
   // ── 1RM Trends ──
   const rmTrends = useMemo(() => {
     const trends = {};
-    TRACKED_LIFTS.forEach(lift => { trends[lift.name] = []; });
+    trackedLifts.forEach(lift => { trends[lift.name] = []; });
 
     const sortedDays = [...completedWorkouts].sort((a, b) => a - b);
 
@@ -47,7 +76,7 @@ const AnalyticsScreen = ({ workoutHistory, completedWorkouts, onBack, schedule }
     }
 
     return trends;
-  }, [workoutHistory, completedWorkouts]);
+  }, [workoutHistory, completedWorkouts, trackedLifts]);
 
   // ── Weekly Volume ──
   const weeklyVolume = useMemo(() => {
@@ -73,20 +102,9 @@ const AnalyticsScreen = ({ workoutHistory, completedWorkouts, onBack, schedule }
     }));
   }, [workoutHistory, completedWorkouts]);
 
-  // ── Consistency ──
+  // ── Consistency (with streak freeze) ──
   const consistency = useMemo(() => {
-    const sorted = [...completedWorkouts].sort((a, b) => a - b);
-
-    let currentStreak = sorted.length > 0 ? 1 : 0;
-    let maxStreak = currentStreak;
-    for (let i = 1; i < sorted.length; i++) {
-      if (sorted[i] === sorted[i - 1] + 1) {
-        currentStreak++;
-      } else {
-        currentStreak = 1;
-      }
-      if (currentStreak > maxStreak) maxStreak = currentStreak;
-    }
+    const { currentStreak, longestStreak, frozenDays } = calculateStreakWithFreeze(completedWorkouts, schedule);
 
     // Perfect weeks
     const weekCounts = {};
@@ -99,27 +117,16 @@ const AnalyticsScreen = ({ workoutHistory, completedWorkouts, onBack, schedule }
     const perfectWeeks = Object.values(weekCounts).filter(c => c >= 6).length;
 
     return {
-      currentStreak: sorted.length > 0 ? (() => {
-        // Current streak from the latest completed day going backwards
-        let streak = 1;
-        for (let i = sorted.length - 1; i > 0; i--) {
-          if (sorted[i] === sorted[i - 1] + 1) {
-            streak++;
-          } else {
-            break;
-          }
-        }
-        return streak;
-      })() : 0,
-      longestStreak: maxStreak,
+      currentStreak,
+      longestStreak,
       perfectWeeks,
-      totalWorkouts: completedWorkouts.length
+      totalWorkouts: completedWorkouts.length,
+      freezesUsed: frozenDays.length
     };
-  }, [completedWorkouts]);
+  }, [completedWorkouts, schedule]);
 
   // ── Calendar Heatmap ──
   const heatmapData = useMemo(() => {
-    // Build a per-day status map from the schedule
     return schedule.map(day => ({
       day: day.day,
       week: day.week,
@@ -137,15 +144,19 @@ const AnalyticsScreen = ({ workoutHistory, completedWorkouts, onBack, schedule }
     return weeks;
   }, [heatmapData]);
 
-  const activeLift = TRACKED_LIFTS.find(l => rmTrends[l.name].length >= 2) || TRACKED_LIFTS[0];
+  // ── Body Weight Trend (Phase 15) ──
+  const weightTrendData = useMemo(() => {
+    if (!weightLog || weightLog.length === 0) return [];
+    return weightLog.slice(-20).map((entry) => ({
+      value: entry.weight,
+      label: new Date(entry.date).toLocaleDateString('en', { month: 'short', day: 'numeric' })
+    }));
+  }, [weightLog]);
 
   return (
     <div className="space-y-6 pb-8">
       <div className="flex items-center justify-between">
-        <button
-          onClick={onBack}
-          className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors"
-        >
+        <button onClick={onBack} className="btn-back">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="m15 18-6-6 6-6" />
           </svg>
@@ -160,35 +171,45 @@ const AnalyticsScreen = ({ workoutHistory, completedWorkouts, onBack, schedule }
 
       {/* Consistency Stats */}
       <div className="grid grid-cols-2 gap-3">
-        <div className="bg-slate-800 rounded-xl p-4 text-center">
-          <div className="text-2xl font-bold text-white">{consistency.currentStreak}</div>
-          <div className="text-xs text-slate-400 mt-1">Current Streak</div>
+        <div className="glass-card p-4 text-center animate-fade-in-up">
+          <div className="stat-number text-3xl">{consistency.currentStreak}</div>
+          <div className="text-[10px] text-slate-500 uppercase tracking-wider mt-1">Current Streak</div>
         </div>
-        <div className="bg-slate-800 rounded-xl p-4 text-center">
-          <div className="text-2xl font-bold text-white">{consistency.longestStreak}</div>
-          <div className="text-xs text-slate-400 mt-1">Longest Streak</div>
+        <div className="glass-card p-4 text-center animate-fade-in-up stagger-1">
+          <div className="stat-number text-3xl">{consistency.longestStreak}</div>
+          <div className="text-[10px] text-slate-500 uppercase tracking-wider mt-1">Longest Streak</div>
         </div>
-        <div className="bg-slate-800 rounded-xl p-4 text-center">
-          <div className="text-2xl font-bold text-white">{consistency.perfectWeeks}</div>
-          <div className="text-xs text-slate-400 mt-1">Perfect Weeks</div>
+        <div className="glass-card p-4 text-center animate-fade-in-up stagger-2">
+          <div className="stat-number text-3xl">{consistency.perfectWeeks}</div>
+          <div className="text-[10px] text-slate-500 uppercase tracking-wider mt-1">Perfect Weeks</div>
         </div>
-        <div className="bg-slate-800 rounded-xl p-4 text-center">
-          <div className="text-2xl font-bold text-white">{consistency.totalWorkouts}</div>
-          <div className="text-xs text-slate-400 mt-1">Total Workouts</div>
+        <div className="glass-card p-4 text-center animate-fade-in-up stagger-3">
+          <div className="stat-number text-3xl">{consistency.totalWorkouts}</div>
+          <div className="text-[10px] text-slate-500 uppercase tracking-wider mt-1">Total Workouts</div>
         </div>
       </div>
 
+      {/* Streak freeze info */}
+      {consistency.freezesUsed > 0 && (
+        <div className="flex items-center justify-center gap-2 text-xs text-amber-400/80 animate-fade-in-up stagger-3">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+          </svg>
+          {consistency.freezesUsed} streak freeze{consistency.freezesUsed !== 1 ? 's' : ''} used
+        </div>
+      )}
+
       {/* Calendar Heatmap */}
-      <div className="bg-slate-800 rounded-xl p-4">
-        <h2 className="text-sm font-semibold text-white mb-3">Activity Map</h2>
+      <div className="glass-card p-4 animate-fade-in-up stagger-4">
+        <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Activity Map</h2>
         <div className="overflow-x-auto">
           <div className="flex gap-[3px]">
             {heatmapWeeks.map((week, wIdx) => (
               <div key={wIdx} className="flex flex-col gap-[3px]">
                 {week.map((day) => {
-                  let color = 'bg-slate-700/30'; // rest
+                  let color = 'bg-white/5';
                   if (!day.rest) {
-                    color = day.completed ? 'bg-green-500' : 'bg-slate-700/60';
+                    color = day.completed ? 'bg-green-500 shadow-sm shadow-green-500/30' : 'bg-white/10';
                   }
                   return (
                     <div
@@ -207,38 +228,53 @@ const AnalyticsScreen = ({ workoutHistory, completedWorkouts, onBack, schedule }
             <div className="w-3 h-3 rounded-sm bg-green-500" /> Done
           </span>
           <span className="flex items-center gap-1">
-            <div className="w-3 h-3 rounded-sm bg-slate-700/60" /> Pending
+            <div className="w-3 h-3 rounded-sm bg-white/10" /> Pending
           </span>
           <span className="flex items-center gap-1">
-            <div className="w-3 h-3 rounded-sm bg-slate-700/30" /> Rest
+            <div className="w-3 h-3 rounded-sm bg-white/5" /> Rest
           </span>
         </div>
       </div>
 
-      {/* 1RM Trends */}
-      <div className="bg-slate-800 rounded-xl p-4">
-        <h2 className="text-sm font-semibold text-white mb-3">Estimated 1RM Trends</h2>
-
-        <div className="flex flex-wrap gap-2 mb-4">
-          {TRACKED_LIFTS.map(lift => {
-            const hasData = rmTrends[lift.name].length >= 2;
-            return (
-              <span
-                key={lift.name}
-                className={`text-xs px-2 py-1 rounded-full font-semibold ${
-                  hasData ? 'opacity-100' : 'opacity-40'
-                }`}
-                style={{ backgroundColor: `${lift.color}20`, color: lift.color }}
-              >
-                {lift.name.replace('Barbell ', '')}
-                {hasData && ` ${rmTrends[lift.name][rmTrends[lift.name].length - 1].value}kg`}
-              </span>
-            );
-          })}
+      {/* Body Weight Trend */}
+      {weightTrendData.length >= 2 && (
+        <div className="glass-card p-4 animate-fade-in-up stagger-5">
+          <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Body Weight Trend</h2>
+          <SimpleLineChart
+            data={weightTrendData}
+            color="#f59e0b"
+            label="Body Weight (kg)"
+            height={140}
+          />
         </div>
+      )}
 
-        {TRACKED_LIFTS.map(lift => {
-          if (rmTrends[lift.name].length < 2) return null;
+      {/* 1RM Trends */}
+      <div className="glass-card p-4 animate-fade-in-up stagger-6">
+        <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Estimated 1RM Trends</h2>
+
+        {trackedLifts.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-4">
+            {trackedLifts.map(lift => {
+              const hasData = rmTrends[lift.name]?.length >= 2;
+              return (
+                <span
+                  key={lift.name}
+                  className={`text-xs px-2.5 py-1 rounded-full font-semibold ${
+                    hasData ? 'opacity-100' : 'opacity-40'
+                  }`}
+                  style={{ backgroundColor: `${lift.color}15`, color: lift.color }}
+                >
+                  {lift.name.replace('Barbell ', '')}
+                  {hasData && ` ${rmTrends[lift.name][rmTrends[lift.name].length - 1].value}kg`}
+                </span>
+              );
+            })}
+          </div>
+        )}
+
+        {trackedLifts.map(lift => {
+          if (!rmTrends[lift.name] || rmTrends[lift.name].length < 2) return null;
           return (
             <div key={lift.name} className="mb-4 last:mb-0">
               <SimpleLineChart
@@ -251,7 +287,7 @@ const AnalyticsScreen = ({ workoutHistory, completedWorkouts, onBack, schedule }
           );
         })}
 
-        {TRACKED_LIFTS.every(l => rmTrends[l.name].length < 2) && (
+        {trackedLifts.length === 0 && (
           <div className="text-center text-slate-500 text-sm py-6">
             Complete more workouts to see 1RM trends
           </div>
@@ -259,8 +295,8 @@ const AnalyticsScreen = ({ workoutHistory, completedWorkouts, onBack, schedule }
       </div>
 
       {/* Weekly Volume */}
-      <div className="bg-slate-800 rounded-xl p-4">
-        <h2 className="text-sm font-semibold text-white mb-3">Weekly Volume</h2>
+      <div className="glass-card p-4 animate-fade-in-up stagger-7">
+        <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Weekly Volume</h2>
         <div className="text-xs text-slate-500 mb-2">
           <span className="inline-block w-2 h-2 rounded-full bg-blue-500 mr-1"></span> Block 1
           <span className="inline-block w-2 h-2 rounded-full bg-purple-500 mr-1 ml-3"></span> Block 2

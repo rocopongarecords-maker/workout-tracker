@@ -40,21 +40,8 @@ export const checkBadges = ({ completedWorkouts, workoutHistory, earnedBadges, t
     block2Days.every(d => completedWorkouts.includes(d))
   );
 
-  // ── Consistency ──
-  const sortedDays = [...completedWorkouts].sort((a, b) => a - b);
-
-  // Consecutive workout days streak
-  let maxStreak = 0;
-  let currentStreak = 1;
-  for (let i = 1; i < sortedDays.length; i++) {
-    if (sortedDays[i] === sortedDays[i - 1] + 1) {
-      currentStreak++;
-    } else {
-      currentStreak = 1;
-    }
-    if (currentStreak > maxStreak) maxStreak = currentStreak;
-  }
-  if (sortedDays.length === 1) maxStreak = 1;
+  // ── Consistency (with streak freeze) ──
+  const { longestStreak: maxStreak } = calculateStreakWithFreeze(completedWorkouts, schedule);
 
   check('streak_3', () => maxStreak >= 3);
   check('streak_7', () => maxStreak >= 7);
@@ -143,6 +130,157 @@ export const checkBadges = ({ completedWorkouts, workoutHistory, earnedBadges, t
   check('first_superset', () => hasSuperset);
 
   return newlyEarned;
+};
+
+/**
+ * Calculate streak with freeze capability.
+ * Rest days are automatically skipped. For every 7 completed workout days
+ * in the streak, 1 missed workout day is forgiven ("frozen").
+ * @returns {{ currentStreak: number, longestStreak: number, frozenDays: number[] }}
+ */
+export const calculateStreakWithFreeze = (completedWorkouts, schedule) => {
+  const workoutDays = schedule.filter(d => !d.rest).map(d => d.day).sort((a, b) => a - b);
+  const completedSet = new Set(completedWorkouts);
+
+  if (workoutDays.length === 0 || completedWorkouts.length === 0) {
+    return { currentStreak: 0, longestStreak: 0, frozenDays: [] };
+  }
+
+  // Calculate streak backward from a given index in workoutDays
+  const calcStreakBackward = (startIdx) => {
+    let streak = 0;
+    let freezesUsed = 0;
+    const frozen = [];
+
+    for (let i = startIdx; i >= 0; i--) {
+      if (completedSet.has(workoutDays[i])) {
+        streak++;
+      } else {
+        const available = Math.floor(streak / 7);
+        if (freezesUsed < available) {
+          freezesUsed++;
+          frozen.push(workoutDays[i]);
+        } else {
+          break;
+        }
+      }
+    }
+    return { streak, frozen };
+  };
+
+  // Current streak: from last completed workout day, walk backward
+  let lastCompletedIdx = -1;
+  for (let i = workoutDays.length - 1; i >= 0; i--) {
+    if (completedSet.has(workoutDays[i])) {
+      lastCompletedIdx = i;
+      break;
+    }
+  }
+
+  const current = lastCompletedIdx >= 0
+    ? calcStreakBackward(lastCompletedIdx)
+    : { streak: 0, frozen: [] };
+
+  // Longest streak: forward scan
+  let longest = 0;
+  for (let start = 0; start < workoutDays.length; start++) {
+    if (!completedSet.has(workoutDays[start])) continue;
+
+    let streak = 0;
+    let freezesUsed = 0;
+
+    for (let i = start; i < workoutDays.length; i++) {
+      if (completedSet.has(workoutDays[i])) {
+        streak++;
+      } else {
+        const available = Math.floor(streak / 7);
+        if (freezesUsed < available) {
+          freezesUsed++;
+        } else {
+          break;
+        }
+      }
+    }
+
+    if (streak > longest) longest = streak;
+  }
+
+  return {
+    currentStreak: current.streak,
+    longestStreak: longest,
+    frozenDays: current.frozen
+  };
+};
+
+/**
+ * Get the closest unearned badge with progress info.
+ * Returns the badge with highest completion percentage that isn't yet earned.
+ */
+export const getClosestBadgeProgress = ({ completedWorkouts, workoutHistory, earnedBadges, totalPRs, schedule, weightLog }) => {
+  const earned = new Set((earnedBadges || []).map(b => typeof b === 'string' ? b : b.id));
+  const count = completedWorkouts.length;
+
+  const { longestStreak } = calculateStreakWithFreeze(completedWorkouts, schedule);
+
+  const weekCounts = {};
+  for (const day of completedWorkouts) {
+    const s = schedule.find(d => d.day === day);
+    if (s && !s.rest) {
+      weekCounts[s.week] = (weekCounts[s.week] || 0) + 1;
+    }
+  }
+  const perfectWeeks = Object.values(weekCounts).filter(c => c >= 6).length;
+
+  let totalVolume = 0;
+  for (const dayKey of Object.keys(workoutHistory || {})) {
+    const workout = workoutHistory[dayKey];
+    if (workout?.exercises) {
+      totalVolume += calculateWorkoutVolume(workout.exercises);
+    }
+  }
+
+  const allTypes = [...new Set(schedule.filter(d => !d.rest).map(d => d.type))];
+  const completedTypes = new Set();
+  for (const day of completedWorkouts) {
+    const s = schedule.find(d => d.day === day);
+    if (s) completedTypes.add(s.type);
+  }
+
+  const progressMap = {
+    first_workout: { current: count, target: 1 },
+    workouts_10: { current: Math.min(count, 10), target: 10 },
+    workouts_25: { current: Math.min(count, 25), target: 25 },
+    workouts_50: { current: Math.min(count, 50), target: 50 },
+    streak_3: { current: Math.min(longestStreak, 3), target: 3 },
+    streak_7: { current: Math.min(longestStreak, 7), target: 7 },
+    full_week: { current: Math.min(perfectWeeks, 1), target: 1 },
+    full_weeks_4: { current: Math.min(perfectWeeks, 4), target: 4 },
+    first_pr: { current: Math.min(totalPRs || 0, 1), target: 1 },
+    prs_10: { current: Math.min(totalPRs || 0, 10), target: 10 },
+    prs_25: { current: Math.min(totalPRs || 0, 25), target: 25 },
+    volume_10k: { current: Math.min(totalVolume, 10000), target: 10000 },
+    volume_50k: { current: Math.min(totalVolume, 50000), target: 50000 },
+    volume_100k: { current: Math.min(totalVolume, 100000), target: 100000 },
+    volume_500k: { current: Math.min(totalVolume, 500000), target: 500000 },
+    all_types: { current: completedTypes.size, target: allTypes.length || 1 },
+  };
+
+  let closest = null;
+  let closestPct = -1;
+
+  for (const [id, { current, target }] of Object.entries(progressMap)) {
+    if (earned.has(id)) continue;
+    const pct = Math.min(current / target, 0.99);
+    if (pct > closestPct) {
+      closestPct = pct;
+      const badge = badges.find(b => b.id === id);
+      if (badge) {
+        closest = { ...badge, current, target, percentage: Math.round(pct * 100) };
+      }
+    }
+  }
+
+  return closest;
 };
 
 /**

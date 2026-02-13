@@ -30,7 +30,6 @@ const SettingsScreen = ({ data, user, onSignOut, onReset, onImport, onBack }) =>
     reader.onload = (event) => {
       try {
         const imported = JSON.parse(event.target.result);
-        // Accept both v1 (completedWorkouts/workoutHistory) and v2 (programData) formats
         const isV1 = imported.completedWorkouts && imported.workoutHistory;
         const isV2 = imported.programData;
         if (!isV1 && !isV2) {
@@ -58,20 +57,21 @@ const SettingsScreen = ({ data, user, onSignOut, onReset, onImport, onBack }) =>
   return (
     <div className="space-y-6 pb-8">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold text-white">Settings</h2>
-        <button
-          onClick={onBack}
-          className="px-4 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-600 transition-colors"
-        >
+        <button onClick={onBack} className="btn-back">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="m15 18-6-6 6-6" />
+          </svg>
           Back
         </button>
+        <h2 className="text-xl font-bold text-white">Settings</h2>
+        <div className="w-16" />
       </div>
 
       {user && (
-        <div className="bg-slate-800 rounded-xl p-5 space-y-4">
-          <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wide">Account</h3>
+        <div className="glass-card-elevated p-5 space-y-4 animate-fade-in-up">
+          <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Account</h3>
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg shadow-blue-500/25">
               {(user.email || '?')[0].toUpperCase()}
             </div>
             <div className="flex-1">
@@ -81,42 +81,42 @@ const SettingsScreen = ({ data, user, onSignOut, onReset, onImport, onBack }) =>
           </div>
           <button
             onClick={onSignOut}
-            className="w-full py-2 bg-slate-700 text-slate-300 rounded-lg text-sm hover:bg-slate-600 transition-colors"
+            className="w-full py-2 btn-secondary text-sm"
           >
             Sign Out
           </button>
         </div>
       )}
 
-      <div className="bg-slate-800 rounded-xl p-5 space-y-4">
-        <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wide">Your Data</h3>
+      <div className="glass-card p-5 space-y-4 animate-fade-in-up stagger-1">
+        <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Your Data</h3>
         <div className="grid grid-cols-2 gap-3">
-          <div className="bg-slate-700/50 rounded-lg p-3 text-center">
-            <div className="text-xl font-bold text-white">{completedCount}</div>
-            <div className="text-xs text-slate-400">Workouts Done</div>
+          <div className="bg-white/5 rounded-xl p-3 text-center">
+            <div className="stat-number text-xl">{completedCount}</div>
+            <div className="text-[10px] text-slate-500 uppercase tracking-wider mt-1">Workouts Done</div>
           </div>
-          <div className="bg-slate-700/50 rounded-lg p-3 text-center">
-            <div className="text-xl font-bold text-white">{historyCount}</div>
-            <div className="text-xs text-slate-400">With Data</div>
+          <div className="bg-white/5 rounded-xl p-3 text-center">
+            <div className="stat-number text-xl">{historyCount}</div>
+            <div className="text-[10px] text-slate-500 uppercase tracking-wider mt-1">With Data</div>
           </div>
         </div>
       </div>
 
-      <div className="bg-slate-800 rounded-xl p-5 space-y-4">
-        <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wide">Backup & Restore</h3>
+      <div className="glass-card p-5 space-y-4 animate-fade-in-up stagger-2">
+        <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Backup & Restore</h3>
         <p className="text-xs text-slate-500">
           Export your workout data as a JSON file to keep a backup. Import a previous backup to restore your data.
         </p>
         <div className="flex gap-3">
           <button
             onClick={handleExport}
-            className="flex-1 py-3 bg-blue-500 text-white rounded-xl font-semibold hover:bg-blue-600 transition-colors"
+            className="flex-1 py-3 btn-primary"
           >
             Export Data
           </button>
           <button
             onClick={handleImportClick}
-            className="flex-1 py-3 bg-slate-700 text-white rounded-xl font-semibold hover:bg-slate-600 transition-colors"
+            className="flex-1 py-3 btn-secondary"
           >
             Import Backup
           </button>
@@ -131,20 +131,20 @@ const SettingsScreen = ({ data, user, onSignOut, onReset, onImport, onBack }) =>
         {importStatus && (
           <div className={`text-sm px-3 py-2 rounded-lg ${
             importStatus.type === 'success'
-              ? 'bg-green-900/30 text-green-400'
-              : 'bg-red-900/30 text-red-400'
+              ? 'bg-green-900/30 text-green-400 border border-green-500/20'
+              : 'bg-red-900/30 text-red-400 border border-red-500/20'
           }`}>
             {importStatus.message}
           </div>
         )}
       </div>
 
-      <div className="bg-slate-800 rounded-xl p-5 space-y-4">
-        <h3 className="text-sm font-semibold text-red-400 uppercase tracking-wide">Danger Zone</h3>
+      <div className="glass-card border-red-500/20 p-5 space-y-4 animate-fade-in-up stagger-3">
+        <h3 className="text-xs font-semibold text-red-400 uppercase tracking-wider">Danger Zone</h3>
         {!showResetConfirm ? (
           <button
             onClick={() => setShowResetConfirm(true)}
-            className="w-full py-3 bg-red-500/20 text-red-400 border-2 border-red-500/40 rounded-xl font-semibold hover:bg-red-500/30 transition-colors"
+            className="w-full py-3 btn-danger"
           >
             Reset All Data
           </button>
@@ -156,7 +156,7 @@ const SettingsScreen = ({ data, user, onSignOut, onReset, onImport, onBack }) =>
             <div className="flex gap-3">
               <button
                 onClick={() => setShowResetConfirm(false)}
-                className="flex-1 py-3 bg-slate-700 text-white rounded-xl font-semibold hover:bg-slate-600 transition-colors"
+                className="flex-1 py-3 btn-secondary"
               >
                 Cancel
               </button>

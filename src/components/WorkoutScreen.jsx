@@ -1,14 +1,28 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { getLastCompletedWorkoutForType } from '../utils/getPreviousWorkout';
+import { haptic } from '../utils/haptics';
 import ExerciseCard from './ExerciseCard';
+import Toast from './Toast';
 
 const WorkoutScreen = ({ dayNumber, workoutType, block, editing, onSave, onComplete, onCancel, workoutHistory, completedWorkouts, onPR, getExercisesForDay, getWorkoutName }) => {
   const [exercises, setExercises] = useState([]);
   const [lastWorkout, setLastWorkout] = useState(null);
+  const [workoutNotes, setWorkoutNotes] = useState('');
+  const [toast, setToast] = useState({ visible: false, message: '', type: 'success', icon: null });
+  const [showBackGuard, setShowBackGuard] = useState(false);
   const exerciseRefs = useRef([]);
   const [startTime] = useState(() => Date.now());
+  const toastTimeout = useRef(null);
 
-  // Build superset group map: { [exerciseIndex]: { groupIndices: [3,4], positionInGroup: 0 } }
+  const showToast = (message, type = 'success', icon = null, duration = 2000) => {
+    if (toastTimeout.current) clearTimeout(toastTimeout.current);
+    setToast({ visible: true, message, type, icon });
+    toastTimeout.current = setTimeout(() => {
+      setToast(prev => ({ ...prev, visible: false }));
+    }, duration);
+  };
+
+  // Build superset group map
   const supersetMap = useMemo(() => {
     const map = {};
     let i = 0;
@@ -34,7 +48,6 @@ const WorkoutScreen = ({ dayNumber, workoutType, block, editing, onSave, onCompl
       const group = supersetMap[exerciseIndex];
 
       if (!group) {
-        // Not in a superset — original behavior
         if (setNumber < totalSets) {
           const el = exerciseRefs.current[exerciseIndex];
           if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -48,22 +61,27 @@ const WorkoutScreen = ({ dayNumber, workoutType, block, editing, onSave, onCompl
         return;
       }
 
-      // In a superset group — alternate between exercises
       const { groupIndices, positionInGroup } = group;
       const isLastInGroup = positionInGroup === groupIndices.length - 1;
 
       if (!isLastInGroup) {
-        // Not last in group → scroll to next partner (they do their set N)
         const nextPartner = groupIndices[positionInGroup + 1];
         const el = exerciseRefs.current[nextPartner];
         if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Superset toast
+        const nextExercise = exercises[nextPartner];
+        if (nextExercise) {
+          showToast(`Now: ${nextExercise.name} — Set ${setNumber}`, 'info', '→');
+        }
       } else if (setNumber < totalSets) {
-        // Last in group but more sets → scroll back to first in group (set N+1)
         const firstInGroup = groupIndices[0];
         const el = exerciseRefs.current[firstInGroup];
         if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        const firstExercise = exercises[firstInGroup];
+        if (firstExercise) {
+          showToast(`Now: ${firstExercise.name} — Set ${setNumber + 1}`, 'info', '↩');
+        }
       } else {
-        // Last in group and all sets done → scroll past the group
         const lastGroupIndex = groupIndices[groupIndices.length - 1];
         const nextIndex = lastGroupIndex + 1;
         if (nextIndex < exercises.length) {
@@ -90,6 +108,7 @@ const WorkoutScreen = ({ dayNumber, workoutType, block, editing, onSave, onCompl
       });
 
       setExercises(initialExercises);
+      if (savedHistory?.notes) setWorkoutNotes(savedHistory.notes);
 
       const lastCompleted = getLastCompletedWorkoutForType(workoutType, workoutHistory, completedWorkouts);
       setLastWorkout(lastCompleted);
@@ -125,16 +144,28 @@ const WorkoutScreen = ({ dayNumber, workoutType, block, editing, onSave, onCompl
       workoutType,
       block,
       duration,
+      notes: workoutNotes || undefined,
       exercises: exercises.map(ex => ({
         name: ex.name,
         userSets: ex.userSets
       }))
     });
+    showToast('Workout saved', 'success', '✓');
+    haptic.success();
   };
 
   const handleComplete = () => {
     handleSave();
+    haptic.workoutComplete();
     onComplete(dayNumber);
+  };
+
+  const handleBack = () => {
+    if (completedSets > 0) {
+      setShowBackGuard(true);
+    } else {
+      onCancel();
+    }
   };
 
   const isComplete = exercises.every(ex => ex.completed);
@@ -147,45 +178,38 @@ const WorkoutScreen = ({ dayNumber, workoutType, block, editing, onSave, onCompl
     ex.userSets.length === Number(ex.sets) && ex.userSets.every(s => s.completed)
   ).length;
 
+  const workoutName = getWorkoutName ? getWorkoutName(dayNumber) || workoutType : workoutType;
+
   return (
     <div className="space-y-6 pb-24">
+      <Toast message={toast.message} type={toast.type} visible={toast.visible} icon={toast.icon} />
+
+      {/* Sticky progress bar */}
       {totalSets > 0 && (
-        <div className="bg-gradient-to-r from-blue-900/50 to-purple-900/50 rounded-xl p-4">
-          <div className="text-sm text-slate-400 mb-2">
-            Workout Progress
+        <div className="sticky top-0 z-30 -mx-4 px-4 py-2.5 bg-slate-950/80 backdrop-blur-xl border-b border-white/5">
+          <div className="flex items-center justify-between text-xs text-slate-400 mb-1.5">
+            <span className="font-medium">{workoutName}</span>
+            <span className="stat-number text-white text-sm">{completedSets}/{totalSets}</span>
           </div>
-          <div className="flex items-center gap-4">
-            <div>
-              <div className="text-2xl font-bold text-white">
-                {completedSets}/{totalSets}
-              </div>
-              <div className="text-xs text-slate-500">
-                Sets
-              </div>
-            </div>
-            <div className="flex-1">
-              <div className="w-full bg-slate-700 rounded-full h-3">
-                <div
-                  className="bg-gradient-to-r from-blue-500 to-purple-500 h-3 rounded-full transition-all"
-                  style={{ width: `${(completedSets / totalSets) * 100}%` }}
-                />
-              </div>
-              <div className="text-xs text-slate-500 mt-1">
-                {completedExercises}/{exercises.length} exercises complete
-              </div>
-            </div>
+          <div className="w-full bg-white/10 rounded-full h-1.5">
+            <div
+              className="bg-gradient-to-r from-blue-500 to-purple-500 h-1.5 rounded-full transition-all duration-500"
+              style={{ width: `${(completedSets / totalSets) * 100}%` }}
+            />
+          </div>
+          <div className="text-[10px] text-slate-500 mt-1">
+            {completedExercises}/{exercises.length} exercises complete
           </div>
         </div>
       )}
 
       <div className="flex items-center justify-between">
         <button
-          onClick={onCancel}
-          className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors"
+          onClick={handleBack}
+          className="btn-back"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="m15 18-6-6 6" />
-            <path d="M9 6h12" />
+            <path d="m15 18-6-6 6-6" />
           </svg>
           Back
         </button>
@@ -196,7 +220,7 @@ const WorkoutScreen = ({ dayNumber, workoutType, block, editing, onSave, onCompl
 
       <div className="text-center">
         <h1 className="text-2xl font-bold text-white mb-1">
-          {getWorkoutName ? getWorkoutName(dayNumber) || workoutType : workoutType}
+          {workoutName}
         </h1>
         <p className="text-slate-400">
           {exercises.length} exercises
@@ -224,8 +248,8 @@ const WorkoutScreen = ({ dayNumber, workoutType, block, editing, onSave, onCompl
           return groups.map((group, gIdx) => {
             if (group.type === 'superset') {
               return (
-                <div key={`superset-${gIdx}`} className="border-2 border-purple-500/40 rounded-xl p-3 space-y-2">
-                  <div className="text-xs font-semibold text-purple-400 uppercase tracking-wide">
+                <div key={`superset-${gIdx}`} className="border-2 border-purple-500/30 rounded-xl p-3 space-y-2 shadow-glow-purple">
+                  <div className="text-xs font-semibold text-purple-400 uppercase tracking-wider">
                     Superset
                   </div>
                   {group.items.map(({ exercise, originalIndex }) => (
@@ -281,26 +305,68 @@ const WorkoutScreen = ({ dayNumber, workoutType, block, editing, onSave, onCompl
         })()}
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 bg-slate-900 border-t border-slate-800 p-4 safe-area-bottom">
+      {/* Workout Notes */}
+      <div className="bg-slate-800 rounded-xl p-4">
+        <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 block">
+          Workout Notes
+        </label>
+        <textarea
+          value={workoutNotes}
+          onChange={(e) => setWorkoutNotes(e.target.value)}
+          placeholder="How did it feel? Any adjustments?"
+          className="w-full bg-black/20 text-white p-3 rounded-lg text-sm border border-white/10 focus:border-blue-500/50 outline-none resize-none placeholder-slate-600"
+          rows={2}
+        />
+      </div>
+
+      {/* Bottom action bar */}
+      <div className="fixed bottom-0 left-0 right-0 bg-slate-950/80 backdrop-blur-xl border-t border-white/10 p-4 safe-area-bottom">
         <div className="flex gap-3 max-w-lg mx-auto">
           <button
             onClick={handleSave}
-            className="flex-1 py-4 bg-slate-700 text-white rounded-xl font-semibold hover:bg-slate-600 transition-colors"
+            className="flex-1 py-4 btn-secondary"
           >
             Save
           </button>
           <button
             onClick={handleComplete}
-            className={`flex-1 py-4 rounded-xl font-semibold transition-colors ${
+            className={`flex-1 py-4 rounded-xl font-semibold transition-all ${
               isComplete
-                ? 'bg-green-500 text-white hover:bg-green-600'
-                : 'bg-blue-500 text-white hover:bg-blue-600'
+                ? 'bg-gradient-to-r from-emerald-500 to-green-500 text-white shadow-lg shadow-emerald-500/25'
+                : 'btn-primary'
             }`}
           >
             Mark Complete
           </button>
         </div>
       </div>
+
+      {/* Back guard dialog */}
+      {showBackGuard && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowBackGuard(false)} />
+          <div className="relative glass-card-elevated p-6 mx-4 max-w-sm animate-fade-in-up">
+            <h3 className="text-lg font-bold text-white mb-2">Leave workout?</h3>
+            <p className="text-sm text-slate-400 mb-5">
+              You have {completedSets} saved set{completedSets !== 1 ? 's' : ''}. Your progress has been auto-saved.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowBackGuard(false)}
+                className="flex-1 py-3 btn-secondary"
+              >
+                Stay
+              </button>
+              <button
+                onClick={() => { setShowBackGuard(false); onCancel(); }}
+                className="flex-1 py-3 btn-danger"
+              >
+                Leave
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
