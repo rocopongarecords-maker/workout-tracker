@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 
-const SettingsScreen = ({ data, onReset, onImport, onBack }) => {
+const SettingsScreen = ({ data, user, onSignOut, onReset, onImport, onBack }) => {
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [importStatus, setImportStatus] = useState(null);
   const fileInputRef = useRef(null);
@@ -63,6 +63,27 @@ const SettingsScreen = ({ data, onReset, onImport, onBack }) => {
           Back
         </button>
       </div>
+
+      {user && (
+        <div className="bg-slate-800 rounded-xl p-5 space-y-4">
+          <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wide">Account</h3>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
+              {(user.email || '?')[0].toUpperCase()}
+            </div>
+            <div className="flex-1">
+              <div className="text-sm font-semibold text-white">{user.user_metadata?.full_name || user.email}</div>
+              <div className="text-xs text-slate-400">{user.email}</div>
+            </div>
+          </div>
+          <button
+            onClick={onSignOut}
+            className="w-full py-2 bg-slate-700 text-slate-300 rounded-lg text-sm hover:bg-slate-600 transition-colors"
+          >
+            Sign Out
+          </button>
+        </div>
+      )}
 
       <div className="bg-slate-800 rounded-xl p-5 space-y-4">
         <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wide">Your Data</h3>

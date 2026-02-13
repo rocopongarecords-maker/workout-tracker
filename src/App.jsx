@@ -1,7 +1,9 @@
 import { useState } from 'react';
+import { useAuth } from './hooks/useAuth';
 import { useWorkoutStorage } from './hooks/useWorkoutStorage';
 import { useProgressTracking } from './hooks/useProgressTracking';
 import { checkBadges } from './utils/checkBadges';
+import AuthScreen from './components/AuthScreen';
 import Dashboard from './components/Dashboard';
 import WorkoutDaySelector from './components/WorkoutDaySelector';
 import WorkoutScreen from './components/WorkoutScreen';
@@ -12,10 +14,13 @@ import BadgeScreen from './components/BadgeScreen';
 import BadgeAward from './components/BadgeAward';
 import AnalyticsScreen from './components/AnalyticsScreen';
 import MeasurementsScreen from './components/MeasurementsScreen';
+import MigrationBanner from './components/MigrationBanner';
 import { schedule } from './data/schedule';
 import './styles/globals.css';
 
 function App() {
+  const auth = useAuth();
+  const [guestMode, setGuestMode] = useState(false);
   const [currentView, setCurrentView] = useState('dashboard');
   const [selectedWorkout, setSelectedWorkout] = useState(null);
   const [reviewDay, setReviewDay] = useState(null);
@@ -23,8 +28,37 @@ function App() {
   const [sessionPRs, setSessionPRs] = useState(0);
   const [newBadges, setNewBadges] = useState([]);
 
-  const { data, saveWorkout, markComplete, isCompleted, getWorkoutHistory, resetData, importData, addBadges, incrementPRs, saveWeight, saveSkinfold } = useWorkoutStorage();
+  const storage = useWorkoutStorage(auth.user);
+  const { data, saveWorkout, markComplete, isCompleted, getWorkoutHistory, resetData, importData, addBadges, incrementPRs, saveWeight, saveSkinfold, syncing, migrationNeeded, migrateLocalData, dismissMigration } = storage;
   const stats = useProgressTracking(data.completedWorkouts);
+
+  // Show auth screen if Supabase is configured, user is not logged in, and not in guest mode
+  if (auth.isConfigured && !auth.user && !guestMode && !auth.loading) {
+    return (
+      <div className="min-h-screen bg-slate-950 text-white">
+        <AuthScreen
+          onSignIn={auth.signIn}
+          onSignUp={auth.signUp}
+          onGoogleSignIn={auth.signInWithGoogle}
+          onResetPassword={auth.resetPassword}
+          onContinueAsGuest={() => setGuestMode(true)}
+          error={auth.error}
+        />
+      </div>
+    );
+  }
+
+  // Loading state
+  if (auth.loading) {
+    return (
+      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+          <p className="text-slate-400 text-sm">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   const handleStartWorkout = (dayNumber, workoutType, block) => {
     setSelectedWorkout({ dayNumber, workoutType, block });
@@ -62,7 +96,6 @@ function App() {
   const handleCompleteWorkout = (dayNumber) => {
     markComplete(dayNumber);
 
-    // Check for new badges after completing
     const earnedIds = (data.earnedBadges || []).map(b => b.id);
     const completedAfter = [...new Set([...data.completedWorkouts, dayNumber])];
     const newlyEarned = checkBadges({
@@ -88,6 +121,22 @@ function App() {
   return (
     <div className="min-h-screen bg-slate-950 text-white">
       <div className="max-w-lg mx-auto px-4 py-8">
+        {/* Migration banner */}
+        {migrationNeeded && (
+          <MigrationBanner
+            onMigrate={migrateLocalData}
+            onDismiss={dismissMigration}
+            syncing={syncing}
+          />
+        )}
+
+        {/* Sync indicator */}
+        {syncing && (
+          <div className="fixed top-0 left-0 right-0 z-50">
+            <div className="h-1 bg-blue-500 animate-pulse" />
+          </div>
+        )}
+
         {currentView === 'dashboard' && (
           <Dashboard
             stats={stats}
@@ -183,6 +232,8 @@ function App() {
         {currentView === 'settings' && (
           <SettingsScreen
             data={data}
+            user={auth.user}
+            onSignOut={auth.signOut}
             onReset={resetData}
             onImport={importData}
             onBack={handleBackToDashboard}

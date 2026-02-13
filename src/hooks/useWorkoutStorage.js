@@ -1,4 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { isSupabaseConfigured } from '../lib/supabase';
+import * as db from '../lib/supabaseStorage';
 
 const STORAGE_KEY = 'workout_tracker_data';
 
@@ -12,55 +14,128 @@ const initialData = {
   skinfoldLog: []
 };
 
-export const useWorkoutStorage = () => {
-  const [data, setData] = useState(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      return stored ? JSON.parse(stored) : initialData;
-    } catch (error) {
-      console.error('Error loading from localStorage:', error);
-      return initialData;
-    }
-  });
+const loadLocal = () => {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    return stored ? JSON.parse(stored) : initialData;
+  } catch {
+    return initialData;
+  }
+};
 
+const saveLocal = (data) => {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+};
+
+export const useWorkoutStorage = (user) => {
+  const [data, setData] = useState(loadLocal);
+  const [syncing, setSyncing] = useState(false);
+  const [migrationNeeded, setMigrationNeeded] = useState(false);
+
+  const isOnline = isSupabaseConfigured() && !!user;
+
+  // Load data from Supabase when user logs in
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    if (!isOnline) return;
+
+    const loadFromSupabase = async () => {
+      setSyncing(true);
+      try {
+        const remoteData = await db.fetchAllData(user.id);
+
+        // Check if user has local data that's not in Supabase
+        const localData = loadLocal();
+        const hasLocalData = localData.completedWorkouts.length > 0 ||
+          Object.keys(localData.workoutHistory).length > 0;
+        const hasRemoteData = remoteData.completedWorkouts.length > 0 ||
+          Object.keys(remoteData.workoutHistory).length > 0;
+
+        if (hasLocalData && !hasRemoteData) {
+          setMigrationNeeded(true);
+          // Keep local data for now, user will be prompted to migrate
+        } else {
+          setData(remoteData);
+        }
+      } catch (err) {
+        console.error('Failed to load from Supabase:', err);
+        // Keep local data as fallback
+      }
+      setSyncing(false);
+    };
+
+    loadFromSupabase();
+  }, [user?.id]);
+
+  // Always save to localStorage as cache
+  useEffect(() => {
+    saveLocal(data);
   }, [data]);
 
-  const saveWorkout = (dayNumber, workoutData) => {
-    setData(prev => ({
-      ...prev,
-      workoutHistory: {
-        ...prev.workoutHistory,
-        [dayNumber]: {
-          date: new Date().toISOString(),
-          ...workoutData
-        }
-      }
-    }));
-  };
+  const migrateLocalData = useCallback(async () => {
+    if (!isOnline) return;
+    setSyncing(true);
+    try {
+      const localData = loadLocal();
+      await db.importLocalDataToSupabase(user.id, localData);
+      setMigrationNeeded(false);
+    } catch (err) {
+      console.error('Migration failed:', err);
+    }
+    setSyncing(false);
+  }, [user?.id, isOnline]);
 
-  const markComplete = (dayNumber) => {
+  const dismissMigration = useCallback(() => {
+    setMigrationNeeded(false);
+  }, []);
+
+  const saveWorkout = useCallback((dayNumber, workoutData) => {
+    setData(prev => {
+      const next = {
+        ...prev,
+        workoutHistory: {
+          ...prev.workoutHistory,
+          [dayNumber]: {
+            date: new Date().toISOString(),
+            ...workoutData
+          }
+        }
+      };
+      return next;
+    });
+
+    // Sync to Supabase in background
+    if (isOnline) {
+      db.upsertWorkout(user.id, dayNumber, workoutData).catch(console.error);
+    }
+  }, [user?.id, isOnline]);
+
+  const markComplete = useCallback((dayNumber) => {
     setData(prev => ({
       ...prev,
       completedWorkouts: [...new Set([...prev.completedWorkouts, dayNumber])]
     }));
-  };
 
-  const isCompleted = (dayNumber) => {
+    if (isOnline) {
+      db.markWorkoutComplete(user.id, dayNumber).catch(console.error);
+    }
+  }, [user?.id, isOnline]);
+
+  const isCompleted = useCallback((dayNumber) => {
     return data.completedWorkouts.includes(dayNumber);
-  };
+  }, [data.completedWorkouts]);
 
-  const getWorkoutHistory = (dayNumber) => {
+  const getWorkoutHistory = useCallback((dayNumber) => {
     return data.workoutHistory[dayNumber];
-  };
+  }, [data.workoutHistory]);
 
-  const resetData = () => {
+  const resetData = useCallback(() => {
     localStorage.removeItem(STORAGE_KEY);
     setData(initialData);
-  };
+    // Note: Supabase data is not deleted on reset — only local data
+    // To fully delete from Supabase, user should use the delete account option
+  }, []);
 
-  const importData = (imported) => {
+  const importData = useCallback((imported) => {
     const merged = {
       completedWorkouts: imported.completedWorkouts || [],
       workoutHistory: imported.workoutHistory || {},
@@ -71,39 +146,56 @@ export const useWorkoutStorage = () => {
       skinfoldLog: imported.skinfoldLog || []
     };
     setData(merged);
-  };
 
-  const addBadges = (badgeIds) => {
+    if (isOnline) {
+      db.importLocalDataToSupabase(user.id, merged).catch(console.error);
+    }
+  }, [user?.id, isOnline]);
+
+  const addBadges = useCallback((badgeIds) => {
     if (!badgeIds || badgeIds.length === 0) return;
+    const newEntries = badgeIds.map(id => ({ id, earnedAt: new Date().toISOString() }));
     setData(prev => ({
       ...prev,
-      earnedBadges: [
-        ...prev.earnedBadges,
-        ...badgeIds.map(id => ({ id, earnedAt: new Date().toISOString() }))
-      ]
+      earnedBadges: [...(prev.earnedBadges || []), ...newEntries]
     }));
-  };
 
-  const incrementPRs = (count = 1) => {
-    setData(prev => ({
-      ...prev,
-      totalPRs: (prev.totalPRs || 0) + count
-    }));
-  };
+    if (isOnline) {
+      db.insertBadges(user.id, badgeIds).catch(console.error);
+    }
+  }, [user?.id, isOnline]);
 
-  const saveWeight = (entry) => {
+  const incrementPRs = useCallback((count = 1) => {
+    setData(prev => {
+      const newTotal = (prev.totalPRs || 0) + count;
+      if (isOnline) {
+        db.upsertPRCount(user.id, newTotal).catch(console.error);
+      }
+      return { ...prev, totalPRs: newTotal };
+    });
+  }, [user?.id, isOnline]);
+
+  const saveWeight = useCallback((entry) => {
     setData(prev => ({
       ...prev,
       weightLog: [...(prev.weightLog || []), entry]
     }));
-  };
 
-  const saveSkinfold = (entry) => {
+    if (isOnline) {
+      db.insertWeight(user.id, entry).catch(console.error);
+    }
+  }, [user?.id, isOnline]);
+
+  const saveSkinfold = useCallback((entry) => {
     setData(prev => ({
       ...prev,
       skinfoldLog: [...(prev.skinfoldLog || []), entry]
     }));
-  };
+
+    if (isOnline) {
+      db.insertSkinfold(user.id, entry).catch(console.error);
+    }
+  }, [user?.id, isOnline]);
 
   return {
     data,
@@ -116,6 +208,10 @@ export const useWorkoutStorage = () => {
     addBadges,
     incrementPRs,
     saveWeight,
-    saveSkinfold
+    saveSkinfold,
+    syncing,
+    migrationNeeded,
+    migrateLocalData,
+    dismissMigration
   };
 };
