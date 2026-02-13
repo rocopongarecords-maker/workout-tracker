@@ -7,7 +7,9 @@ const initialData = {
   workoutHistory: {},
   startDate: null,
   earnedBadges: [],
-  totalPRs: 0
+  totalPRs: 0,
+  weightLog: [],
+  skinfoldLog: []
 };
 
 export const useWorkoutStorage = () => {
@@ -64,7 +66,9 @@ export const useWorkoutStorage = () => {
       workoutHistory: imported.workoutHistory || {},
       startDate: imported.startDate || null,
       earnedBadges: imported.earnedBadges || [],
-      totalPRs: imported.totalPRs || 0
+      totalPRs: imported.totalPRs || 0,
+      weightLog: imported.weightLog || [],
+      skinfoldLog: imported.skinfoldLog || []
     };
     setData(merged);
   };
@@ -87,6 +91,20 @@ export const useWorkoutStorage = () => {
     }));
   };
 
+  const saveWeight = (entry) => {
+    setData(prev => ({
+      ...prev,
+      weightLog: [...(prev.weightLog || []), entry]
+    }));
+  };
+
+  const saveSkinfold = (entry) => {
+    setData(prev => ({
+      ...prev,
+      skinfoldLog: [...(prev.skinfoldLog || []), entry]
+    }));
+  };
+
   return {
     data,
     saveWorkout,
@@ -96,6 +114,8 @@ export const useWorkoutStorage = () => {
     resetData,
     importData,
     addBadges,
-    incrementPRs
+    incrementPRs,
+    saveWeight,
+    saveSkinfold
   };
 };

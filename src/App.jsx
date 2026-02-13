@@ -10,6 +10,8 @@ import WorkoutSummary from './components/WorkoutSummary';
 import SettingsScreen from './components/SettingsScreen';
 import BadgeScreen from './components/BadgeScreen';
 import BadgeAward from './components/BadgeAward';
+import AnalyticsScreen from './components/AnalyticsScreen';
+import MeasurementsScreen from './components/MeasurementsScreen';
 import { schedule } from './data/schedule';
 import './styles/globals.css';
 
@@ -21,7 +23,7 @@ function App() {
   const [sessionPRs, setSessionPRs] = useState(0);
   const [newBadges, setNewBadges] = useState([]);
 
-  const { data, saveWorkout, markComplete, isCompleted, getWorkoutHistory, resetData, importData, addBadges, incrementPRs } = useWorkoutStorage();
+  const { data, saveWorkout, markComplete, isCompleted, getWorkoutHistory, resetData, importData, addBadges, incrementPRs, saveWeight, saveSkinfold } = useWorkoutStorage();
   const stats = useProgressTracking(data.completedWorkouts);
 
   const handleStartWorkout = (dayNumber, workoutType, block) => {
@@ -94,6 +96,8 @@ function App() {
             onViewAllWorkouts={() => setCurrentView('selector')}
             onOpenSettings={() => setCurrentView('settings')}
             onViewBadges={() => setCurrentView('badges')}
+            onViewAnalytics={() => setCurrentView('analytics')}
+            onViewMeasurements={() => setCurrentView('measurements')}
             earnedBadges={data.earnedBadges}
             currentView={currentView}
             setCurrentView={setCurrentView}
@@ -154,6 +158,24 @@ function App() {
         {currentView === 'badges' && (
           <BadgeScreen
             earnedBadges={data.earnedBadges}
+            onBack={handleBackToDashboard}
+          />
+        )}
+
+        {currentView === 'analytics' && (
+          <AnalyticsScreen
+            workoutHistory={data.workoutHistory}
+            completedWorkouts={data.completedWorkouts}
+            onBack={handleBackToDashboard}
+          />
+        )}
+
+        {currentView === 'measurements' && (
+          <MeasurementsScreen
+            weightLog={data.weightLog}
+            skinfoldLog={data.skinfoldLog}
+            onSaveWeight={saveWeight}
+            onSaveSkinfold={saveSkinfold}
             onBack={handleBackToDashboard}
           />
         )}
