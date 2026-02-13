@@ -30,7 +30,10 @@ const SettingsScreen = ({ data, user, onSignOut, onReset, onImport, onBack }) =>
     reader.onload = (event) => {
       try {
         const imported = JSON.parse(event.target.result);
-        if (!imported.completedWorkouts || !imported.workoutHistory) {
+        // Accept both v1 (completedWorkouts/workoutHistory) and v2 (programData) formats
+        const isV1 = imported.completedWorkouts && imported.workoutHistory;
+        const isV2 = imported.programData;
+        if (!isV1 && !isV2) {
           setImportStatus({ type: 'error', message: 'Invalid backup file format.' });
           return;
         }

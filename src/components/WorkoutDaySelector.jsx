@@ -16,7 +16,10 @@ const WorkoutDaySelector = ({ schedule, completedWorkouts, nextDay, onSelectDay,
       pull2: 'U2',
       rest: 'Rest'
     };
-    return labels[type] || type;
+    if (labels[type]) return labels[type];
+    // For custom programs: abbreviate to first 2-3 chars
+    if (type.length <= 3) return type;
+    return type.slice(0, 3);
   };
 
   const weeks = [];

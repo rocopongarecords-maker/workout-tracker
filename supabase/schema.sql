@@ -25,19 +25,32 @@ create or replace trigger on_auth_user_created
   for each row execute procedure public.handle_new_user();
 
 -- ── Workout Data ──
--- Stores the full workout state (replaces localStorage workoutHistory)
+-- Stores the full workout state, namespaced by program_id
 create table if not exists workout_data (
   id uuid default gen_random_uuid() primary key,
   user_id uuid references auth.users on delete cascade not null,
+  program_id text not null default 'jeff_nippard_lpp',
   day_number integer not null,
   workout_type text not null,
-  block integer not null,
+  block integer,
   exercises jsonb not null default '[]',
   completed boolean default false,
   date timestamptz default now(),
   created_at timestamptz default now(),
   updated_at timestamptz default now(),
-  unique(user_id, day_number)
+  unique(user_id, program_id, day_number)
+);
+
+-- ── Custom Programs ──
+-- Stores user-created training programs
+create table if not exists custom_programs (
+  id uuid default gen_random_uuid() primary key,
+  user_id uuid references auth.users on delete cascade not null,
+  program_id text not null,
+  program_data jsonb not null,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now(),
+  unique(user_id, program_id)
 );
 
 -- ── Weight Log ──
@@ -76,6 +89,7 @@ create table if not exists earned_badges (
 create table if not exists user_stats (
   user_id uuid references auth.users on delete cascade primary key,
   total_prs integer default 0,
+  active_program text default 'jeff_nippard_lpp',
   updated_at timestamptz default now()
 );
 
@@ -84,6 +98,7 @@ create table if not exists user_stats (
 
 alter table profiles enable row level security;
 alter table workout_data enable row level security;
+alter table custom_programs enable row level security;
 alter table weight_log enable row level security;
 alter table skinfold_log enable row level security;
 alter table earned_badges enable row level security;
@@ -103,6 +118,16 @@ create policy "Users can insert own workouts" on workout_data
 create policy "Users can update own workouts" on workout_data
   for update using (auth.uid() = user_id);
 create policy "Users can delete own workouts" on workout_data
+  for delete using (auth.uid() = user_id);
+
+-- Custom programs
+create policy "Users can view own programs" on custom_programs
+  for select using (auth.uid() = user_id);
+create policy "Users can insert own programs" on custom_programs
+  for insert with check (auth.uid() = user_id);
+create policy "Users can update own programs" on custom_programs
+  for update using (auth.uid() = user_id);
+create policy "Users can delete own programs" on custom_programs
   for delete using (auth.uid() = user_id);
 
 -- Weight log
@@ -133,7 +158,20 @@ create policy "Users can update own stats" on user_stats
 
 -- ── Indexes ──
 create index if not exists idx_workout_data_user on workout_data(user_id);
-create index if not exists idx_workout_data_user_day on workout_data(user_id, day_number);
+create index if not exists idx_workout_data_user_program_day on workout_data(user_id, program_id, day_number);
+create index if not exists idx_custom_programs_user on custom_programs(user_id);
 create index if not exists idx_weight_log_user on weight_log(user_id, date desc);
 create index if not exists idx_skinfold_log_user on skinfold_log(user_id, date desc);
 create index if not exists idx_earned_badges_user on earned_badges(user_id);
+
+-- ── Migration from v1 ──
+-- Run these if you already have the v1 schema deployed:
+--
+-- ALTER TABLE workout_data ADD COLUMN IF NOT EXISTS program_id text NOT NULL DEFAULT 'jeff_nippard_lpp';
+-- ALTER TABLE workout_data DROP CONSTRAINT IF EXISTS workout_data_user_id_day_number_key;
+-- ALTER TABLE workout_data ADD CONSTRAINT workout_data_user_id_program_id_day_number_key UNIQUE(user_id, program_id, day_number);
+-- ALTER TABLE user_stats ADD COLUMN IF NOT EXISTS active_program text DEFAULT 'jeff_nippard_lpp';
+-- DROP INDEX IF EXISTS idx_workout_data_user_day;
+-- CREATE INDEX IF NOT EXISTS idx_workout_data_user_program_day ON workout_data(user_id, program_id, day_number);
+--
+-- Then create the custom_programs table and its RLS policies above.
