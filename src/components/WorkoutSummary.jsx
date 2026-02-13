@@ -13,6 +13,15 @@ const WorkoutSummary = ({ dayNumber, workoutHistory, completedWorkouts, prsHit, 
   }, 0);
   const totalExercises = (history.exercises || []).length;
 
+  const formatDuration = (seconds) => {
+    if (!seconds || seconds <= 0) return null;
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    if (h > 0) return `${h}h ${m}m`;
+    return `${m}m`;
+  };
+  const durationStr = formatDuration(history.duration);
+
   const comparison = getVolumeComparison(
     history.workoutType, dayNumber, workoutHistory, completedWorkouts
   );
@@ -34,7 +43,13 @@ const WorkoutSummary = ({ dayNumber, workoutHistory, completedWorkouts, prsHit, 
         <p className="text-slate-400">{workoutName} — Day {dayNumber}</p>
       </div>
 
-      <div className="grid grid-cols-3 gap-3">
+      <div className={`grid gap-3 ${durationStr ? 'grid-cols-4' : 'grid-cols-3'}`}>
+        {durationStr && (
+          <div className="bg-slate-800 rounded-xl p-4 text-center">
+            <div className="text-2xl font-bold text-white">{durationStr}</div>
+            <div className="text-xs text-slate-400 mt-1">Duration</div>
+          </div>
+        )}
         <div className="bg-slate-800 rounded-xl p-4 text-center">
           <div className="text-2xl font-bold text-white">{totalExercises}</div>
           <div className="text-xs text-slate-400 mt-1">Exercises</div>

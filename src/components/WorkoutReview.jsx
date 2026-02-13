@@ -67,7 +67,15 @@ const WorkoutReview = ({ dayNumber, workoutHistory, completedWorkouts, onBack, o
         <p className="text-slate-400 text-sm">
           Day {dayNumber}{history.block ? ` — Block ${history.block}` : ''}
         </p>
-        <p className="text-slate-500 text-xs mt-1">{completedDate}</p>
+        <p className="text-slate-500 text-xs mt-1">
+          {completedDate}
+          {history.duration > 0 && (() => {
+            const h = Math.floor(history.duration / 3600);
+            const m = Math.floor((history.duration % 3600) / 60);
+            const dur = h > 0 ? `${h}h ${m}m` : `${m}m`;
+            return ` · ${dur}`;
+          })()}
+        </p>
       </div>
 
       <div className="grid grid-cols-2 gap-3">

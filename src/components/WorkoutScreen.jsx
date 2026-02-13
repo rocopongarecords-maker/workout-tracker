@@ -6,6 +6,7 @@ const WorkoutScreen = ({ dayNumber, workoutType, block, editing, onSave, onCompl
   const [exercises, setExercises] = useState([]);
   const [lastWorkout, setLastWorkout] = useState(null);
   const exerciseRefs = useRef([]);
+  const [startTime] = useState(() => Date.now());
 
   const scrollToNext = (exerciseIndex, setNumber, totalSets) => {
     setTimeout(() => {
@@ -70,9 +71,11 @@ const WorkoutScreen = ({ dayNumber, workoutType, block, editing, onSave, onCompl
   };
 
   const handleSave = () => {
+    const duration = Math.round((Date.now() - startTime) / 1000);
     onSave(dayNumber, {
       workoutType,
       block,
+      duration,
       exercises: exercises.map(ex => ({
         name: ex.name,
         userSets: ex.userSets
