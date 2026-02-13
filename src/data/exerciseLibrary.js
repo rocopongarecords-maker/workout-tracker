@@ -1,0 +1,105 @@
+// All muscle groups used in the library
+export const muscleGroups = [
+  'Chest', 'Back', 'Shoulders', 'Quadriceps', 'Hamstrings', 'Glutes',
+  'Biceps', 'Triceps', 'Core', 'Calves', 'Traps', 'Forearms', 'Lower Back'
+];
+
+// Exercise categories
+export const exerciseCategories = ['compound', 'isolation'];
+
+// Full exercise library — program exercises + common gym exercises
+export const exerciseLibrary = [
+  // === LEGS ===
+  { name: 'Back Squat', muscles: ['Quadriceps', 'Glutes', 'Core'], category: 'compound', equipment: 'barbell' },
+  { name: 'Front Squat', muscles: ['Quadriceps', 'Core', 'Glutes'], category: 'compound', equipment: 'barbell' },
+  { name: 'Tempo Back Squat', muscles: ['Quadriceps', 'Glutes', 'Core'], category: 'compound', equipment: 'barbell' },
+  { name: 'Deadlift', muscles: ['Hamstrings', 'Glutes', 'Lower Back', 'Traps'], category: 'compound', equipment: 'barbell' },
+  { name: 'Romanian Deadlift', muscles: ['Hamstrings', 'Glutes', 'Lower Back'], category: 'compound', equipment: 'barbell' },
+  { name: 'Barbell Hip Thrust', muscles: ['Glutes', 'Hamstrings'], category: 'compound', equipment: 'barbell' },
+  { name: 'Pause Barbell Hip Thrust', muscles: ['Glutes', 'Hamstrings'], category: 'compound', equipment: 'barbell' },
+  { name: 'Dumbbell Walking Lunge', muscles: ['Quadriceps', 'Glutes', 'Hamstrings'], category: 'compound', equipment: 'dumbbell' },
+  { name: 'Reverse Lunge', muscles: ['Quadriceps', 'Glutes', 'Hamstrings'], category: 'compound', equipment: 'dumbbell' },
+  { name: 'Leg Extension', muscles: ['Quadriceps'], category: 'isolation', equipment: 'machine' },
+  { name: 'Single-Leg Leg Extension', muscles: ['Quadriceps'], category: 'isolation', equipment: 'machine' },
+  { name: 'Enhanced-Eccentric Leg Extension', muscles: ['Quadriceps'], category: 'isolation', equipment: 'machine' },
+  { name: 'Seated Leg Curl', muscles: ['Hamstrings'], category: 'isolation', equipment: 'machine' },
+  { name: 'Lying Leg Curl', muscles: ['Hamstrings'], category: 'isolation', equipment: 'machine' },
+  { name: 'Swiss Ball Single-Leg Leg Curl', muscles: ['Hamstrings', 'Glutes'], category: 'isolation', equipment: 'swiss ball' },
+  { name: 'Standing Calf Raise', muscles: ['Calves'], category: 'isolation', equipment: 'machine' },
+  { name: 'Cable Pull Through', muscles: ['Glutes', 'Hamstrings'], category: 'isolation', equipment: 'cable' },
+  { name: 'Single-Leg Leg Press', muscles: ['Quadriceps', 'Glutes'], category: 'compound', equipment: 'machine' },
+  { name: 'Round-Back 45° Hyperextension', muscles: ['Glutes', 'Hamstrings', 'Lower Back'], category: 'compound', equipment: 'bodyweight' },
+  { name: 'Leg Press', muscles: ['Quadriceps', 'Glutes'], category: 'compound', equipment: 'machine' },
+  { name: 'Goblet Squat', muscles: ['Quadriceps', 'Glutes', 'Core'], category: 'compound', equipment: 'dumbbell' },
+  { name: 'Bulgarian Split Squat', muscles: ['Quadriceps', 'Glutes'], category: 'compound', equipment: 'dumbbell' },
+  { name: 'Hack Squat', muscles: ['Quadriceps', 'Glutes'], category: 'compound', equipment: 'machine' },
+  { name: 'Seated Calf Raise', muscles: ['Calves'], category: 'isolation', equipment: 'machine' },
+  { name: 'Sumo Deadlift', muscles: ['Glutes', 'Hamstrings', 'Quadriceps'], category: 'compound', equipment: 'barbell' },
+
+  // === PUSH (Chest / Shoulders / Triceps) ===
+  { name: 'Barbell Bench Press', muscles: ['Chest', 'Triceps', 'Shoulders'], category: 'compound', equipment: 'barbell' },
+  { name: 'Pause Barbell Bench Press', muscles: ['Chest', 'Triceps', 'Shoulders'], category: 'compound', equipment: 'barbell' },
+  { name: 'Close-Grip Bench Press', muscles: ['Triceps', 'Chest'], category: 'compound', equipment: 'barbell' },
+  { name: 'Dumbbell Incline Press', muscles: ['Chest', 'Shoulders', 'Triceps'], category: 'compound', equipment: 'dumbbell' },
+  { name: 'Dumbbell Seated Shoulder Press', muscles: ['Shoulders', 'Triceps'], category: 'compound', equipment: 'dumbbell' },
+  { name: 'Standing Dumbbell Shoulder Press', muscles: ['Shoulders', 'Triceps', 'Core'], category: 'compound', equipment: 'dumbbell' },
+  { name: 'Military Press', muscles: ['Shoulders', 'Triceps', 'Core'], category: 'compound', equipment: 'barbell' },
+  { name: 'Weighted Dip', muscles: ['Chest', 'Triceps', 'Shoulders'], category: 'compound', equipment: 'bodyweight' },
+  { name: 'Low-to-High Cable Flye', muscles: ['Chest'], category: 'isolation', equipment: 'cable' },
+  { name: 'Cable Flye', muscles: ['Chest'], category: 'isolation', equipment: 'cable' },
+  { name: 'Pec Deck', muscles: ['Chest'], category: 'isolation', equipment: 'machine' },
+  { name: 'Dumbbell Lateral Raise', muscles: ['Shoulders'], category: 'isolation', equipment: 'dumbbell' },
+  { name: 'Cable Lateral Raise', muscles: ['Shoulders'], category: 'isolation', equipment: 'cable' },
+  { name: 'Egyptian Lateral Raise', muscles: ['Shoulders'], category: 'isolation', equipment: 'cable' },
+  { name: 'Dumbbell Isolateral Skull Crusher', muscles: ['Triceps'], category: 'isolation', equipment: 'dumbbell' },
+  { name: 'Barbell Floor Skull Crusher', muscles: ['Triceps'], category: 'isolation', equipment: 'barbell' },
+  { name: 'Cable Triceps Kickback', muscles: ['Triceps'], category: 'isolation', equipment: 'cable' },
+  { name: 'Rope Overhead Triceps Extension', muscles: ['Triceps'], category: 'isolation', equipment: 'cable' },
+  { name: 'Ab Wheel Rollout', muscles: ['Core'], category: 'isolation', equipment: 'ab wheel' },
+  { name: 'Bicycle Crunch', muscles: ['Core'], category: 'isolation', equipment: 'bodyweight' },
+  { name: 'Hanging Leg Raise', muscles: ['Core'], category: 'isolation', equipment: 'bodyweight' },
+  { name: 'Incline Barbell Bench Press', muscles: ['Chest', 'Shoulders', 'Triceps'], category: 'compound', equipment: 'barbell' },
+  { name: 'Dumbbell Flat Bench Press', muscles: ['Chest', 'Triceps'], category: 'compound', equipment: 'dumbbell' },
+  { name: 'Push-Up', muscles: ['Chest', 'Triceps', 'Shoulders'], category: 'compound', equipment: 'bodyweight' },
+  { name: 'Tricep Pushdown', muscles: ['Triceps'], category: 'isolation', equipment: 'cable' },
+  { name: 'Arnold Press', muscles: ['Shoulders', 'Triceps'], category: 'compound', equipment: 'dumbbell' },
+  { name: 'Front Raise', muscles: ['Shoulders'], category: 'isolation', equipment: 'dumbbell' },
+
+  // === PULL (Back / Biceps / Rear Delts) ===
+  { name: 'Pull-Up', muscles: ['Back', 'Biceps'], category: 'compound', equipment: 'bodyweight' },
+  { name: 'Neutral-Grip Pull-Up', muscles: ['Back', 'Biceps'], category: 'compound', equipment: 'bodyweight' },
+  { name: 'Pendlay Row', muscles: ['Back', 'Biceps', 'Lower Back'], category: 'compound', equipment: 'barbell' },
+  { name: 'Chest-Supported T-Bar Row', muscles: ['Back', 'Biceps'], category: 'compound', equipment: 'machine' },
+  { name: 'Seal Row', muscles: ['Back', 'Biceps'], category: 'compound', equipment: 'barbell' },
+  { name: 'Dumbbell One-Arm Row', muscles: ['Back', 'Biceps'], category: 'compound', equipment: 'dumbbell' },
+  { name: 'Machine High Row', muscles: ['Back', 'Biceps'], category: 'compound', equipment: 'machine' },
+  { name: 'Neutral-Grip Pulldown', muscles: ['Back', 'Biceps'], category: 'compound', equipment: 'cable' },
+  { name: 'Supinated Pulldown', muscles: ['Back', 'Biceps'], category: 'compound', equipment: 'cable' },
+  { name: 'Single-Arm Pulldown', muscles: ['Back', 'Biceps'], category: 'compound', equipment: 'cable' },
+  { name: '1-Arm Lat Pull-In', muscles: ['Back'], category: 'isolation', equipment: 'cable' },
+  { name: 'Kneeling Straight-Arm Cable Pull-Over', muscles: ['Back'], category: 'isolation', equipment: 'cable' },
+  { name: 'Cable Seated Elbows-Out Row (A1)', muscles: ['Back', 'Shoulders'], category: 'compound', equipment: 'cable' },
+  { name: 'Cable Seated Row (A2)', muscles: ['Back'], category: 'compound', equipment: 'cable' },
+  { name: 'Seated Face Pull', muscles: ['Shoulders', 'Traps'], category: 'isolation', equipment: 'cable' },
+  { name: 'Cable Reverse Flye', muscles: ['Shoulders'], category: 'isolation', equipment: 'cable' },
+  { name: 'Low-to-High Reverse Flye', muscles: ['Shoulders'], category: 'isolation', equipment: 'cable' },
+  { name: 'Reverse Pec Deck', muscles: ['Shoulders'], category: 'isolation', equipment: 'machine' },
+  { name: 'Snatch-Grip Barbell Shrug', muscles: ['Traps'], category: 'isolation', equipment: 'barbell' },
+  { name: 'Reverse-Grip EZ-Bar Curl (A1)', muscles: ['Biceps', 'Forearms'], category: 'isolation', equipment: 'barbell' },
+  { name: 'Supinated EZ-Bar Curl (A2)', muscles: ['Biceps'], category: 'isolation', equipment: 'barbell' },
+  { name: 'Dumbbell Preacher Curl', muscles: ['Biceps'], category: 'isolation', equipment: 'dumbbell' },
+  { name: 'Single-Arm Cable Curl', muscles: ['Biceps'], category: 'isolation', equipment: 'cable' },
+  { name: 'Hammer Curl', muscles: ['Biceps', 'Forearms'], category: 'isolation', equipment: 'dumbbell' },
+  { name: 'Dumbbell Hammer Curl', muscles: ['Biceps', 'Forearms'], category: 'isolation', equipment: 'dumbbell' },
+  { name: 'Dumbbell Supinated Curl', muscles: ['Biceps'], category: 'isolation', equipment: 'dumbbell' },
+  { name: 'High Cable Curl', muscles: ['Biceps'], category: 'isolation', equipment: 'cable' },
+  { name: 'Barbell Curl', muscles: ['Biceps'], category: 'isolation', equipment: 'barbell' },
+  { name: 'Barbell Row', muscles: ['Back', 'Biceps'], category: 'compound', equipment: 'barbell' },
+  { name: 'Lat Pulldown', muscles: ['Back', 'Biceps'], category: 'compound', equipment: 'cable' },
+  { name: 'Seated Cable Row', muscles: ['Back', 'Biceps'], category: 'compound', equipment: 'cable' },
+  { name: 'Chin-Up', muscles: ['Back', 'Biceps'], category: 'compound', equipment: 'bodyweight' },
+  { name: 'Barbell Shrug', muscles: ['Traps'], category: 'isolation', equipment: 'barbell' }
+];
+
+// Get all unique equipment types
+export const equipmentTypes = [...new Set(exerciseLibrary.map(e => e.equipment))].sort();

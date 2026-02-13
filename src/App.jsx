@@ -19,6 +19,9 @@ import MeasurementsScreen from './components/MeasurementsScreen';
 import MigrationBanner from './components/MigrationBanner';
 import OfflineBanner from './components/OfflineBanner';
 import LoadingSkeleton from './components/LoadingSkeleton';
+import ExerciseLibrary from './components/ExerciseLibrary';
+import ProgramSelector from './components/ProgramSelector';
+import ProgramBuilder from './components/ProgramBuilder';
 import { schedule } from './data/schedule';
 import './styles/globals.css';
 
@@ -34,7 +37,7 @@ function App() {
   const [newBadges, setNewBadges] = useState([]);
 
   const storage = useWorkoutStorage(auth.user);
-  const { data, saveWorkout, markComplete, isCompleted, getWorkoutHistory, resetData, importData, addBadges, incrementPRs, saveWeight, saveSkinfold, syncing, migrationNeeded, migrateLocalData, dismissMigration } = storage;
+  const { data, saveWorkout, markComplete, isCompleted, getWorkoutHistory, resetData, importData, addBadges, incrementPRs, saveWeight, saveSkinfold, saveCustomProgram, deleteCustomProgram, setActiveProgram, syncing, migrationNeeded, migrateLocalData, dismissMigration } = storage;
   const stats = useProgressTracking(data.completedWorkouts);
 
   // Show auth screen if Supabase is configured, user is not logged in, and not in guest mode
@@ -154,6 +157,8 @@ function App() {
             onViewBadges={() => setCurrentView('badges')}
             onViewAnalytics={() => setCurrentView('analytics')}
             onViewMeasurements={() => setCurrentView('measurements')}
+            onViewPrograms={() => setCurrentView('programs')}
+            onViewExercises={() => setCurrentView('exercises')}
             earnedBadges={data.earnedBadges}
             currentView={currentView}
             setCurrentView={setCurrentView}
@@ -244,6 +249,33 @@ function App() {
             onReset={resetData}
             onImport={importData}
             onBack={handleBackToDashboard}
+          />
+        )}
+
+        {currentView === 'exercises' && (
+          <ExerciseLibrary
+            onBack={handleBackToDashboard}
+          />
+        )}
+
+        {currentView === 'programs' && (
+          <ProgramSelector
+            programs={data.customPrograms}
+            activeProgram={data.activeProgram}
+            onSelectProgram={setActiveProgram}
+            onCreateProgram={() => setCurrentView('program-builder')}
+            onDeleteProgram={deleteCustomProgram}
+            onBack={handleBackToDashboard}
+          />
+        )}
+
+        {currentView === 'program-builder' && (
+          <ProgramBuilder
+            onSave={(program) => {
+              saveCustomProgram(program);
+              setCurrentView('programs');
+            }}
+            onBack={() => setCurrentView('programs')}
           />
         )}
       </div>

@@ -11,7 +11,9 @@ const initialData = {
   earnedBadges: [],
   totalPRs: 0,
   weightLog: [],
-  skinfoldLog: []
+  skinfoldLog: [],
+  customPrograms: [],
+  activeProgram: 'jeff_nippard_lpp'
 };
 
 const loadLocal = () => {
@@ -143,7 +145,9 @@ export const useWorkoutStorage = (user) => {
       earnedBadges: imported.earnedBadges || [],
       totalPRs: imported.totalPRs || 0,
       weightLog: imported.weightLog || [],
-      skinfoldLog: imported.skinfoldLog || []
+      skinfoldLog: imported.skinfoldLog || [],
+      customPrograms: imported.customPrograms || [],
+      activeProgram: imported.activeProgram || 'jeff_nippard_lpp'
     };
     setData(merged);
 
@@ -197,6 +201,28 @@ export const useWorkoutStorage = (user) => {
     }
   }, [user?.id, isOnline]);
 
+  const saveCustomProgram = useCallback((program) => {
+    setData(prev => {
+      const existing = (prev.customPrograms || []);
+      const updated = existing.find(p => p.id === program.id)
+        ? existing.map(p => p.id === program.id ? program : p)
+        : [...existing, program];
+      return { ...prev, customPrograms: updated };
+    });
+  }, []);
+
+  const deleteCustomProgram = useCallback((programId) => {
+    setData(prev => ({
+      ...prev,
+      customPrograms: (prev.customPrograms || []).filter(p => p.id !== programId),
+      activeProgram: prev.activeProgram === programId ? 'jeff_nippard_lpp' : prev.activeProgram
+    }));
+  }, []);
+
+  const setActiveProgram = useCallback((programId) => {
+    setData(prev => ({ ...prev, activeProgram: programId }));
+  }, []);
+
   return {
     data,
     saveWorkout,
@@ -209,6 +235,9 @@ export const useWorkoutStorage = (user) => {
     incrementPRs,
     saveWeight,
     saveSkinfold,
+    saveCustomProgram,
+    deleteCustomProgram,
+    setActiveProgram,
     syncing,
     migrationNeeded,
     migrateLocalData,
