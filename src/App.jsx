@@ -23,6 +23,7 @@ import LoadingSkeleton from './components/LoadingSkeleton';
 import ExerciseLibrary from './components/ExerciseLibrary';
 import ProgramSelector from './components/ProgramSelector';
 import ProgramBuilder from './components/ProgramBuilder';
+import OnboardingScreen from './components/OnboardingScreen';
 import './styles/globals.css';
 
 function App() {
@@ -37,7 +38,7 @@ function App() {
   const [newBadges, setNewBadges] = useState([]);
 
   const storage = useWorkoutStorage(auth.user);
-  const { data, saveWorkout, markComplete, isCompleted, getWorkoutHistory, resetData, importData, addBadges, incrementPRs, saveWeight, saveSkinfold, saveCustomProgram, deleteCustomProgram, setActiveProgram, syncing, migrationNeeded, migrateLocalData, dismissMigration } = storage;
+  const { data, saveWorkout, markComplete, isCompleted, getWorkoutHistory, resetData, importData, addBadges, incrementPRs, saveWeight, saveSkinfold, saveCustomProgram, deleteCustomProgram, setActiveProgram, markOnboardingComplete, syncing, migrationNeeded, migrateLocalData, dismissMigration } = storage;
 
   const program = useActiveProgram(data.activeProgram, data.customPrograms);
   const { schedule, getExercisesForDay, getWorkoutName } = program;
@@ -65,6 +66,22 @@ function App() {
       <div className="min-h-screen bg-slate-950 text-white">
         <div className="max-w-lg mx-auto px-4 py-8">
           <LoadingSkeleton />
+        </div>
+      </div>
+    );
+  }
+
+  // Show onboarding for new users (no workouts completed, onboarding not dismissed)
+  const isNewUser = !data.onboardingComplete && data.completedWorkouts.length === 0;
+  if (isNewUser && currentView === 'dashboard') {
+    return (
+      <div className="min-h-screen bg-slate-950 text-white">
+        <div className="max-w-lg mx-auto px-4 py-8">
+          <OnboardingScreen
+            onComplete={markOnboardingComplete}
+            onSelectProgram={setActiveProgram}
+            programs={data.customPrograms}
+          />
         </div>
       </div>
     );

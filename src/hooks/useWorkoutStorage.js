@@ -18,6 +18,7 @@ const initialData = {
   weightLog: [],
   skinfoldLog: [],
   customPrograms: [],
+  onboardingComplete: false,
   schemaVersion: 2
 };
 
@@ -284,6 +285,10 @@ export const useWorkoutStorage = (user) => {
     }
   }, [user?.id, isOnline]);
 
+  const markOnboardingComplete = useCallback(() => {
+    setRawData(prev => ({ ...prev, onboardingComplete: true }));
+  }, []);
+
   const setActiveProgram = useCallback((programId) => {
     setRawData(prev => {
       const programData = { ...prev.programData };
@@ -309,6 +314,7 @@ export const useWorkoutStorage = (user) => {
     saveCustomProgram,
     deleteCustomProgram,
     setActiveProgram,
+    markOnboardingComplete,
     syncing,
     migrationNeeded,
     migrateLocalData,
