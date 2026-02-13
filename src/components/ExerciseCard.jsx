@@ -1,7 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { calculate1RM } from '../utils/calculate1RM';
+import { detectPR } from '../utils/detectPR';
+import PRCelebration from './PRCelebration';
+import ExerciseInfoModal from './ExerciseInfoModal';
 
-const ExerciseCard = ({ exercise, onChange, previousWorkout, onSave, scrollToNext, currentSet, totalSets }) => {
+const ExerciseCard = ({ exercise, exerciseIndex, onChange, previousWorkout, onSave, scrollToNext, workoutHistory }) => {
+  const [showInfo, setShowInfo] = useState(false);
   const setsCount = Number(exercise.sets) || 0;
   const oneRM = previousWorkout ? calculate1RM(previousWorkout.weight, previousWorkout.reps) : null;
   const timerIntervals = useRef({});
@@ -110,8 +114,12 @@ const ExerciseCard = ({ exercise, onChange, previousWorkout, onSave, scrollToNex
     });
   };
 
+  const [prInfo, setPrInfo] = useState({ show: false, type: null, value: null });
+
   const handleSaveAndNext = (setNumber) => {
     stopTimer(setNumber);
+
+    const currentSetData = userSets.find(s => s.setNumber === setNumber);
 
     const updatedSets = userSets.map(set =>
       set.setNumber === setNumber
@@ -123,8 +131,17 @@ const ExerciseCard = ({ exercise, onChange, previousWorkout, onSave, scrollToNex
     onChange(exercise.name, updatedSets);
     onSave(exercise.name, updatedSets);
 
+    // Check for PR
+    if (workoutHistory && currentSetData?.weight && currentSetData?.reps) {
+      const pr = detectPR(exercise.name, currentSetData.weight, currentSetData.reps, workoutHistory);
+      if (pr.isPR) {
+        setPrInfo({ show: true, type: pr.type, value: pr.value });
+        return; // Delay scroll until celebration finishes
+      }
+    }
+
     setTimeout(() => {
-      scrollToNext(setNumber, setsCount);
+      scrollToNext(exerciseIndex, setNumber, setsCount);
     }, 300);
   };
 
@@ -133,9 +150,29 @@ const ExerciseCard = ({ exercise, onChange, previousWorkout, onSave, scrollToNex
 
   return (
     <div className="bg-slate-800 rounded-xl p-4 mb-4" id={`exercise-${exercise.name.replace(/\s+/g, '-')}`}>
-      <h3 className="text-lg font-semibold text-white mb-3">
-        {exercise.name}
-      </h3>
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-lg font-semibold text-white">
+          {exercise.name}
+        </h3>
+        <button
+          onClick={() => setShowInfo(true)}
+          className="p-1.5 text-slate-400 hover:text-blue-400 transition-colors"
+          title="Exercise info"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 16v-4" />
+            <path d="M12 8h.01" />
+          </svg>
+        </button>
+      </div>
+
+      {showInfo && (
+        <ExerciseInfoModal
+          exerciseName={exercise.name}
+          onClose={() => setShowInfo(false)}
+        />
+      )}
 
       <div className="bg-slate-900/50 rounded-lg p-3 mb-4">
         <div className="flex items-center justify-between mb-2">
@@ -299,6 +336,20 @@ const ExerciseCard = ({ exercise, onChange, previousWorkout, onSave, scrollToNex
           </div>
         ))}
       </div>
+
+      <PRCelebration
+        show={prInfo.show}
+        type={prInfo.type}
+        value={prInfo.value}
+        onDone={() => {
+          setPrInfo({ show: false, type: null, value: null });
+          // Find which set just completed and scroll
+          const lastCompleted = userSets.filter(s => s.completed).pop();
+          if (lastCompleted) {
+            scrollToNext(exerciseIndex, lastCompleted.setNumber, setsCount);
+          }
+        }}
+      />
 
       <div className="mt-4 pt-3 border-t border-slate-700">
         <div className="flex items-center justify-between text-sm">

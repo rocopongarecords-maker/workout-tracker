@@ -5,6 +5,7 @@ import Dashboard from './components/Dashboard';
 import WorkoutDaySelector from './components/WorkoutDaySelector';
 import WorkoutScreen from './components/WorkoutScreen';
 import WorkoutReview from './components/WorkoutReview';
+import WorkoutSummary from './components/WorkoutSummary';
 import SettingsScreen from './components/SettingsScreen';
 import { schedule } from './data/schedule';
 import './styles/globals.css';
@@ -13,12 +14,15 @@ function App() {
   const [currentView, setCurrentView] = useState('dashboard');
   const [selectedWorkout, setSelectedWorkout] = useState(null);
   const [reviewDay, setReviewDay] = useState(null);
+  const [summaryDay, setSummaryDay] = useState(null);
+  const [sessionPRs, setSessionPRs] = useState(0);
 
   const { data, saveWorkout, markComplete, isCompleted, getWorkoutHistory, resetData, importData } = useWorkoutStorage();
   const stats = useProgressTracking(data.completedWorkouts);
 
   const handleStartWorkout = (dayNumber, workoutType, block) => {
     setSelectedWorkout({ dayNumber, workoutType, block });
+    setSessionPRs(0);
     setCurrentView('workout');
   };
 
@@ -26,6 +30,16 @@ function App() {
     const dayData = schedule.find(day => day.day === dayNumber);
     if (dayData && !dayData.rest) {
       setSelectedWorkout({ dayNumber, workoutType: dayData.type, block: dayData.block });
+      setSessionPRs(0);
+      setCurrentView('workout');
+    }
+  };
+
+  const handleEditWorkout = (dayNumber) => {
+    const dayData = schedule.find(day => day.day === dayNumber);
+    if (dayData) {
+      setSelectedWorkout({ dayNumber, workoutType: dayData.type, block: dayData.block, editing: true });
+      setSessionPRs(0);
       setCurrentView('workout');
     }
   };
@@ -41,7 +55,8 @@ function App() {
 
   const handleCompleteWorkout = (dayNumber) => {
     markComplete(dayNumber);
-    setCurrentView('dashboard');
+    setSummaryDay(dayNumber);
+    setCurrentView('summary');
   };
 
   const handleBackToDashboard = () => {
@@ -80,6 +95,7 @@ function App() {
             dayNumber={selectedWorkout.dayNumber}
             workoutType={selectedWorkout.workoutType}
             block={selectedWorkout.block}
+            editing={selectedWorkout.editing}
             onSave={handleSaveWorkout}
             onComplete={handleCompleteWorkout}
             onCancel={handleBackToDashboard}
@@ -94,6 +110,17 @@ function App() {
             workoutHistory={data.workoutHistory}
             completedWorkouts={data.completedWorkouts}
             onBack={() => setCurrentView('selector')}
+            onEdit={() => handleEditWorkout(reviewDay)}
+          />
+        )}
+
+        {currentView === 'summary' && summaryDay && (
+          <WorkoutSummary
+            dayNumber={summaryDay}
+            workoutHistory={data.workoutHistory}
+            completedWorkouts={data.completedWorkouts}
+            prsHit={sessionPRs}
+            onContinue={handleBackToDashboard}
           />
         )}
 

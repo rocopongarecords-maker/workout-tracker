@@ -4,40 +4,26 @@ import { getWorkoutByDay } from '../utils/getNextWorkout';
 import { getLastCompletedWorkoutForType } from '../utils/getPreviousWorkout';
 import ExerciseCard from './ExerciseCard';
 
-const WorkoutScreen = ({ dayNumber, workoutType, block, onSave, onComplete, onCancel, workoutHistory, completedWorkouts }) => {
+const WorkoutScreen = ({ dayNumber, workoutType, block, editing, onSave, onComplete, onCancel, workoutHistory, completedWorkouts }) => {
   const [exercises, setExercises] = useState([]);
   const [lastWorkout, setLastWorkout] = useState(null);
-  const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
-  const [currentSet, setCurrentSet] = useState(0);
   const exerciseRefs = useRef([]);
 
-  const scrollToNext = (currentSet, totalSets) => {
-    const nextSet = currentSet + 1;
-    if (nextSet < totalSets) {
-      setCurrentSet(nextSet);
-    } else {
-      const nextIndex = currentExerciseIndex + 1;
-      if (nextIndex < exercises.length) {
-        setCurrentExerciseIndex(nextIndex);
-        setCurrentSet(0);
-      }
-    }
+  const scrollToNext = (exerciseIndex, setNumber, totalSets) => {
     setTimeout(() => {
-      if (nextSet < totalSets) {
-        const nextElement = exerciseRefs.current[currentExerciseIndex];
-        if (nextElement) {
-          nextElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
+      if (setNumber < totalSets) {
+        // More sets in this exercise — scroll to same card (it re-renders with next set visible)
+        const el = exerciseRefs.current[exerciseIndex];
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
       } else {
-        const nextIndex = currentExerciseIndex + 1;
+        // All sets done — scroll to next exercise
+        const nextIndex = exerciseIndex + 1;
         if (nextIndex < exercises.length) {
-          const nextElement = exerciseRefs.current[nextIndex];
-          if (nextElement) {
-            nextElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          }
+          const el = exerciseRefs.current[nextIndex];
+          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
       }
-    }, 100);
+    }, 150);
   };
 
   useEffect(() => {
@@ -45,19 +31,25 @@ const WorkoutScreen = ({ dayNumber, workoutType, block, onSave, onComplete, onCa
     if (dayData) {
       const blockKey = `block${block}`;
       const workoutInfo = workoutData[blockKey][workoutType];
+      const savedHistory = editing ? workoutHistory[dayNumber] : null;
 
-      const initialExercises = workoutInfo.exercises.map(ex => ({
-        ...ex,
-        userSets: [],
-        completed: false
-      }));
+      const initialExercises = workoutInfo.exercises.map(ex => {
+        // If editing, restore saved userSets
+        if (savedHistory?.exercises) {
+          const savedEx = savedHistory.exercises.find(s => s.name === ex.name);
+          if (savedEx?.userSets?.length > 0) {
+            return { ...ex, userSets: savedEx.userSets, completed: false };
+          }
+        }
+        return { ...ex, userSets: [], completed: false };
+      });
 
       setExercises(initialExercises);
 
       const lastCompleted = getLastCompletedWorkoutForType(workoutType, workoutHistory, completedWorkouts);
       setLastWorkout(lastCompleted);
     }
-  }, [dayNumber, workoutType, block, workoutHistory, completedWorkouts]);
+  }, [dayNumber, workoutType, block, editing]);
 
   const handleExerciseChange = (exerciseName, newSets) => {
     setExercises(prev => prev.map(ex =>
@@ -196,6 +188,7 @@ const WorkoutScreen = ({ dayNumber, workoutType, block, onSave, onComplete, onCa
                     >
                       <ExerciseCard
                         exercise={exercise}
+                        exerciseIndex={originalIndex}
                         onChange={handleExerciseChange}
                         previousWorkout={getPreviousWorkoutDetails(exercise.name)}
                         onSave={(exerciseName, sets) => {
@@ -206,6 +199,7 @@ const WorkoutScreen = ({ dayNumber, workoutType, block, onSave, onComplete, onCa
                           ));
                         }}
                         scrollToNext={scrollToNext}
+                        workoutHistory={workoutHistory}
                       />
                     </div>
                   ))}
@@ -220,6 +214,7 @@ const WorkoutScreen = ({ dayNumber, workoutType, block, onSave, onComplete, onCa
               >
                 <ExerciseCard
                   exercise={group.exercise}
+                  exerciseIndex={group.originalIndex}
                   onChange={handleExerciseChange}
                   previousWorkout={getPreviousWorkoutDetails(group.exercise.name)}
                   onSave={(exerciseName, sets) => {
@@ -230,6 +225,7 @@ const WorkoutScreen = ({ dayNumber, workoutType, block, onSave, onComplete, onCa
                     ));
                   }}
                   scrollToNext={scrollToNext}
+                  workoutHistory={workoutHistory}
                 />
               </div>
             );
