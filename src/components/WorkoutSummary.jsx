@@ -1,14 +1,11 @@
-import { workoutData } from '../data/workoutData';
 import { calculateWorkoutVolume, getVolumeComparison } from '../utils/calculateVolume';
 import { getBadge } from '../utils/checkBadges';
 
-const WorkoutSummary = ({ dayNumber, workoutHistory, completedWorkouts, prsHit, newBadges, onContinue }) => {
+const WorkoutSummary = ({ dayNumber, workoutHistory, completedWorkouts, prsHit, newBadges, onContinue, getWorkoutName }) => {
   const history = workoutHistory[dayNumber];
   if (!history) return null;
 
-  const blockKey = `block${history.block}`;
-  const workoutInfo = workoutData[blockKey]?.[history.workoutType];
-  const workoutName = workoutInfo?.name || history.workoutType;
+  const workoutName = getWorkoutName ? (getWorkoutName(dayNumber) || history.workoutType) : history.workoutType;
 
   const totalVolume = calculateWorkoutVolume(history.exercises);
   const totalSetsCompleted = (history.exercises || []).reduce((sum, ex) => {

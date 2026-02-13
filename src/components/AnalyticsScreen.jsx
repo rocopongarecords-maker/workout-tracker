@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 import { calculate1RM } from '../utils/calculate1RM';
 import { calculateWorkoutVolume } from '../utils/calculateVolume';
-import { schedule } from '../data/schedule';
 import SimpleLineChart from './charts/SimpleLineChart';
 import SimpleBarChart from './charts/SimpleBarChart';
 
@@ -12,7 +11,7 @@ const TRACKED_LIFTS = [
   { name: 'Military Press', color: '#a855f7' }
 ];
 
-const AnalyticsScreen = ({ workoutHistory, completedWorkouts, onBack }) => {
+const AnalyticsScreen = ({ workoutHistory, completedWorkouts, onBack, schedule }) => {
   // ── 1RM Trends ──
   const rmTrends = useMemo(() => {
     const trends = {};

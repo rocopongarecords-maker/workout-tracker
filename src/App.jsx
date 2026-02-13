@@ -3,6 +3,7 @@ import { useAuth } from './hooks/useAuth';
 import { useWorkoutStorage } from './hooks/useWorkoutStorage';
 import { useProgressTracking } from './hooks/useProgressTracking';
 import { useOnlineStatus } from './hooks/useOnlineStatus';
+import { useActiveProgram } from './hooks/useActiveProgram';
 import { checkBadges } from './utils/checkBadges';
 import ErrorBoundary from './components/ErrorBoundary';
 import AuthScreen from './components/AuthScreen';
@@ -22,7 +23,6 @@ import LoadingSkeleton from './components/LoadingSkeleton';
 import ExerciseLibrary from './components/ExerciseLibrary';
 import ProgramSelector from './components/ProgramSelector';
 import ProgramBuilder from './components/ProgramBuilder';
-import { schedule } from './data/schedule';
 import './styles/globals.css';
 
 function App() {
@@ -38,7 +38,10 @@ function App() {
 
   const storage = useWorkoutStorage(auth.user);
   const { data, saveWorkout, markComplete, isCompleted, getWorkoutHistory, resetData, importData, addBadges, incrementPRs, saveWeight, saveSkinfold, saveCustomProgram, deleteCustomProgram, setActiveProgram, syncing, migrationNeeded, migrateLocalData, dismissMigration } = storage;
-  const stats = useProgressTracking(data.completedWorkouts);
+
+  const program = useActiveProgram(data.activeProgram, data.customPrograms);
+  const { schedule, getExercisesForDay, getWorkoutName } = program;
+  const stats = useProgressTracking(data.completedWorkouts, schedule);
 
   // Show auth screen if Supabase is configured, user is not logged in, and not in guest mode
   if (auth.isConfigured && !auth.user && !guestMode && !auth.loading) {
@@ -109,7 +112,9 @@ function App() {
       completedWorkouts: completedAfter,
       workoutHistory: data.workoutHistory,
       earnedBadges: earnedIds,
-      totalPRs: data.totalPRs || 0
+      totalPRs: data.totalPRs || 0,
+      schedule,
+      weightLog: data.weightLog
     });
 
     if (newlyEarned.length > 0) {
@@ -162,6 +167,10 @@ function App() {
             earnedBadges={data.earnedBadges}
             currentView={currentView}
             setCurrentView={setCurrentView}
+            schedule={schedule}
+            getWorkoutName={getWorkoutName}
+            programName={program.programName}
+            totalWeeks={program.totalWeeks}
           />
         )}
 
@@ -192,6 +201,8 @@ function App() {
               setSessionPRs(prev => prev + 1);
               incrementPRs();
             }}
+            getExercisesForDay={getExercisesForDay}
+            getWorkoutName={getWorkoutName}
           />
         )}
 
@@ -202,6 +213,7 @@ function App() {
             completedWorkouts={data.completedWorkouts}
             onBack={() => setCurrentView('selector')}
             onEdit={() => handleEditWorkout(reviewDay)}
+            getWorkoutName={getWorkoutName}
           />
         )}
 
@@ -213,6 +225,7 @@ function App() {
             prsHit={sessionPRs}
             newBadges={newBadges}
             onContinue={handleBackToDashboard}
+            getWorkoutName={getWorkoutName}
           />
         )}
 
@@ -228,6 +241,7 @@ function App() {
             workoutHistory={data.workoutHistory}
             completedWorkouts={data.completedWorkouts}
             onBack={handleBackToDashboard}
+            schedule={schedule}
           />
         )}
 

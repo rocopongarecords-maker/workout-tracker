@@ -1,10 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
-import { workoutData } from '../data/workoutData';
-import { getWorkoutByDay } from '../utils/getNextWorkout';
 import { getLastCompletedWorkoutForType } from '../utils/getPreviousWorkout';
 import ExerciseCard from './ExerciseCard';
 
-const WorkoutScreen = ({ dayNumber, workoutType, block, editing, onSave, onComplete, onCancel, workoutHistory, completedWorkouts, onPR }) => {
+const WorkoutScreen = ({ dayNumber, workoutType, block, editing, onSave, onComplete, onCancel, workoutHistory, completedWorkouts, onPR, getExercisesForDay, getWorkoutName }) => {
   const [exercises, setExercises] = useState([]);
   const [lastWorkout, setLastWorkout] = useState(null);
   const exerciseRefs = useRef([]);
@@ -27,14 +25,11 @@ const WorkoutScreen = ({ dayNumber, workoutType, block, editing, onSave, onCompl
   };
 
   useEffect(() => {
-    const dayData = getWorkoutByDay(dayNumber);
-    if (dayData) {
-      const blockKey = `block${block}`;
-      const workoutInfo = workoutData[blockKey][workoutType];
+    const exerciseList = getExercisesForDay(dayNumber);
+    if (exerciseList) {
       const savedHistory = editing ? workoutHistory[dayNumber] : null;
 
-      const initialExercises = workoutInfo.exercises.map(ex => {
-        // If editing, restore saved userSets
+      const initialExercises = exerciseList.map(ex => {
         if (savedHistory?.exercises) {
           const savedEx = savedHistory.exercises.find(s => s.name === ex.name);
           if (savedEx?.userSets?.length > 0) {
@@ -143,13 +138,13 @@ const WorkoutScreen = ({ dayNumber, workoutType, block, editing, onSave, onCompl
           Back
         </button>
         <div className="text-sm text-slate-400">
-          Day {dayNumber} • Block {block}
+          Day {dayNumber}{block ? ` • Block ${block}` : ''}
         </div>
       </div>
 
       <div className="text-center">
         <h1 className="text-2xl font-bold text-white mb-1">
-          {workoutType.replace('legs', 'Legs').replace('push', 'Push').replace('pull', 'Pull').toUpperCase()}
+          {getWorkoutName ? getWorkoutName(dayNumber) || workoutType : workoutType}
         </h1>
         <p className="text-slate-400">
           {exercises.length} exercises

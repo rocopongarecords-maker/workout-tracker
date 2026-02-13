@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
-import { schedule } from '../data/schedule';
 
-export const useProgressTracking = (completedWorkouts) => {
+export const useProgressTracking = (completedWorkouts, schedule) => {
   const stats = useMemo(() => {
     const totalWorkouts = schedule.filter(day => !day.rest).length;
     const completed = completedWorkouts.filter(day => {
@@ -26,7 +25,7 @@ export const useProgressTracking = (completedWorkouts) => {
       currentWeek,
       allCompleted
     };
-  }, [completedWorkouts]);
+  }, [completedWorkouts, schedule]);
 
   return stats;
 };

@@ -1,5 +1,4 @@
 import { badges } from '../data/badges';
-import { schedule } from '../data/schedule';
 import { calculateWorkoutVolume } from './calculateVolume';
 
 /**
@@ -9,9 +8,11 @@ import { calculateWorkoutVolume } from './calculateVolume';
  * @param {Object} params.workoutHistory - { [day]: { workoutType, block, exercises, date } }
  * @param {string[]} params.earnedBadges - already earned badge IDs
  * @param {number} params.totalPRs - lifetime PR count
+ * @param {Array} params.schedule - the active program's schedule
+ * @param {Array} [params.weightLog] - body weight log entries
  * @returns {string[]} - array of newly earned badge IDs
  */
-export const checkBadges = ({ completedWorkouts, workoutHistory, earnedBadges, totalPRs }) => {
+export const checkBadges = ({ completedWorkouts, workoutHistory, earnedBadges, totalPRs, schedule, weightLog }) => {
   const earned = new Set(earnedBadges || []);
   const newlyEarned = [];
 
@@ -91,13 +92,13 @@ export const checkBadges = ({ completedWorkouts, workoutHistory, earnedBadges, t
   check('volume_500k', () => totalVolume >= 500000);
 
   // ── Explorer ──
-  const allTypes = ['legs1', 'legs2', 'push1', 'push2', 'pull1', 'pull2'];
+  const allTypes = [...new Set(schedule.filter(d => !d.rest).map(d => d.type))];
   const completedTypes = new Set();
   for (const day of completedWorkouts) {
     const scheduleDay = schedule.find(s => s.day === day);
     if (scheduleDay) completedTypes.add(scheduleDay.type);
   }
-  check('all_types', () => allTypes.every(t => completedTypes.has(t)));
+  check('all_types', () => allTypes.length > 0 && allTypes.every(t => completedTypes.has(t)));
 
   // Superset check: any completed workout that has superset exercises
   let hasSuperset = false;

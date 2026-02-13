@@ -1,15 +1,9 @@
 import { Dumbbell, Calendar } from 'lucide-react';
 import { getNextWorkout } from '../utils/getNextWorkout';
-import { workoutData } from '../data/workoutData';
 import ProgressIndicator from './ProgressIndicator';
 
-const Dashboard = ({ stats, completedWorkouts, onStartWorkout, onViewAllWorkouts, onOpenSettings, onViewBadges, onViewAnalytics, onViewMeasurements, onViewPrograms, onViewExercises, earnedBadges, currentView, setCurrentView }) => {
-  const nextWorkout = getNextWorkout(completedWorkouts);
-
-  const getWorkoutName = (type, block) => {
-    const blockKey = `block${block}`;
-    return workoutData[blockKey][type]?.name || type;
-  };
+const Dashboard = ({ stats, completedWorkouts, onStartWorkout, onViewAllWorkouts, onOpenSettings, onViewBadges, onViewAnalytics, onViewMeasurements, onViewPrograms, onViewExercises, earnedBadges, currentView, setCurrentView, schedule, getWorkoutName: getWorkoutNameProp, programName, totalWeeks }) => {
+  const nextWorkout = getNextWorkout(completedWorkouts, schedule);
 
   const getBlockLabel = (block) => {
     if (block === 1) return 'Block 1 - Technique & Volume';
@@ -21,10 +15,10 @@ const Dashboard = ({ stats, completedWorkouts, onStartWorkout, onViewAllWorkouts
     <div className="space-y-6">
       <div className="text-center">
         <h1 className="text-2xl font-bold text-white mb-2">
-          Legs-Push-Pull Tracker
+          {programName || "Legs-Push-Pull Tracker"}
         </h1>
         <p className="text-slate-400">
-          Week {stats.currentWeek} of 16
+          Week {stats.currentWeek} of {totalWeeks || 16}
         </p>
       </div>
 
@@ -53,10 +47,10 @@ const Dashboard = ({ stats, completedWorkouts, onStartWorkout, onViewAllWorkouts
                   </div>
                   <div className="flex-1">
                     <h3 className="text-xl font-bold text-white mb-1">
-                      {getWorkoutName(nextWorkout.type, nextWorkout.block)}
+                      {getWorkoutNameProp ? getWorkoutNameProp(nextWorkout.day) || nextWorkout.type : nextWorkout.type}
                     </h3>
                     <p className="text-slate-400 text-sm">
-                      Day {nextWorkout.day} • {getBlockLabel(nextWorkout.block)}
+                      Day {nextWorkout.day}{nextWorkout.block ? ` • ${getBlockLabel(nextWorkout.block)}` : ''}
                     </p>
                   </div>
                 </div>

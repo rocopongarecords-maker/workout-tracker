@@ -1,8 +1,7 @@
-import { workoutData } from '../data/workoutData';
 import { calculate1RM } from '../utils/calculate1RM';
 import { getVolumeComparison } from '../utils/calculateVolume';
 
-const WorkoutReview = ({ dayNumber, workoutHistory, completedWorkouts, onBack, onEdit }) => {
+const WorkoutReview = ({ dayNumber, workoutHistory, completedWorkouts, onBack, onEdit, getWorkoutName }) => {
   const history = workoutHistory[dayNumber];
 
   if (!history) {
@@ -24,9 +23,7 @@ const WorkoutReview = ({ dayNumber, workoutHistory, completedWorkouts, onBack, o
     );
   }
 
-  const blockKey = `block${history.block}`;
-  const workoutInfo = workoutData[blockKey]?.[history.workoutType];
-  const workoutName = workoutInfo?.name || history.workoutType;
+  const workoutName = getWorkoutName ? (getWorkoutName(dayNumber) || history.workoutType) : history.workoutType;
   const completedDate = history.date ? new Date(history.date).toLocaleDateString('en-US', {
     weekday: 'short', month: 'short', day: 'numeric', year: 'numeric'
   }) : 'Unknown date';
@@ -68,7 +65,7 @@ const WorkoutReview = ({ dayNumber, workoutHistory, completedWorkouts, onBack, o
       <div className="text-center">
         <h1 className="text-2xl font-bold text-white mb-1">{workoutName}</h1>
         <p className="text-slate-400 text-sm">
-          Day {dayNumber} — Block {history.block}
+          Day {dayNumber}{history.block ? ` — Block ${history.block}` : ''}
         </p>
         <p className="text-slate-500 text-xs mt-1">{completedDate}</p>
       </div>
