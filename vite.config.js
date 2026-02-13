@@ -2,6 +2,9 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
+// Use '/workout-tracker/' for GitHub Pages, '/' for Vercel/custom domain
+const base = process.env.VITE_BASE_PATH || '/workout-tracker/'
+
 export default defineConfig({
   plugins: [
     react(),
@@ -18,23 +21,23 @@ export default defineConfig({
         orientation: 'portrait',
         icons: [
           {
-            src: '/workout-tracker/icons/icon-192.png',
+            src: `${base}icons/icon-192.png`,
             sizes: '192x192',
             type: 'image/png'
           },
           {
-            src: '/workout-tracker/icons/icon-512.png',
+            src: `${base}icons/icon-512.png`,
             sizes: '512x512',
             type: 'image/png'
           },
           {
-            src: '/workout-tracker/icons/maskable-icon-192.png',
+            src: `${base}icons/maskable-icon-192.png`,
             sizes: '192x192',
             type: 'image/png',
             purpose: 'maskable'
           },
           {
-            src: '/workout-tracker/icons/maskable-icon-512.png',
+            src: `${base}icons/maskable-icon-512.png`,
             sizes: '512x512',
             type: 'image/png',
             purpose: 'maskable'
@@ -70,7 +73,7 @@ export default defineConfig({
       }
     })
   ],
-  base: '/workout-tracker/',
+  base,
   server: {
     port: 3000
   }

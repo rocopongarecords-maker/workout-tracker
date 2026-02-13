@@ -2,7 +2,9 @@ import { useState } from 'react';
 import { useAuth } from './hooks/useAuth';
 import { useWorkoutStorage } from './hooks/useWorkoutStorage';
 import { useProgressTracking } from './hooks/useProgressTracking';
+import { useOnlineStatus } from './hooks/useOnlineStatus';
 import { checkBadges } from './utils/checkBadges';
+import ErrorBoundary from './components/ErrorBoundary';
 import AuthScreen from './components/AuthScreen';
 import Dashboard from './components/Dashboard';
 import WorkoutDaySelector from './components/WorkoutDaySelector';
@@ -15,11 +17,14 @@ import BadgeAward from './components/BadgeAward';
 import AnalyticsScreen from './components/AnalyticsScreen';
 import MeasurementsScreen from './components/MeasurementsScreen';
 import MigrationBanner from './components/MigrationBanner';
+import OfflineBanner from './components/OfflineBanner';
+import LoadingSkeleton from './components/LoadingSkeleton';
 import { schedule } from './data/schedule';
 import './styles/globals.css';
 
 function App() {
   const auth = useAuth();
+  const isOnline = useOnlineStatus();
   const [guestMode, setGuestMode] = useState(false);
   const [currentView, setCurrentView] = useState('dashboard');
   const [selectedWorkout, setSelectedWorkout] = useState(null);
@@ -48,13 +53,12 @@ function App() {
     );
   }
 
-  // Loading state
+  // Loading state — show skeleton matching dashboard layout
   if (auth.loading) {
     return (
-      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-          <p className="text-slate-400 text-sm">Loading...</p>
+      <div className="min-h-screen bg-slate-950 text-white">
+        <div className="max-w-lg mx-auto px-4 py-8">
+          <LoadingSkeleton />
         </div>
       </div>
     );
@@ -120,7 +124,10 @@ function App() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
-      <div className="max-w-lg mx-auto px-4 py-8">
+      {/* Offline banner */}
+      {!isOnline && <OfflineBanner />}
+
+      <div className={`max-w-lg mx-auto px-4 py-8 ${!isOnline ? 'pt-16' : ''}`}>
         {/* Migration banner */}
         {migrationNeeded && (
           <MigrationBanner
@@ -251,4 +258,10 @@ function App() {
   );
 }
 
-export default App;
+const AppWithErrorBoundary = () => (
+  <ErrorBoundary>
+    <App />
+  </ErrorBoundary>
+);
+
+export default AppWithErrorBoundary;
