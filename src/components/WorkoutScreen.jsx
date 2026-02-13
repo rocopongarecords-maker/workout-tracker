@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { getLastCompletedWorkoutForType } from '../utils/getPreviousWorkout';
 import ExerciseCard from './ExerciseCard';
 
@@ -8,15 +8,64 @@ const WorkoutScreen = ({ dayNumber, workoutType, block, editing, onSave, onCompl
   const exerciseRefs = useRef([]);
   const [startTime] = useState(() => Date.now());
 
+  // Build superset group map: { [exerciseIndex]: { groupIndices: [3,4], positionInGroup: 0 } }
+  const supersetMap = useMemo(() => {
+    const map = {};
+    let i = 0;
+    while (i < exercises.length) {
+      if (exercises[i].superset) {
+        const groupIndices = [];
+        while (i < exercises.length && exercises[i].superset) {
+          groupIndices.push(i);
+          i++;
+        }
+        groupIndices.forEach((idx, pos) => {
+          map[idx] = { groupIndices, positionInGroup: pos };
+        });
+      } else {
+        i++;
+      }
+    }
+    return map;
+  }, [exercises]);
+
   const scrollToNext = (exerciseIndex, setNumber, totalSets) => {
     setTimeout(() => {
-      if (setNumber < totalSets) {
-        // More sets in this exercise — scroll to same card (it re-renders with next set visible)
-        const el = exerciseRefs.current[exerciseIndex];
+      const group = supersetMap[exerciseIndex];
+
+      if (!group) {
+        // Not in a superset — original behavior
+        if (setNumber < totalSets) {
+          const el = exerciseRefs.current[exerciseIndex];
+          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else {
+          const nextIndex = exerciseIndex + 1;
+          if (nextIndex < exercises.length) {
+            const el = exerciseRefs.current[nextIndex];
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }
+        return;
+      }
+
+      // In a superset group — alternate between exercises
+      const { groupIndices, positionInGroup } = group;
+      const isLastInGroup = positionInGroup === groupIndices.length - 1;
+
+      if (!isLastInGroup) {
+        // Not last in group → scroll to next partner (they do their set N)
+        const nextPartner = groupIndices[positionInGroup + 1];
+        const el = exerciseRefs.current[nextPartner];
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else if (setNumber < totalSets) {
+        // Last in group but more sets → scroll back to first in group (set N+1)
+        const firstInGroup = groupIndices[0];
+        const el = exerciseRefs.current[firstInGroup];
         if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
       } else {
-        // All sets done — scroll to next exercise
-        const nextIndex = exerciseIndex + 1;
+        // Last in group and all sets done → scroll past the group
+        const lastGroupIndex = groupIndices[groupIndices.length - 1];
+        const nextIndex = lastGroupIndex + 1;
         if (nextIndex < exercises.length) {
           const el = exerciseRefs.current[nextIndex];
           if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
