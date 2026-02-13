@@ -3,7 +3,7 @@ import { getNextWorkout } from '../utils/getNextWorkout';
 import { workoutData } from '../data/workoutData';
 import ProgressIndicator from './ProgressIndicator';
 
-const Dashboard = ({ stats, completedWorkouts, onStartWorkout, onViewAllWorkouts, onOpenSettings, currentView, setCurrentView }) => {
+const Dashboard = ({ stats, completedWorkouts, onStartWorkout, onViewAllWorkouts, onOpenSettings, onViewBadges, earnedBadges, currentView, setCurrentView }) => {
   const nextWorkout = getNextWorkout(completedWorkouts);
 
   const getWorkoutName = (type, block) => {
@@ -92,6 +92,21 @@ const Dashboard = ({ stats, completedWorkouts, onStartWorkout, onViewAllWorkouts
           className="flex-1 py-4 bg-slate-800 text-white rounded-xl font-semibold hover:bg-slate-700 transition-colors"
         >
           View All Workouts
+        </button>
+        <button
+          onClick={onViewBadges}
+          className="py-4 px-5 bg-slate-800 text-slate-400 rounded-xl font-semibold hover:bg-slate-700 hover:text-amber-400 transition-colors relative"
+          title="Badges"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5C7 4 9 8 12 8s5-4 7.5-4a2.5 2.5 0 0 1 0 5H18" />
+            <path d="M18 9v11a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V9" />
+          </svg>
+          {(earnedBadges || []).length > 0 && (
+            <span className="absolute -top-1 -right-1 w-4 h-4 bg-amber-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+              {(earnedBadges || []).length}
+            </span>
+          )}
         </button>
         <button
           onClick={onOpenSettings}

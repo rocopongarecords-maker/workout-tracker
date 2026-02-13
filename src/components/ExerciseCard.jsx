@@ -4,7 +4,7 @@ import { detectPR } from '../utils/detectPR';
 import PRCelebration from './PRCelebration';
 import ExerciseInfoModal from './ExerciseInfoModal';
 
-const ExerciseCard = ({ exercise, exerciseIndex, onChange, previousWorkout, onSave, scrollToNext, workoutHistory }) => {
+const ExerciseCard = ({ exercise, exerciseIndex, onChange, previousWorkout, onSave, scrollToNext, workoutHistory, onPR }) => {
   const [showInfo, setShowInfo] = useState(false);
   const setsCount = Number(exercise.sets) || 0;
   const oneRM = previousWorkout ? calculate1RM(previousWorkout.weight, previousWorkout.reps) : null;
@@ -136,6 +136,7 @@ const ExerciseCard = ({ exercise, exerciseIndex, onChange, previousWorkout, onSa
       const pr = detectPR(exercise.name, currentSetData.weight, currentSetData.reps, workoutHistory);
       if (pr.isPR) {
         setPrInfo({ show: true, type: pr.type, value: pr.value });
+        if (onPR) onPR();
         return; // Delay scroll until celebration finishes
       }
     }

@@ -1,7 +1,8 @@
 import { workoutData } from '../data/workoutData';
 import { calculateWorkoutVolume, getVolumeComparison } from '../utils/calculateVolume';
+import { getBadge } from '../utils/checkBadges';
 
-const WorkoutSummary = ({ dayNumber, workoutHistory, completedWorkouts, prsHit, onContinue }) => {
+const WorkoutSummary = ({ dayNumber, workoutHistory, completedWorkouts, prsHit, newBadges, onContinue }) => {
   const history = workoutHistory[dayNumber];
   if (!history) return null;
 
@@ -64,6 +65,24 @@ const WorkoutSummary = ({ dayNumber, workoutHistory, completedWorkouts, prsHit, 
         <div className="bg-amber-900/20 border border-amber-500/30 rounded-xl p-4 text-center">
           <div className="text-lg font-bold text-amber-400">
             🏆 {prsHit} Personal Record{prsHit > 1 ? 's' : ''} Today!
+          </div>
+        </div>
+      )}
+
+      {(newBadges || []).length > 0 && (
+        <div className="bg-amber-900/20 border border-amber-500/30 rounded-xl p-4">
+          <div className="text-sm font-bold text-amber-400 mb-3 text-center">Badges Earned!</div>
+          <div className="flex flex-wrap justify-center gap-3">
+            {newBadges.map(id => {
+              const badge = getBadge(id);
+              if (!badge) return null;
+              return (
+                <div key={id} className="flex items-center gap-2 bg-slate-800 rounded-lg px-3 py-2">
+                  <span className="text-xl">{badge.icon}</span>
+                  <span className="text-sm font-semibold text-white">{badge.name}</span>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}

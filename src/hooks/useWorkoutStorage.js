@@ -5,7 +5,9 @@ const STORAGE_KEY = 'workout_tracker_data';
 const initialData = {
   completedWorkouts: [],
   workoutHistory: {},
-  startDate: null
+  startDate: null,
+  earnedBadges: [],
+  totalPRs: 0
 };
 
 export const useWorkoutStorage = () => {
@@ -60,9 +62,29 @@ export const useWorkoutStorage = () => {
     const merged = {
       completedWorkouts: imported.completedWorkouts || [],
       workoutHistory: imported.workoutHistory || {},
-      startDate: imported.startDate || null
+      startDate: imported.startDate || null,
+      earnedBadges: imported.earnedBadges || [],
+      totalPRs: imported.totalPRs || 0
     };
     setData(merged);
+  };
+
+  const addBadges = (badgeIds) => {
+    if (!badgeIds || badgeIds.length === 0) return;
+    setData(prev => ({
+      ...prev,
+      earnedBadges: [
+        ...prev.earnedBadges,
+        ...badgeIds.map(id => ({ id, earnedAt: new Date().toISOString() }))
+      ]
+    }));
+  };
+
+  const incrementPRs = (count = 1) => {
+    setData(prev => ({
+      ...prev,
+      totalPRs: (prev.totalPRs || 0) + count
+    }));
   };
 
   return {
@@ -72,6 +94,8 @@ export const useWorkoutStorage = () => {
     isCompleted,
     getWorkoutHistory,
     resetData,
-    importData
+    importData,
+    addBadges,
+    incrementPRs
   };
 };

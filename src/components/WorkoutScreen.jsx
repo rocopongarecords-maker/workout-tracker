@@ -4,7 +4,7 @@ import { getWorkoutByDay } from '../utils/getNextWorkout';
 import { getLastCompletedWorkoutForType } from '../utils/getPreviousWorkout';
 import ExerciseCard from './ExerciseCard';
 
-const WorkoutScreen = ({ dayNumber, workoutType, block, editing, onSave, onComplete, onCancel, workoutHistory, completedWorkouts }) => {
+const WorkoutScreen = ({ dayNumber, workoutType, block, editing, onSave, onComplete, onCancel, workoutHistory, completedWorkouts, onPR }) => {
   const [exercises, setExercises] = useState([]);
   const [lastWorkout, setLastWorkout] = useState(null);
   const exerciseRefs = useRef([]);
@@ -200,6 +200,7 @@ const WorkoutScreen = ({ dayNumber, workoutType, block, editing, onSave, onCompl
                         }}
                         scrollToNext={scrollToNext}
                         workoutHistory={workoutHistory}
+                        onPR={onPR}
                       />
                     </div>
                   ))}

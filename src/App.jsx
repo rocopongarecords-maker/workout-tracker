@@ -1,12 +1,15 @@
 import { useState } from 'react';
 import { useWorkoutStorage } from './hooks/useWorkoutStorage';
 import { useProgressTracking } from './hooks/useProgressTracking';
+import { checkBadges } from './utils/checkBadges';
 import Dashboard from './components/Dashboard';
 import WorkoutDaySelector from './components/WorkoutDaySelector';
 import WorkoutScreen from './components/WorkoutScreen';
 import WorkoutReview from './components/WorkoutReview';
 import WorkoutSummary from './components/WorkoutSummary';
 import SettingsScreen from './components/SettingsScreen';
+import BadgeScreen from './components/BadgeScreen';
+import BadgeAward from './components/BadgeAward';
 import { schedule } from './data/schedule';
 import './styles/globals.css';
 
@@ -16,8 +19,9 @@ function App() {
   const [reviewDay, setReviewDay] = useState(null);
   const [summaryDay, setSummaryDay] = useState(null);
   const [sessionPRs, setSessionPRs] = useState(0);
+  const [newBadges, setNewBadges] = useState([]);
 
-  const { data, saveWorkout, markComplete, isCompleted, getWorkoutHistory, resetData, importData } = useWorkoutStorage();
+  const { data, saveWorkout, markComplete, isCompleted, getWorkoutHistory, resetData, importData, addBadges, incrementPRs } = useWorkoutStorage();
   const stats = useProgressTracking(data.completedWorkouts);
 
   const handleStartWorkout = (dayNumber, workoutType, block) => {
@@ -55,6 +59,22 @@ function App() {
 
   const handleCompleteWorkout = (dayNumber) => {
     markComplete(dayNumber);
+
+    // Check for new badges after completing
+    const earnedIds = (data.earnedBadges || []).map(b => b.id);
+    const completedAfter = [...new Set([...data.completedWorkouts, dayNumber])];
+    const newlyEarned = checkBadges({
+      completedWorkouts: completedAfter,
+      workoutHistory: data.workoutHistory,
+      earnedBadges: earnedIds,
+      totalPRs: data.totalPRs || 0
+    });
+
+    if (newlyEarned.length > 0) {
+      addBadges(newlyEarned);
+      setNewBadges(newlyEarned);
+    }
+
     setSummaryDay(dayNumber);
     setCurrentView('summary');
   };
@@ -73,6 +93,8 @@ function App() {
             onStartWorkout={handleStartWorkout}
             onViewAllWorkouts={() => setCurrentView('selector')}
             onOpenSettings={() => setCurrentView('settings')}
+            onViewBadges={() => setCurrentView('badges')}
+            earnedBadges={data.earnedBadges}
             currentView={currentView}
             setCurrentView={setCurrentView}
           />
@@ -101,6 +123,10 @@ function App() {
             onCancel={handleBackToDashboard}
             workoutHistory={data.workoutHistory}
             completedWorkouts={data.completedWorkouts}
+            onPR={() => {
+              setSessionPRs(prev => prev + 1);
+              incrementPRs();
+            }}
           />
         )}
 
@@ -120,7 +146,15 @@ function App() {
             workoutHistory={data.workoutHistory}
             completedWorkouts={data.completedWorkouts}
             prsHit={sessionPRs}
+            newBadges={newBadges}
             onContinue={handleBackToDashboard}
+          />
+        )}
+
+        {currentView === 'badges' && (
+          <BadgeScreen
+            earnedBadges={data.earnedBadges}
+            onBack={handleBackToDashboard}
           />
         )}
 
@@ -133,6 +167,13 @@ function App() {
           />
         )}
       </div>
+
+      {newBadges.length > 0 && currentView === 'summary' && (
+        <BadgeAward
+          badgeIds={newBadges}
+          onDone={() => setNewBadges([])}
+        />
+      )}
     </div>
   );
 }
