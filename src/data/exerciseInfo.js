@@ -825,5 +825,213 @@ export const exerciseInfo = {
       "Dropping the elbows below shoulder height during the curl",
       "Using too much weight and losing the peak contraction"
     ]
+  },
+
+  // ========== FULL BODY PROGRAM — Additional Exercises ==========
+  "Dumbbell Flat Bench Press": {
+    muscles: ["Chest", "Triceps", "Front Delts"],
+    tips: [
+      "Retract your shoulder blades and maintain a slight arch in your upper back",
+      "Lower the dumbbells to the sides of your chest with elbows at about 45 degrees",
+      "Press up and slightly inward so the dumbbells nearly touch at the top"
+    ],
+    mistakes: [
+      "Flaring the elbows to 90 degrees which overloads the shoulders",
+      "Letting the dumbbells drift too low toward the belly instead of mid-chest"
+    ]
+  },
+  "Lat Pulldown": {
+    muscles: ["Lats", "Biceps", "Rhomboids"],
+    tips: [
+      "Lean back slightly and pull the bar to your upper chest",
+      "Drive your elbows down and back — think about putting them in your back pockets",
+      "Control the eccentric and feel a full lat stretch at the top"
+    ],
+    mistakes: [
+      "Leaning too far back and turning it into a rowing motion",
+      "Pulling the bar behind the neck which stresses the shoulders"
+    ]
+  },
+  "Incline Barbell Bench Press": {
+    muscles: ["Upper Chest", "Front Delts", "Triceps"],
+    tips: [
+      "Set the bench to 30-45 degrees and unrack with a strong shoulder retraction",
+      "Lower the bar to your upper chest just below the collarbone",
+      "Press in a slight arc back toward the rack for optimal force"
+    ],
+    mistakes: [
+      "Setting the incline too steep which turns it into a shoulder press",
+      "Bouncing the bar off the chest instead of using a controlled touch"
+    ]
+  },
+
+  // ========== HYROX PROGRAM — Station & Conditioning Exercises ==========
+  "Ski Erg": {
+    muscles: ["Lats", "Triceps", "Core", "Shoulders"],
+    tips: [
+      "Start with arms overhead and hinge at the hips as you pull down",
+      "Drive the handles down past your hips with a powerful lat contraction",
+      "Use your legs by bending the knees slightly to generate more power"
+    ],
+    mistakes: [
+      "Only using your arms and not engaging the hips and core",
+      "Standing too upright — a strong hip hinge is key to power output"
+    ]
+  },
+  "Sled Push": {
+    muscles: ["Quadriceps", "Glutes", "Calves", "Core"],
+    tips: [
+      "Grip the high handles, lean forward at 45 degrees, and drive through your toes",
+      "Keep your back flat and core braced — don't round the spine",
+      "Take short, powerful steps and maintain steady forward momentum"
+    ],
+    mistakes: [
+      "Standing too upright which reduces pushing power",
+      "Taking too long strides — short choppy steps are more efficient"
+    ]
+  },
+  "Sled Pull": {
+    muscles: ["Upper Back", "Biceps", "Forearms", "Hamstrings"],
+    tips: [
+      "Grip the rope hand-over-hand and sit back into a low athletic stance",
+      "Pull with your whole body — use legs and back, not just arms",
+      "Keep a steady rhythm and don't let the rope go slack between pulls"
+    ],
+    mistakes: [
+      "Standing upright and pulling only with the arms",
+      "Losing grip by not maintaining a firm hand-over-hand technique"
+    ]
+  },
+  "Burpee Broad Jump": {
+    muscles: ["Full Body", "Quadriceps", "Glutes", "Chest", "Core"],
+    tips: [
+      "Drop into the burpee fast, chest touches the floor",
+      "Explode up and immediately transition into a forward broad jump",
+      "Land softly with bent knees and reset quickly for the next rep"
+    ],
+    mistakes: [
+      "Not fully extending the hips on the broad jump, losing distance",
+      "Taking too long between the burpee and the jump — flow should be continuous"
+    ]
+  },
+  "Rowing Machine": {
+    muscles: ["Legs", "Back", "Biceps", "Core"],
+    tips: [
+      "Drive with your legs first, then lean back, then pull with arms — legs-body-arms sequence",
+      "Keep a firm grip and pull the handle to your lower ribs",
+      "On the return, reverse the sequence: arms-body-legs to slide forward smoothly"
+    ],
+    mistakes: [
+      "Pulling with the arms before the legs have finished driving",
+      "Rounding the back instead of maintaining a proud chest throughout"
+    ]
+  },
+  "Farmers Carry": {
+    muscles: ["Forearms", "Traps", "Core", "Glutes"],
+    tips: [
+      "Stand tall with shoulders back and down — don't shrug up",
+      "Take short, controlled steps and keep your core braced tight",
+      "Grip the handles as hard as you can and breathe rhythmically"
+    ],
+    mistakes: [
+      "Leaning to one side or letting the weights pull you forward",
+      "Taking strides that are too long which causes wobbling"
+    ]
+  },
+  "Sandbag Lunge": {
+    muscles: ["Quadriceps", "Glutes", "Hamstrings", "Core"],
+    tips: [
+      "Hold the sandbag in a bear hug position tight against your chest",
+      "Take a moderate stride and lower until the back knee nearly touches the floor",
+      "Drive through the front heel and keep your torso as upright as possible"
+    ],
+    mistakes: [
+      "Letting the sandbag slip down which pulls you forward",
+      "Rushing and losing balance — steady controlled steps are faster overall"
+    ]
+  },
+  "Wall Ball": {
+    muscles: ["Quadriceps", "Glutes", "Shoulders", "Core"],
+    tips: [
+      "Squat deep with the ball at your chest, then drive up explosively",
+      "Use the hip drive to launch the ball — arms just guide it to the target",
+      "Catch the ball and immediately flow into the next squat rep"
+    ],
+    mistakes: [
+      "Not squatting deep enough which reduces power on the throw",
+      "Pressing the ball with your arms instead of using leg drive"
+    ]
+  },
+  "Running": {
+    muscles: ["Quadriceps", "Hamstrings", "Calves", "Core"],
+    tips: [
+      "Maintain an upright posture with a slight forward lean from the ankles",
+      "Land with a midfoot strike under your center of mass",
+      "Keep a steady, sustainable pace — consistent splits are key in Hyrox"
+    ],
+    mistakes: [
+      "Starting too fast and burning out before the later rounds",
+      "Over-striding which wastes energy and increases injury risk"
+    ]
+  },
+  "Tempo Run": {
+    muscles: ["Quadriceps", "Hamstrings", "Calves", "Cardiovascular System"],
+    tips: [
+      "Run at a 'comfortably hard' pace — you can speak in short phrases but not full sentences",
+      "Focus on maintaining an even pace throughout the entire duration",
+      "Use breathing rhythm to gauge effort — try a 2:2 or 3:3 inhale:exhale pattern"
+    ],
+    mistakes: [
+      "Starting too fast and fading in the second half",
+      "Running too easy — tempo should feel like sustained effort, not a jog"
+    ]
+  },
+  "Interval Run": {
+    muscles: ["Quadriceps", "Hamstrings", "Calves", "Cardiovascular System"],
+    tips: [
+      "Hit your target pace during work intervals — don't hold back",
+      "Use rest intervals for active recovery (walk or light jog), not complete stops",
+      "Focus on maintaining consistent speed across all work intervals"
+    ],
+    mistakes: [
+      "Going all-out on the first interval and crashing on later ones",
+      "Resting too long between intervals and losing the training stimulus"
+    ]
+  },
+  "Push-Up": {
+    muscles: ["Chest", "Triceps", "Front Delts", "Core"],
+    tips: [
+      "Keep your body in a straight line from head to heels — squeeze your glutes",
+      "Lower until your chest touches or nearly touches the floor",
+      "Keep your elbows at about 45 degrees, not flared out to 90"
+    ],
+    mistakes: [
+      "Sagging the hips and letting the lower back hyperextend",
+      "Only doing half reps and not touching the chest to the floor"
+    ]
+  },
+  "Goblet Squat": {
+    muscles: ["Quadriceps", "Glutes", "Core"],
+    tips: [
+      "Hold the dumbbell or kettlebell close to your chest with elbows pointing down",
+      "Squat deep — elbows should track inside the knees at the bottom",
+      "Drive up through the full foot and squeeze your glutes at the top"
+    ],
+    mistakes: [
+      "Letting the weight pull you forward and rounding the upper back",
+      "Not squatting deep enough to get full quad and glute engagement"
+    ]
+  },
+  "Barbell Row": {
+    muscles: ["Upper Back", "Lats", "Biceps", "Rear Delts"],
+    tips: [
+      "Hinge forward at about 45 degrees and pull the bar to your lower chest",
+      "Squeeze your shoulder blades together at the top of each rep",
+      "Keep your core braced and avoid jerking the torso upright"
+    ],
+    mistakes: [
+      "Using too much body English and heaving the weight with momentum",
+      "Rounding the lower back by hinging too far forward"
+    ]
   }
 };

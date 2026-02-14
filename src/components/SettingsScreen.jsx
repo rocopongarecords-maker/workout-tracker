@@ -1,9 +1,48 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
+
+const THEMES = [
+  { id: 'ocean', label: 'Ocean', color: '#3b82f6', preview: 'from-blue-500 to-blue-600' },
+  { id: 'ember', label: 'Ember', color: '#f97316', preview: 'from-orange-500 to-orange-600' },
+  { id: 'violet', label: 'Violet', color: '#8b5cf6', preview: 'from-violet-500 to-violet-600' }
+];
+
+const FONTS = [
+  { id: 'inter', label: 'Inter', family: "'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif" },
+  { id: 'jakarta', label: 'Plus Jakarta Sans', family: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif" },
+  { id: 'system', label: 'System Default', family: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }
+];
 
 const SettingsScreen = ({ data, user, onSignOut, onReset, onImport, onBack }) => {
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [importStatus, setImportStatus] = useState(null);
   const fileInputRef = useRef(null);
+
+  // Theme & font state
+  const [currentTheme, setCurrentTheme] = useState(() => {
+    return localStorage.getItem('wt-theme') || 'ocean';
+  });
+  const [currentFont, setCurrentFont] = useState(() => {
+    return localStorage.getItem('wt-font') || 'inter';
+  });
+
+  useEffect(() => {
+    // Apply theme
+    if (currentTheme === 'ocean') {
+      document.documentElement.removeAttribute('data-theme');
+    } else {
+      document.documentElement.setAttribute('data-theme', currentTheme);
+    }
+    localStorage.setItem('wt-theme', currentTheme);
+  }, [currentTheme]);
+
+  useEffect(() => {
+    // Apply font
+    const font = FONTS.find(f => f.id === currentFont);
+    if (font) {
+      document.documentElement.style.setProperty('--font-family', font.family);
+    }
+    localStorage.setItem('wt-font', currentFont);
+  }, [currentFont]);
 
   const handleExport = () => {
     const json = JSON.stringify(data, null, 2);
@@ -88,7 +127,64 @@ const SettingsScreen = ({ data, user, onSignOut, onReset, onImport, onBack }) =>
         </div>
       )}
 
+      {/* Theme Picker */}
+      <div className="glass-card p-5 space-y-4 animate-fade-in-up">
+        <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Theme</h3>
+        <div className="grid grid-cols-3 gap-3">
+          {THEMES.map(theme => (
+            <button
+              key={theme.id}
+              onClick={() => setCurrentTheme(theme.id)}
+              className={`relative p-3 rounded-xl border-2 transition-all ${
+                currentTheme === theme.id
+                  ? 'border-white/40 bg-white/10'
+                  : 'border-white/5 bg-white/5 hover:bg-white/10'
+              }`}
+            >
+              <div
+                className={`w-full h-8 rounded-lg bg-gradient-to-r ${theme.preview} mb-2`}
+              />
+              <span className="text-xs font-semibold text-white">{theme.label}</span>
+              {currentTheme === theme.id && (
+                <div className="absolute top-1.5 right-1.5">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-green-400">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                </div>
+              )}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Font Picker */}
       <div className="glass-card p-5 space-y-4 animate-fade-in-up stagger-1">
+        <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Typography</h3>
+        <div className="space-y-2">
+          {FONTS.map(font => (
+            <button
+              key={font.id}
+              onClick={() => setCurrentFont(font.id)}
+              className={`w-full flex items-center justify-between p-3 rounded-xl border transition-all ${
+                currentFont === font.id
+                  ? 'border-white/30 bg-white/10'
+                  : 'border-white/5 bg-white/5 hover:bg-white/10'
+              }`}
+            >
+              <span className="text-sm text-white" style={{ fontFamily: font.family }}>
+                {font.label}
+              </span>
+              {currentFont === font.id && (
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-green-400">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              )}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="glass-card p-5 space-y-4 animate-fade-in-up stagger-2">
         <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Your Data</h3>
         <div className="grid grid-cols-2 gap-3">
           <div className="bg-white/5 rounded-xl p-3 text-center">
@@ -102,7 +198,7 @@ const SettingsScreen = ({ data, user, onSignOut, onReset, onImport, onBack }) =>
         </div>
       </div>
 
-      <div className="glass-card p-5 space-y-4 animate-fade-in-up stagger-2">
+      <div className="glass-card p-5 space-y-4 animate-fade-in-up stagger-3">
         <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Backup & Restore</h3>
         <p className="text-xs text-slate-500">
           Export your workout data as a JSON file to keep a backup. Import a previous backup to restore your data.
@@ -139,7 +235,7 @@ const SettingsScreen = ({ data, user, onSignOut, onReset, onImport, onBack }) =>
         )}
       </div>
 
-      <div className="glass-card border-red-500/20 p-5 space-y-4 animate-fade-in-up stagger-3">
+      <div className="glass-card border-red-500/20 p-5 space-y-4 animate-fade-in-up stagger-4">
         <h3 className="text-xs font-semibold text-red-400 uppercase tracking-wider">Danger Zone</h3>
         {!showResetConfirm ? (
           <button

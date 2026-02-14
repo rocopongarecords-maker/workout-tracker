@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { getLastCompletedWorkoutForType } from '../utils/getPreviousWorkout';
 import { haptic } from '../utils/haptics';
+import { exerciseSubstitutions } from '../data/exerciseSubstitutions';
+import { exerciseLibrary } from '../data/exerciseLibrary';
 import ExerciseCard from './ExerciseCard';
 import Toast from './Toast';
 
@@ -123,6 +125,43 @@ const WorkoutScreen = ({ dayNumber, workoutType, block, editing, onSave, onCompl
     ));
   };
 
+  const handleSkipExercise = (exerciseName, skip) => {
+    setExercises(prev => prev.map(ex =>
+      ex.name === exerciseName
+        ? { ...ex, skipped: skip, userSets: skip ? [] : ex.userSets }
+        : ex
+    ));
+    if (skip) {
+      haptic.light();
+      showToast(`${exerciseName} skipped`, 'info', '⏭');
+    }
+  };
+
+  const handleSubstituteExercise = (originalName, newName) => {
+    const libEntry = exerciseLibrary.find(e => e.name === newName);
+    setExercises(prev => prev.map(ex =>
+      ex.name === originalName
+        ? {
+            ...ex,
+            name: newName,
+            originalName: ex.originalName || originalName,
+            substituted: true,
+            userSets: [],
+            muscles: libEntry?.muscles
+          }
+        : ex
+    ));
+    showToast(`Swapped to ${newName}`, 'success', '↔');
+  };
+
+  const getSubstitutesForExercise = (exerciseName) => {
+    const originalName = exercises.find(ex => ex.name === exerciseName)?.originalName || exerciseName;
+    const subNames = exerciseSubstitutions[originalName] || exerciseSubstitutions[exerciseName] || [];
+    return subNames
+      .map(name => exerciseLibrary.find(e => e.name === name))
+      .filter(Boolean);
+  };
+
   const getPreviousWorkoutDetails = (exerciseName) => {
     if (!lastWorkout) return null;
 
@@ -147,7 +186,9 @@ const WorkoutScreen = ({ dayNumber, workoutType, block, editing, onSave, onCompl
       notes: workoutNotes || undefined,
       exercises: exercises.map(ex => ({
         name: ex.name,
-        userSets: ex.userSets
+        userSets: ex.userSets,
+        ...(ex.skipped && { skipped: true }),
+        ...(ex.substituted && { substituted: true, originalName: ex.originalName })
       }))
     });
     showToast('Workout saved', 'success', '✓');
@@ -168,7 +209,7 @@ const WorkoutScreen = ({ dayNumber, workoutType, block, editing, onSave, onCompl
     }
   };
 
-  const isComplete = exercises.every(ex => ex.completed);
+  const isComplete = exercises.every(ex => ex.skipped || ex.completed);
 
   const totalSets = exercises.reduce((sum, ex) => sum + Number(ex.sets), 0);
   const completedSets = exercises.reduce((sum, ex) =>
@@ -272,6 +313,9 @@ const WorkoutScreen = ({ dayNumber, workoutType, block, editing, onSave, onCompl
                         scrollToNext={scrollToNext}
                         workoutHistory={workoutHistory}
                         onPR={onPR}
+                        onSkip={handleSkipExercise}
+                        onSubstitute={handleSubstituteExercise}
+                        substitutes={getSubstitutesForExercise(exercise.name)}
                       />
                     </div>
                   ))}
@@ -298,6 +342,9 @@ const WorkoutScreen = ({ dayNumber, workoutType, block, editing, onSave, onCompl
                   }}
                   scrollToNext={scrollToNext}
                   workoutHistory={workoutHistory}
+                  onSkip={handleSkipExercise}
+                  onSubstitute={handleSubstituteExercise}
+                  substitutes={getSubstitutesForExercise(group.exercise.name)}
                 />
               </div>
             );

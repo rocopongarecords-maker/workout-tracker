@@ -98,7 +98,20 @@ export const exerciseLibrary = [
   { name: 'Lat Pulldown', muscles: ['Back', 'Biceps'], category: 'compound', equipment: 'cable' },
   { name: 'Seated Cable Row', muscles: ['Back', 'Biceps'], category: 'compound', equipment: 'cable' },
   { name: 'Chin-Up', muscles: ['Back', 'Biceps'], category: 'compound', equipment: 'bodyweight' },
-  { name: 'Barbell Shrug', muscles: ['Traps'], category: 'isolation', equipment: 'barbell' }
+  { name: 'Barbell Shrug', muscles: ['Traps'], category: 'isolation', equipment: 'barbell' },
+
+  // === HYROX / FUNCTIONAL ===
+  { name: 'Ski Erg', muscles: ['Back', 'Shoulders', 'Core', 'Triceps'], category: 'compound', equipment: 'machine', repType: 'duration' },
+  { name: 'Sled Push', muscles: ['Quadriceps', 'Glutes', 'Calves', 'Core'], category: 'compound', equipment: 'sled', repType: 'distance' },
+  { name: 'Sled Pull', muscles: ['Back', 'Biceps', 'Hamstrings', 'Core'], category: 'compound', equipment: 'sled', repType: 'distance' },
+  { name: 'Burpee Broad Jump', muscles: ['Quadriceps', 'Glutes', 'Chest', 'Core'], category: 'compound', equipment: 'bodyweight' },
+  { name: 'Rowing Machine', muscles: ['Back', 'Quadriceps', 'Core', 'Biceps'], category: 'compound', equipment: 'machine', repType: 'duration' },
+  { name: 'Farmers Carry', muscles: ['Forearms', 'Traps', 'Core', 'Shoulders'], category: 'compound', equipment: 'dumbbell', repType: 'distance' },
+  { name: 'Sandbag Lunge', muscles: ['Quadriceps', 'Glutes', 'Hamstrings', 'Core'], category: 'compound', equipment: 'sandbag' },
+  { name: 'Wall Ball', muscles: ['Quadriceps', 'Glutes', 'Shoulders', 'Core'], category: 'compound', equipment: 'medicine ball' },
+  { name: 'Running', muscles: ['Quadriceps', 'Hamstrings', 'Calves', 'Core'], category: 'compound', equipment: 'none', repType: 'duration' },
+  { name: 'Tempo Run', muscles: ['Quadriceps', 'Hamstrings', 'Calves', 'Core'], category: 'compound', equipment: 'none', repType: 'duration' },
+  { name: 'Interval Run', muscles: ['Quadriceps', 'Hamstrings', 'Calves', 'Core'], category: 'compound', equipment: 'none', repType: 'duration' }
 ];
 
 // Get all unique equipment types

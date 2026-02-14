@@ -25,6 +25,16 @@ const ExerciseInfoModal = ({ exerciseName, onClose }) => {
 
         {info ? (
           <div className="space-y-5">
+            {info.imageUrl && (
+              <div className="rounded-xl overflow-hidden bg-slate-800">
+                <img
+                  src={`${import.meta.env.BASE_URL}${info.imageUrl}`}
+                  alt={exerciseName}
+                  className="w-full h-48 object-contain"
+                  onError={(e) => { e.target.parentElement.style.display = 'none'; }}
+                />
+              </div>
+            )}
             <div>
               <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Muscle Groups</h4>
               <div className="flex flex-wrap gap-2">

@@ -2,13 +2,31 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── Theme System ─── */
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  /* Ocean theme (default) */
+  --color-primary: 59, 130, 246;      /* #3b82f6 blue-500 */
+  --color-primary-light: 96, 165, 250; /* #60a5fa blue-400 */
+  --color-primary-dark: 37, 99, 235;   /* #2563eb blue-600 */
+  --font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
+[data-theme="ember"] {
+  --color-primary: 249, 115, 22;       /* #f97316 orange-500 */
+  --color-primary-light: 251, 146, 60; /* #fb923c orange-400 */
+  --color-primary-dark: 234, 88, 12;   /* #ea580c orange-600 */
+}
+
+[data-theme="violet"] {
+  --color-primary: 139, 92, 246;       /* #8b5cf6 violet-500 */
+  --color-primary-light: 167, 139, 250;/* #a78bfa violet-400 */
+  --color-primary-dark: 124, 58, 237;  /* #7c3aed violet-600 */
 }
 
 body {
   margin: 0;
   min-height: 100vh;
+  font-family: var(--font-family);
   @apply bg-slate-950 text-white antialiased;
 }
 
@@ -37,11 +55,15 @@ input[type="number"] {
            hover:bg-white/[0.08] hover:border-white/[0.15] active:scale-[0.98] transition-all duration-200;
   }
 
-  /* Buttons */
+  /* Buttons — using CSS custom properties for theme colors */
   .btn-primary {
-    @apply bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold
-           shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:from-blue-400 hover:to-blue-500
-           active:scale-[0.98] transition-all duration-200;
+    background: linear-gradient(to right, rgb(var(--color-primary)), rgb(var(--color-primary-dark)));
+    box-shadow: 0 10px 15px -3px rgba(var(--color-primary), 0.25);
+    @apply text-white rounded-xl font-semibold active:scale-[0.98] transition-all duration-200;
+  }
+  .btn-primary:hover {
+    background: linear-gradient(to right, rgb(var(--color-primary-light)), rgb(var(--color-primary)));
+    box-shadow: 0 10px 15px -3px rgba(var(--color-primary), 0.4);
   }
   .btn-secondary {
     @apply bg-white/5 border border-white/10 text-white rounded-xl font-semibold
@@ -61,6 +83,11 @@ input[type="number"] {
     @apply font-bold text-white;
     font-variant-numeric: tabular-nums;
   }
+}
+
+/* ─── Theme-aware glow shadows ─── */
+.shadow-glow-primary {
+  box-shadow: 0 0 20px rgba(var(--color-primary), 0.15);
 }
 
 /* ─── Shimmer animation for loading skeletons ─── */

@@ -1,6 +1,68 @@
 import { useState } from 'react';
 import { calculateBF3Site, calculateBF7Site } from '../utils/calculateBF';
+import { weighingGuide, skinfoldGuide, skinfoldSites } from '../data/measurementGuide';
 import SimpleLineChart from './charts/SimpleLineChart';
+
+const GuidanceCard = ({ title, tips }) => {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="glass-card overflow-hidden animate-fade-in-up">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center justify-between p-4 text-left"
+      >
+        <div className="flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-400 flex-shrink-0">
+            <circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" />
+          </svg>
+          <span className="text-sm font-semibold text-white">{title}</span>
+        </div>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`text-slate-400 transition-transform ${open ? 'rotate-180' : ''}`}>
+          <path d="m6 9 6 6 6-6" />
+        </svg>
+      </button>
+      {open && (
+        <div className="px-4 pb-4 space-y-2">
+          {tips.map((tip, i) => (
+            <div key={i} className="flex gap-2 text-sm text-slate-300">
+              <span className="text-blue-400 flex-shrink-0 mt-0.5">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              </span>
+              <span className="text-xs">{tip}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+const SiteInfoButton = ({ siteKey }) => {
+  const [show, setShow] = useState(false);
+  const site = skinfoldSites[siteKey];
+  if (!site) return null;
+  return (
+    <>
+      <button
+        onClick={() => setShow(!show)}
+        className="p-0.5 text-slate-500 hover:text-blue-400 transition-colors"
+        title={`Info: ${site.label}`}
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" />
+        </svg>
+      </button>
+      {show && (
+        <div className="absolute z-10 left-0 right-0 top-full mt-1 bg-slate-800 border border-white/10 rounded-lg p-2.5 shadow-lg">
+          <p className="text-[10px] text-slate-300 mb-1">{site.description}</p>
+          <p className="text-[10px] text-blue-400">Tip: {site.tip}</p>
+        </div>
+      )}
+    </>
+  );
+};
 
 const MeasurementsScreen = ({ weightLog, skinfoldLog, onSaveWeight, onSaveSkinfold, onBack }) => {
   const [activeTab, setActiveTab] = useState('weight');
@@ -46,10 +108,16 @@ const MeasurementsScreen = ({ weightLog, skinfoldLog, onSaveWeight, onSaveSkinfo
       </div>
 
       {activeTab === 'weight' && (
-        <WeightTab weightLog={weightLog} onSave={onSaveWeight} />
+        <>
+          <GuidanceCard title={weighingGuide.title} tips={weighingGuide.tips} />
+          <WeightTab weightLog={weightLog} onSave={onSaveWeight} />
+        </>
       )}
       {activeTab === 'bodyfat' && (
-        <BodyFatTab skinfoldLog={skinfoldLog} onSave={onSaveSkinfold} />
+        <>
+          <GuidanceCard title={skinfoldGuide.title} tips={skinfoldGuide.tips} />
+          <BodyFatTab skinfoldLog={skinfoldLog} onSave={onSaveSkinfold} />
+        </>
       )}
     </div>
   );
@@ -267,8 +335,11 @@ const BodyFatTab = ({ skinfoldLog, onSave }) => {
         <div className="text-xs text-slate-400 mb-1">Skinfold Measurements (mm)</div>
         <div className={`grid ${protocol === '7site' ? 'grid-cols-2' : 'grid-cols-3'} gap-2`}>
           {fields.map(field => (
-            <div key={field.key}>
-              <div className="text-[10px] text-slate-500 mb-1 text-center">{field.label}</div>
+            <div key={field.key} className="relative">
+              <div className="flex items-center justify-center gap-1 mb-1">
+                <span className="text-[10px] text-slate-500">{field.label}</span>
+                <SiteInfoButton siteKey={field.key} />
+              </div>
               <input
                 type="number"
                 step="0.5"

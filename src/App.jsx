@@ -203,6 +203,7 @@ function App() {
             onReviewDay={handleReviewDay}
             currentView={currentView}
             setCurrentView={setCurrentView}
+            getWorkoutName={getWorkoutName}
           />
         )}
 

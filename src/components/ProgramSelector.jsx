@@ -1,14 +1,32 @@
-const DEFAULT_PROGRAM = {
-  id: 'jeff_nippard_lpp',
-  name: "Jeff Nippard's Legs-Push-Pull",
-  description: '16-week evidence-based program with 6 training days per week. Block 1 focuses on technique & volume, Block 2 on higher effort.',
-  weeks: 16,
-  daysPerWeek: 6,
-  isDefault: true
-};
+const BUILT_IN_PROGRAMS = [
+  {
+    id: 'jeff_nippard_lpp',
+    name: "Jeff Nippard's Legs-Push-Pull",
+    description: '16-week evidence-based program with 6 training days per week. Block 1 focuses on technique & volume, Block 2 on higher effort.',
+    weeks: 16,
+    daysPerWeek: 6,
+    isDefault: true
+  },
+  {
+    id: 'jeff_nippard_fullbody',
+    name: "Jeff Nippard's Full Body",
+    description: '12-week full body program, 4 days per week. Each session hits all major muscle groups. Block 1: volume, Block 2: intensity.',
+    weeks: 12,
+    daysPerWeek: 4,
+    isDefault: true
+  },
+  {
+    id: 'hyrox_prep',
+    name: "Hyrox Race Prep",
+    description: '10-week Hyrox preparation program. Combines strength training with race-specific stations (Ski Erg, Sled Push/Pull, Wall Ball, etc.).',
+    weeks: 10,
+    daysPerWeek: 4,
+    isDefault: true
+  }
+];
 
 const ProgramSelector = ({ programs, activeProgram, onSelectProgram, onCreateProgram, onDeleteProgram, onBack }) => {
-  const allPrograms = [DEFAULT_PROGRAM, ...(programs || [])];
+  const allPrograms = [...BUILT_IN_PROGRAMS, ...(programs || [])];
 
   return (
     <div className="space-y-6 pb-8">

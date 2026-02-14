@@ -1,12 +1,20 @@
 import { useMemo } from 'react';
 import { Dumbbell, Calendar } from 'lucide-react';
-import { getNextWorkout } from '../utils/getNextWorkout';
+import { getNextWorkout, getPendingWorkouts } from '../utils/getNextWorkout';
 import { getClosestBadgeProgress } from '../utils/checkBadges';
 import ProgressIndicator from './ProgressIndicator';
 
 const Dashboard = ({ stats, completedWorkouts, onStartWorkout, onViewAllWorkouts, onOpenSettings, onViewBadges, onViewAnalytics, onViewMeasurements, onViewPrograms, onViewExercises, earnedBadges, currentView, setCurrentView, schedule, getWorkoutName: getWorkoutNameProp, programName, totalWeeks, getExercisesForDay, totalPRs, workoutHistory }) => {
   const nextWorkout = getNextWorkout(completedWorkouts, schedule);
   const nextExercises = nextWorkout && getExercisesForDay ? getExercisesForDay(nextWorkout.day) : null;
+
+  // Get next 2-3 pending workouts for quick-pick
+  const pendingGroups = useMemo(() => getPendingWorkouts(completedWorkouts, schedule), [completedWorkouts, schedule]);
+  const upcomingOptions = useMemo(() => {
+    const all = pendingGroups.flatMap(g => g.days);
+    // Exclude the suggested workout and take next 2
+    return all.filter(d => d.day !== nextWorkout?.day).slice(0, 2);
+  }, [pendingGroups, nextWorkout]);
 
   const nextBadge = useMemo(() => {
     return getClosestBadgeProgress({
@@ -66,9 +74,17 @@ const Dashboard = ({ stats, completedWorkouts, onStartWorkout, onViewAllWorkouts
       ) : (
         <>
           <div className="glass-card-elevated p-6 animate-fade-in-up">
-            <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">
-              Your Next Workout
-            </h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wider">
+                Suggested Workout
+              </h2>
+              <button
+                onClick={() => onViewAllWorkouts()}
+                className="text-xs text-blue-400 hover:text-blue-300 transition-colors"
+              >
+                Pick different
+              </button>
+            </div>
 
             {nextWorkout ? (
               <div className="space-y-4">
@@ -110,6 +126,31 @@ const Dashboard = ({ stats, completedWorkouts, onStartWorkout, onViewAllWorkouts
                   <Calendar size={20} />
                   Start Workout
                 </button>
+
+                {/* Upcoming alternative options */}
+                {upcomingOptions.length > 0 && (
+                  <div className="space-y-2 pt-2 border-t border-white/5">
+                    <p className="text-[10px] text-slate-500 uppercase tracking-wider">Or jump to:</p>
+                    {upcomingOptions.map(opt => (
+                      <button
+                        key={opt.day}
+                        onClick={() => onStartWorkout(opt.day, opt.type, opt.block)}
+                        className="w-full flex items-center justify-between p-2.5 bg-white/5 hover:bg-white/10 rounded-lg transition-all text-left"
+                      >
+                        <div>
+                          <span className="text-sm text-white font-semibold">
+                            {getWorkoutNameProp ? getWorkoutNameProp(opt.day) || opt.type : opt.type}
+                          </span>
+                          <span className="text-xs text-slate-500 ml-2">Day {opt.day}</span>
+                        </div>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-slate-500">
+                          <path d="m9 18 6-6-6-6" />
+                        </svg>
+                      </button>
+                    ))}
+                    <p className="text-[10px] text-slate-600 italic">Jeff recommends following the sequence for optimal progression</p>
+                  </div>
+                )}
               </div>
             ) : (
               <p className="text-slate-400">

@@ -26,6 +26,7 @@ const WorkoutReview = ({ dayNumber, workoutHistory, completedWorkouts, onBack, o
   }) : 'Unknown date';
 
   const totalVolume = (history.exercises || []).reduce((total, ex) => {
+    if (ex.skipped) return total;
     return total + (ex.userSets || []).reduce((sum, set) => {
       const w = Number(set.weight) || 0;
       const r = Number(set.reps) || 0;
@@ -110,6 +111,20 @@ const WorkoutReview = ({ dayNumber, workoutHistory, completedWorkouts, onBack, o
 
       <div className="space-y-4">
         {(history.exercises || []).map((exercise, idx) => {
+          // Skipped exercise
+          if (exercise.skipped) {
+            return (
+              <div key={idx} className="glass-card p-4 border-amber-500/20">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-semibold text-slate-400 line-through">{exercise.name}</h3>
+                  <span className="px-2 py-0.5 bg-amber-500/10 text-amber-400 text-[10px] font-bold rounded-full border border-amber-500/20">
+                    SKIPPED
+                  </span>
+                </div>
+              </div>
+            );
+          }
+
           const sets = exercise.userSets || [];
           const completedSets = sets.filter(s => s.completed);
           const bestSet = completedSets.reduce((best, set) => {
@@ -125,7 +140,12 @@ const WorkoutReview = ({ dayNumber, workoutHistory, completedWorkouts, onBack, o
           return (
             <div key={idx} className="glass-card p-4">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm font-semibold text-white">{exercise.name}</h3>
+                <div>
+                  <h3 className="text-sm font-semibold text-white">{exercise.name}</h3>
+                  {exercise.substituted && exercise.originalName && (
+                    <span className="text-[10px] text-purple-400">Substituted for {exercise.originalName}</span>
+                  )}
+                </div>
                 {est1RM > 0 && (
                   <span className="text-xs text-slate-400">Est 1RM: {est1RM} kg</span>
                 )}

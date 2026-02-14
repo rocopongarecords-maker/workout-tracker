@@ -6,7 +6,7 @@ import PRCelebration from './PRCelebration';
 import ExerciseInfoModal from './ExerciseInfoModal';
 import NumberStepper from './NumberStepper';
 
-const ExerciseCard = ({ exercise, exerciseIndex, onChange, previousWorkout, onSave, scrollToNext, workoutHistory, onPR }) => {
+const ExerciseCard = ({ exercise, exerciseIndex, onChange, previousWorkout, onSave, scrollToNext, workoutHistory, onPR, onSkip, onSubstitute, substitutes }) => {
   const [showInfo, setShowInfo] = useState(false);
   const setsCount = Number(exercise.sets) || 0;
   const oneRM = previousWorkout ? calculate1RM(previousWorkout.weight, previousWorkout.reps) : null;
@@ -195,23 +195,82 @@ const ExerciseCard = ({ exercise, exerciseIndex, onChange, previousWorkout, onSa
     }, 300);
   };
 
+  const [showSubstitutes, setShowSubstitutes] = useState(false);
+  const hasSavedSets = userSets.some(s => s.completed);
+
+  // If exercise is skipped, show collapsed state
+  if (exercise.skipped) {
+    return (
+      <div className="bg-slate-800/50 rounded-xl p-4 mb-4 border border-amber-500/20" id={`exercise-${exercise.name.replace(/\s+/g, '-')}`}>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-amber-500/10 rounded-lg flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-amber-400">
+                <path d="m13 17 5-5-5-5" /><path d="m6 17 5-5-5-5" />
+              </svg>
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold text-slate-400 line-through">{exercise.name}</h3>
+              <span className="text-xs text-amber-400">Exercise Skipped</span>
+            </div>
+          </div>
+          <button
+            onClick={() => onSkip && onSkip(exercise.name, false)}
+            className="px-3 py-1.5 text-xs text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded-lg hover:bg-amber-500/20 transition-all font-semibold"
+          >
+            Undo
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-slate-800 rounded-xl p-4 mb-4" id={`exercise-${exercise.name.replace(/\s+/g, '-')}`}>
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-lg font-semibold text-white">
-          {exercise.name}
-        </h3>
-        <button
-          onClick={() => setShowInfo(true)}
-          className="p-1.5 text-slate-400 hover:text-blue-400 transition-colors"
-          title="Exercise info"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="10" />
-            <path d="M12 16v-4" />
-            <path d="M12 8h.01" />
-          </svg>
-        </button>
+        <div className="flex-1 min-w-0">
+          <h3 className="text-lg font-semibold text-white">
+            {exercise.name}
+          </h3>
+          {exercise.substituted && exercise.originalName && (
+            <span className="text-[11px] text-purple-400">Substituted for {exercise.originalName}</span>
+          )}
+        </div>
+        <div className="flex items-center gap-1">
+          {substitutes && substitutes.length > 0 && !hasSavedSets && (
+            <button
+              onClick={() => setShowSubstitutes(true)}
+              className="p-1.5 text-purple-400 hover:text-purple-300 transition-colors"
+              title="Swap exercise"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="m16 3 4 4-4 4" /><path d="M20 7H4" /><path d="m8 21-4-4 4-4" /><path d="M4 17h16" />
+              </svg>
+            </button>
+          )}
+          {onSkip && (
+            <button
+              onClick={() => onSkip(exercise.name, true)}
+              className="p-1.5 text-amber-400 hover:text-amber-300 transition-colors"
+              title="Skip exercise"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="m13 17 5-5-5-5" /><path d="m6 17 5-5-5-5" />
+              </svg>
+            </button>
+          )}
+          <button
+            onClick={() => setShowInfo(true)}
+            className="p-1.5 text-slate-400 hover:text-blue-400 transition-colors"
+            title="Exercise info"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 16v-4" />
+              <path d="M12 8h.01" />
+            </svg>
+          </button>
+        </div>
       </div>
 
       {showInfo && (
@@ -298,25 +357,55 @@ const ExerciseCard = ({ exercise, exerciseIndex, onChange, previousWorkout, onSa
               )}
 
               <div className="grid grid-cols-2 gap-3 mb-3">
-                <NumberStepper
-                  value={set.weight}
-                  onChange={(val) => handleSetChange(set.setNumber, 'weight', val)}
-                  min={0}
-                  max={300}
-                  step={2.5}
-                  label="Weight"
-                  unit="kg"
-                  disabled={set.completed}
-                />
-                <NumberStepper
-                  value={set.reps}
-                  onChange={(val) => handleSetChange(set.setNumber, 'reps', val)}
-                  min={1}
-                  max={50}
-                  step={1}
-                  label="Reps"
-                  disabled={set.completed}
-                />
+                {exercise.repType === 'distance' || exercise.repType === 'duration' ? (
+                  <>
+                    <div>
+                      <div className="text-[10px] text-slate-400 mb-1 text-center">
+                        {exercise.repType === 'distance' ? 'Distance' : 'Duration'}
+                      </div>
+                      <input
+                        type="text"
+                        value={set.reps || ''}
+                        onChange={(e) => handleSetChange(set.setNumber, 'reps', e.target.value)}
+                        disabled={set.completed}
+                        placeholder={exercise.repType === 'distance' ? 'e.g. 50m' : 'e.g. 2:00'}
+                        className="w-full bg-black/20 text-white p-2.5 rounded-lg text-center font-semibold border border-white/10 focus:border-blue-500/50 outline-none text-sm disabled:opacity-50"
+                      />
+                    </div>
+                    <NumberStepper
+                      value={set.weight}
+                      onChange={(val) => handleSetChange(set.setNumber, 'weight', val)}
+                      min={0}
+                      max={300}
+                      step={2.5}
+                      label="Weight"
+                      unit="kg"
+                      disabled={set.completed}
+                    />
+                  </>
+                ) : (
+                  <>
+                    <NumberStepper
+                      value={set.weight}
+                      onChange={(val) => handleSetChange(set.setNumber, 'weight', val)}
+                      min={0}
+                      max={300}
+                      step={2.5}
+                      label="Weight"
+                      unit="kg"
+                      disabled={set.completed}
+                    />
+                    <NumberStepper
+                      value={set.reps}
+                      onChange={(val) => handleSetChange(set.setNumber, 'reps', val)}
+                      min={1}
+                      max={50}
+                      step={1}
+                      label="Reps"
+                      disabled={set.completed}
+                    />
+                  </>
+                )}
               </div>
 
               {/* Rest Timer — auto-starts on save, no manual Start button */}
@@ -375,9 +464,9 @@ const ExerciseCard = ({ exercise, exerciseIndex, onChange, previousWorkout, onSa
               {!set.completed && (
                 <button
                   onClick={() => handleSaveAndNext(set.setNumber)}
-                  disabled={!set.weight || !set.reps}
+                  disabled={exercise.repType ? !set.reps : (!set.weight || !set.reps)}
                   className={`w-full py-3 rounded-xl font-semibold transition-all ${
-                    set.weight && set.reps
+                    (exercise.repType ? set.reps : (set.weight && set.reps))
                       ? 'btn-primary'
                       : 'bg-slate-600 text-slate-400 cursor-not-allowed'
                   }`}
@@ -387,13 +476,31 @@ const ExerciseCard = ({ exercise, exerciseIndex, onChange, previousWorkout, onSa
               )}
 
               {set.completed && (
-                <div className="flex flex-col items-center justify-center gap-2 text-green-400">
-                  <div className="flex items-center gap-2">
+                <div className="flex items-center justify-center gap-3">
+                  <div className="flex items-center gap-2 text-green-400">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="20 6 9 17 4 12" strokeDasharray="24" strokeDashoffset="0" className="animate-checkmark-draw" />
                     </svg>
                     <span className="text-sm font-semibold">Saved</span>
                   </div>
+                  <button
+                    onClick={() => {
+                      stopTimer(set.setNumber);
+                      setUserSets(prev => {
+                        const updated = prev.map(s =>
+                          s.setNumber === set.setNumber
+                            ? { ...s, completed: false }
+                            : s
+                        );
+                        onChange(exercise.name, updated);
+                        return updated;
+                      });
+                      haptic.light();
+                    }}
+                    className="px-3 py-1.5 text-xs text-blue-400 bg-blue-500/10 border border-blue-500/20 rounded-lg hover:bg-blue-500/20 transition-all font-semibold"
+                  >
+                    Edit
+                  </button>
                 </div>
               )}
             </div>
@@ -428,6 +535,52 @@ const ExerciseCard = ({ exercise, exerciseIndex, onChange, previousWorkout, onSa
           />
         </div>
       </div>
+
+      {/* Substitution bottom sheet */}
+      {showSubstitutes && substitutes && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center" onClick={() => setShowSubstitutes(false)}>
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+          <div
+            className="relative w-full max-w-lg bg-slate-900/95 backdrop-blur-xl border-t border-white/10 rounded-t-2xl p-6 pb-8 max-h-[60vh] overflow-y-auto animate-slide-up"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-white">Swap Exercise</h3>
+              <button
+                onClick={() => setShowSubstitutes(false)}
+                className="p-1 text-slate-400 hover:text-white transition-colors"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            </div>
+            <p className="text-xs text-slate-400 mb-4">Replace <strong className="text-white">{exercise.name}</strong> with:</p>
+            <div className="space-y-2">
+              {substitutes.map((sub) => (
+                <button
+                  key={sub.name}
+                  onClick={() => {
+                    onSubstitute && onSubstitute(exercise.name, sub.name);
+                    setShowSubstitutes(false);
+                    haptic.light();
+                  }}
+                  className="w-full text-left p-3 bg-white/5 hover:bg-white/10 rounded-xl border border-white/5 transition-all"
+                >
+                  <div className="text-sm font-semibold text-white">{sub.name}</div>
+                  {sub.muscles && (
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {sub.muscles.map((m, i) => (
+                        <span key={i} className="text-[10px] text-purple-400 bg-purple-500/10 px-1.5 py-0.5 rounded">{m}</span>
+                      ))}
+                    </div>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
