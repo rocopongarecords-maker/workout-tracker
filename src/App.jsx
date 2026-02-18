@@ -23,7 +23,15 @@ import LoadingSkeleton from './components/LoadingSkeleton';
 import ExerciseLibrary from './components/ExerciseLibrary';
 import ProgramSelector from './components/ProgramSelector';
 import ProgramBuilder from './components/ProgramBuilder';
+import FreeWorkoutScreen from './components/FreeWorkoutScreen';
 import OnboardingScreen from './components/OnboardingScreen';
+import MarketplaceBrowse from './components/MarketplaceBrowse';
+import MarketplaceDetail from './components/MarketplaceDetail';
+import PublishProgram from './components/PublishProgram';
+import ProgramFeed from './components/ProgramFeed';
+import CreatorDashboard from './components/CreatorDashboard';
+import InviteJoin from './components/InviteJoin';
+import { useMarketplace } from './hooks/useMarketplace';
 import './styles/globals.css';
 
 function App() {
@@ -38,11 +46,30 @@ function App() {
   const [newBadges, setNewBadges] = useState([]);
 
   const storage = useWorkoutStorage(auth.user);
-  const { data, saveWorkout, markComplete, isCompleted, getWorkoutHistory, resetData, importData, addBadges, incrementPRs, saveWeight, saveSkinfold, saveCustomProgram, deleteCustomProgram, setActiveProgram, markOnboardingComplete, syncing, migrationNeeded, migrateLocalData, dismissMigration } = storage;
+  const { data, saveWorkout, markComplete, isCompleted, getWorkoutHistory, resetData, importData, addBadges, incrementPRs, saveWeight, saveSkinfold, saveCustomProgram, deleteCustomProgram, setActiveProgram, markOnboardingComplete, saveFreeWorkout, syncing, migrationNeeded, migrateLocalData, dismissMigration } = storage;
+
+  const marketplace = useMarketplace(auth.user);
+  const [marketplaceProgram, setMarketplaceProgram] = useState(null);
+  const [publishProgram, setPublishProgram] = useState(null);
+  const [feedProgramId, setFeedProgramId] = useState(null);
+  const [feedProgramName, setFeedProgramName] = useState('');
+  const [inviteToken, setInviteToken] = useState(null);
 
   const program = useActiveProgram(data.activeProgram, data.customPrograms);
   const { schedule, getExercisesForDay, getWorkoutName } = program;
   const stats = useProgressTracking(data.completedWorkouts, schedule);
+
+  // Parse invite token from URL on mount
+  useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('invite');
+    if (token) {
+      setInviteToken(token);
+      setCurrentView('invite-join');
+      // Clean URL
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  });
 
   // Show auth screen if Supabase is configured, user is not logged in, and not in guest mode
   if (auth.isConfigured && !auth.user && !guestMode && !auth.loading) {
@@ -181,6 +208,7 @@ function App() {
             onViewMeasurements={() => setCurrentView('measurements')}
             onViewPrograms={() => setCurrentView('programs')}
             onViewExercises={() => setCurrentView('exercises')}
+            onLogFreeWorkout={() => setCurrentView('free-workout')}
             earnedBadges={data.earnedBadges}
             currentView={currentView}
             setCurrentView={setCurrentView}
@@ -301,17 +329,106 @@ function App() {
             onSelectProgram={setActiveProgram}
             onCreateProgram={() => setCurrentView('program-builder')}
             onDeleteProgram={deleteCustomProgram}
+            onBrowseMarketplace={() => setCurrentView('marketplace-browse')}
             onBack={handleBackToDashboard}
           />
         )}
 
         {currentView === 'program-builder' && (
           <ProgramBuilder
-            onSave={(program) => {
-              saveCustomProgram(program);
+            onSave={(prog) => {
+              saveCustomProgram(prog);
               setCurrentView('programs');
             }}
+            onPublish={(prog) => {
+              setPublishProgram(prog);
+              setCurrentView('publish-program');
+            }}
             onBack={() => setCurrentView('programs')}
+          />
+        )}
+
+        {currentView === 'free-workout' && (
+          <FreeWorkoutScreen
+            onSave={saveFreeWorkout}
+            onBack={handleBackToDashboard}
+          />
+        )}
+
+        {currentView === 'marketplace-browse' && (
+          <MarketplaceBrowse
+            marketplace={marketplace}
+            onSelectProgram={(prog) => {
+              setMarketplaceProgram(prog);
+              setCurrentView('marketplace-detail');
+            }}
+            onViewCreatorDashboard={() => setCurrentView('creator-dashboard')}
+            onBack={() => setCurrentView('programs')}
+          />
+        )}
+
+        {currentView === 'marketplace-detail' && marketplaceProgram && (
+          <MarketplaceDetail
+            program={marketplaceProgram}
+            marketplace={marketplace}
+            saveCustomProgram={saveCustomProgram}
+            userId={auth.user?.id}
+            onViewFeed={(programId, programName) => {
+              setFeedProgramId(programId);
+              setFeedProgramName(programName);
+              setCurrentView('program-feed');
+            }}
+            onShare={() => {}}
+            onBack={() => setCurrentView('marketplace-browse')}
+          />
+        )}
+
+        {currentView === 'publish-program' && publishProgram && (
+          <PublishProgram
+            program={publishProgram}
+            marketplace={marketplace}
+            onBack={() => setCurrentView('program-builder')}
+            onPublished={() => {
+              setPublishProgram(null);
+              setCurrentView('programs');
+            }}
+          />
+        )}
+
+        {currentView === 'program-feed' && feedProgramId && (
+          <ProgramFeed
+            programId={feedProgramId}
+            programName={feedProgramName}
+            marketplace={marketplace}
+            userId={auth.user?.id}
+            onBack={() => setCurrentView('marketplace-detail')}
+          />
+        )}
+
+        {currentView === 'creator-dashboard' && (
+          <CreatorDashboard
+            marketplace={marketplace}
+            onSelectProgram={(prog) => {
+              setMarketplaceProgram(prog);
+              setCurrentView('marketplace-detail');
+            }}
+            onBack={() => setCurrentView('marketplace-browse')}
+          />
+        )}
+
+        {currentView === 'invite-join' && inviteToken && (
+          <InviteJoin
+            token={inviteToken}
+            marketplace={marketplace}
+            saveCustomProgram={saveCustomProgram}
+            onBack={() => {
+              setInviteToken(null);
+              setCurrentView('dashboard');
+            }}
+            onJoined={() => {
+              setInviteToken(null);
+              setCurrentView('dashboard');
+            }}
           />
         )}
       </div>

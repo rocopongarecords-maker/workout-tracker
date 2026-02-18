@@ -18,6 +18,7 @@ const initialData = {
   weightLog: [],
   skinfoldLog: [],
   customPrograms: [],
+  freeWorkoutLog: [],
   onboardingComplete: false,
   schemaVersion: 2
 };
@@ -40,6 +41,7 @@ const migrateSchema = (stored) => {
     stored.programData = { jeff_nippard_lpp: { completedWorkouts: [], workoutHistory: {} } };
   }
   if (!stored.customPrograms) stored.customPrograms = [];
+  if (!stored.freeWorkoutLog) stored.freeWorkoutLog = [];
   if (!stored.activeProgram) stored.activeProgram = 'jeff_nippard_lpp';
   return stored;
 };
@@ -71,6 +73,73 @@ const updateProgramData = (state, updater) => {
   };
 };
 
+// Merge local and remote data — union of all collections, latest date wins on conflicts
+const mergeLocalAndRemote = (local, remote) => {
+  const mergedProgramData = { ...remote.programData };
+
+  for (const [programId, localPd] of Object.entries(local.programData || {})) {
+    if (!mergedProgramData[programId]) {
+      mergedProgramData[programId] = localPd;
+      continue;
+    }
+    const remotePd = mergedProgramData[programId];
+
+    // Union of completedWorkouts
+    const mergedCompleted = [...new Set([
+      ...(remotePd.completedWorkouts || []),
+      ...(localPd.completedWorkouts || [])
+    ])].sort((a, b) => a - b);
+
+    // Merge workoutHistory — keep entry with later date
+    const mergedHistory = { ...remotePd.workoutHistory };
+    for (const [day, localEntry] of Object.entries(localPd.workoutHistory || {})) {
+      const remoteEntry = mergedHistory[day];
+      if (!remoteEntry || (localEntry.date && (!remoteEntry.date || localEntry.date > remoteEntry.date))) {
+        mergedHistory[day] = localEntry;
+      }
+    }
+
+    mergedProgramData[programId] = { completedWorkouts: mergedCompleted, workoutHistory: mergedHistory };
+  }
+
+  // Merge earned badges — union by ID
+  const remoteBadgeIds = new Set((remote.earnedBadges || []).map(b => b.id));
+  const mergedBadges = [
+    ...(remote.earnedBadges || []),
+    ...(local.earnedBadges || []).filter(b => !remoteBadgeIds.has(b.id))
+  ];
+
+  // Merge weight log — union, deduplicate by date
+  const remoteWeightDates = new Set((remote.weightLog || []).map(w => w.date));
+  const mergedWeights = [
+    ...(remote.weightLog || []),
+    ...(local.weightLog || []).filter(w => !remoteWeightDates.has(w.date))
+  ].sort((a, b) => a.date.localeCompare(b.date));
+
+  // Merge custom programs — union by ID, local wins
+  const remoteProgramIds = new Set((remote.customPrograms || []).map(p => p.id));
+  const mergedCustomPrograms = [
+    ...(remote.customPrograms || []),
+    ...(local.customPrograms || []).filter(p => !remoteProgramIds.has(p.id))
+  ];
+
+  return {
+    programData: mergedProgramData,
+    activeProgram: remote.activeProgram || local.activeProgram || 'jeff_nippard_lpp',
+    startDate: remote.startDate || local.startDate || null,
+    earnedBadges: mergedBadges,
+    totalPRs: Math.max(remote.totalPRs || 0, local.totalPRs || 0),
+    weightLog: mergedWeights,
+    skinfoldLog: [...(remote.skinfoldLog || []), ...(local.skinfoldLog || []).filter(s =>
+      !(remote.skinfoldLog || []).some(rs => rs.date === s.date)
+    )],
+    customPrograms: mergedCustomPrograms,
+    freeWorkoutLog: [...(remote.freeWorkoutLog || []), ...(local.freeWorkoutLog || [])],
+    onboardingComplete: remote.onboardingComplete || local.onboardingComplete,
+    schemaVersion: 2
+  };
+};
+
 export const useWorkoutStorage = (user) => {
   const [rawData, setRawData] = useState(loadLocal);
   const [syncing, setSyncing] = useState(false);
@@ -89,7 +158,7 @@ export const useWorkoutStorage = (user) => {
     };
   }, [rawData]);
 
-  // Load data from Supabase when user logs in
+  // Load data from Supabase when user logs in — merge local + remote
   useEffect(() => {
     if (!isOnline) return;
 
@@ -110,6 +179,12 @@ export const useWorkoutStorage = (user) => {
 
         if (hasLocalData && !hasRemoteData) {
           setMigrationNeeded(true);
+        } else if (hasLocalData && hasRemoteData) {
+          // Merge: union of local and remote data (local wins on date conflicts)
+          const merged = mergeLocalAndRemote(localData, migrated);
+          setRawData(merged);
+          // Push any local-only workouts to Supabase
+          db.importLocalDataToSupabase(user.id, merged).catch(console.error);
         } else {
           setRawData(migrated);
         }
@@ -299,6 +374,25 @@ export const useWorkoutStorage = (user) => {
     });
   }, []);
 
+  const saveFreeWorkout = useCallback((workout) => {
+    const entry = {
+      ...workout,
+      id: workout.id || `free_${Date.now()}`,
+      date: workout.date || new Date().toISOString()
+    };
+    setRawData(prev => ({
+      ...prev,
+      freeWorkoutLog: [...(prev.freeWorkoutLog || []), entry]
+    }));
+  }, []);
+
+  const deleteFreeWorkout = useCallback((workoutId) => {
+    setRawData(prev => ({
+      ...prev,
+      freeWorkoutLog: (prev.freeWorkoutLog || []).filter(w => w.id !== workoutId)
+    }));
+  }, []);
+
   return {
     data,
     saveWorkout,
@@ -315,6 +409,8 @@ export const useWorkoutStorage = (user) => {
     deleteCustomProgram,
     setActiveProgram,
     markOnboardingComplete,
+    saveFreeWorkout,
+    deleteFreeWorkout,
     syncing,
     migrationNeeded,
     migrateLocalData,

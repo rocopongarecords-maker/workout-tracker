@@ -4,7 +4,7 @@ import ExerciseLibrary from './ExerciseLibrary';
 const DAYS_OF_WEEK = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const DEFAULT_REST = { compound: '3-4 min', isolation: '1-2 min' };
 
-const ProgramBuilder = ({ onSave, onBack, existingProgram }) => {
+const ProgramBuilder = ({ onSave, onPublish, onBack, existingProgram }) => {
   const [step, setStep] = useState(1);
   const [name, setName] = useState(existingProgram?.name || '');
   const [weeks, setWeeks] = useState(existingProgram?.weeks || 8);
@@ -356,12 +356,25 @@ const ProgramBuilder = ({ onSave, onBack, existingProgram }) => {
             Next
           </button>
         ) : (
-          <button
-            onClick={handleSave}
-            className="flex-1 py-3 bg-gradient-to-r from-emerald-500 to-green-500 text-white rounded-xl font-semibold shadow-lg shadow-emerald-500/25 active:scale-[0.98] transition-transform"
-          >
-            Save Program
-          </button>
+          <div className="flex-1 flex flex-col gap-2">
+            <button
+              onClick={handleSave}
+              className="w-full py-3 bg-gradient-to-r from-emerald-500 to-green-500 text-white rounded-xl font-semibold shadow-lg shadow-emerald-500/25 active:scale-[0.98] transition-transform"
+            >
+              Save Program
+            </button>
+            {onPublish && existingProgram && !existingProgram.isPublished && (
+              <button
+                onClick={() => {
+                  const prog = { id: existingProgram.id, name, weeks, workoutDays, isCustom: true, createdAt: existingProgram.createdAt };
+                  onPublish(prog);
+                }}
+                className="w-full py-3 border border-blue-500/30 text-blue-400 rounded-xl font-semibold hover:bg-blue-500/10 transition-colors text-sm"
+              >
+                Publish to Marketplace
+              </button>
+            )}
+          </div>
         )}
       </div>
     </div>
