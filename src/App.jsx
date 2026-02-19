@@ -25,7 +25,6 @@ import ProgramSelector from './components/ProgramSelector';
 import ProgramBuilder from './components/ProgramBuilder';
 import FreeWorkoutScreen from './components/FreeWorkoutScreen';
 import OnboardingScreen from './components/OnboardingScreen';
-import MarketplaceBrowse from './components/MarketplaceBrowse';
 import MarketplaceDetail from './components/MarketplaceDetail';
 import PublishProgram from './components/PublishProgram';
 import ProgramFeed from './components/ProgramFeed';
@@ -329,8 +328,12 @@ function App() {
             onSelectProgram={setActiveProgram}
             onCreateProgram={() => setCurrentView('program-builder')}
             onDeleteProgram={deleteCustomProgram}
-            onBrowseMarketplace={() => setCurrentView('marketplace-browse')}
+            onViewProgramDetail={(prog) => {
+              setMarketplaceProgram(prog);
+              setCurrentView('marketplace-detail');
+            }}
             onBack={handleBackToDashboard}
+            marketplace={marketplace}
           />
         )}
 
@@ -355,18 +358,6 @@ function App() {
           />
         )}
 
-        {currentView === 'marketplace-browse' && (
-          <MarketplaceBrowse
-            marketplace={marketplace}
-            onSelectProgram={(prog) => {
-              setMarketplaceProgram(prog);
-              setCurrentView('marketplace-detail');
-            }}
-            onViewCreatorDashboard={() => setCurrentView('creator-dashboard')}
-            onBack={() => setCurrentView('programs')}
-          />
-        )}
-
         {currentView === 'marketplace-detail' && marketplaceProgram && (
           <MarketplaceDetail
             program={marketplaceProgram}
@@ -379,7 +370,7 @@ function App() {
               setCurrentView('program-feed');
             }}
             onShare={() => {}}
-            onBack={() => setCurrentView('marketplace-browse')}
+            onBack={() => setCurrentView('programs')}
           />
         )}
 
@@ -412,7 +403,7 @@ function App() {
               setMarketplaceProgram(prog);
               setCurrentView('marketplace-detail');
             }}
-            onBack={() => setCurrentView('marketplace-browse')}
+            onBack={() => setCurrentView('programs')}
           />
         )}
 
