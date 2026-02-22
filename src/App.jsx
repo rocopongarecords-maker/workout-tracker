@@ -203,13 +203,11 @@ function App() {
 
       {/* Global brand bar — hidden during active workout and summary */}
       {!['workout', 'summary', 'free-workout'].includes(currentView) && (
-        <div className="flex items-center gap-2 max-w-lg mx-auto px-4 py-2.5 border-b border-white/[0.07]">
-          <img
-            src={`${import.meta.env.BASE_URL}icons/icon-192.png`}
-            className="w-6 h-6 rounded-lg"
-            alt="ZW"
-          />
-          <span className="text-xs font-bold text-white/60 tracking-widest uppercase">ZeroWait</span>
+        <div className="flex items-center gap-2 max-w-lg mx-auto px-4 py-2.5 border-b border-white/[0.08]">
+          <div className="w-6 h-6 rounded-lg bg-blue-600 flex items-center justify-center flex-shrink-0">
+            <span className="text-white text-[11px] font-black">Z</span>
+          </div>
+          <span className="text-xs font-bold text-white/70 tracking-widest uppercase">ZeroWait</span>
         </div>
       )}
 
