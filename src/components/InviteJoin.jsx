@@ -90,7 +90,7 @@ const InviteJoin = ({ token, marketplace, saveCustomProgram, onBack, onJoined })
           <p className="text-slate-400 text-sm text-center max-w-sm">{error}</p>
           <button
             onClick={onBack}
-            className="mt-6 px-6 py-3 rounded-xl bg-slate-800/50 border border-slate-700/50 text-white font-semibold hover:border-slate-600 transition-colors"
+            className="mt-6 px-6 py-3 rounded-xl bg-app-surface/50 border border-white/[0.08] text-white font-semibold hover:border-white/[0.08] transition-colors"
           >
             Go Back
           </button>
@@ -139,7 +139,7 @@ const InviteJoin = ({ token, marketplace, saveCustomProgram, onBack, onJoined })
       </div>
 
       {/* Program card */}
-      <div className="bg-slate-800/50 border border-slate-700/50 rounded-2xl p-6">
+      <div className="bg-app-surface/50 border border-white/[0.08] rounded-2xl p-6">
         <h3 className="text-xl font-bold text-white mb-1">{program.name}</h3>
         <p className="text-sm text-slate-400 mb-3">
           {program.is_builtin ? (

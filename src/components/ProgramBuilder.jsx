@@ -123,7 +123,7 @@ const ProgramBuilder = ({ onSave, onPublish, onBack, existingProgram }) => {
           <div
             key={s}
             className={`h-1 flex-1 rounded-full transition-all ${
-              s <= step ? 'bg-gradient-to-r from-blue-500 to-blue-600' : 'bg-white/10'
+              s <= step ? 'bg-gradient-to-r from-blue-500 to-blue-600' : 'bg-white/[0.08]'
             }`}
           />
         ))}
@@ -142,7 +142,7 @@ const ProgramBuilder = ({ onSave, onPublish, onBack, existingProgram }) => {
               placeholder="e.g., Upper/Lower Split"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-3 bg-black/20 text-white rounded-xl border border-white/10 focus:border-blue-500/50 outline-none"
+              className="w-full px-4 py-3 bg-black/20 text-white rounded-xl border border-white/[0.08] focus:border-blue-500/50 outline-none"
             />
           </div>
           <div>
@@ -150,7 +150,7 @@ const ProgramBuilder = ({ onSave, onPublish, onBack, existingProgram }) => {
             <select
               value={weeks}
               onChange={(e) => setWeeks(Number(e.target.value))}
-              className="w-full px-4 py-3 bg-black/20 text-white rounded-xl border border-white/10 focus:border-blue-500/50 outline-none"
+              className="w-full px-4 py-3 bg-black/20 text-white rounded-xl border border-white/[0.08] focus:border-blue-500/50 outline-none"
             >
               {[4, 6, 8, 10, 12, 16, 20, 24].map(w => (
                 <option key={w} value={w}>{w} weeks</option>
@@ -179,7 +179,7 @@ const ProgramBuilder = ({ onSave, onPublish, onBack, existingProgram }) => {
                   className={`py-3 rounded-xl text-sm font-semibold transition-all ${
                     isSelected
                       ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/25'
-                      : 'bg-white/5 text-slate-400 hover:bg-white/10'
+                      : 'bg-white/[0.05] text-slate-400 hover:bg-white/[0.08]'
                   }`}
                 >
                   {day}
@@ -198,7 +198,7 @@ const ProgramBuilder = ({ onSave, onPublish, onBack, existingProgram }) => {
                     type="text"
                     value={d.name}
                     onChange={(e) => updateDayName(d.dayOfWeek, e.target.value)}
-                    className="flex-1 px-3 py-2 bg-black/20 text-white rounded-lg border border-white/10 text-sm focus:border-blue-500/50 outline-none"
+                    className="flex-1 px-3 py-2 bg-black/20 text-white rounded-lg border border-white/[0.08] text-sm focus:border-blue-500/50 outline-none"
                   />
                 </div>
               ))}
@@ -223,7 +223,7 @@ const ProgramBuilder = ({ onSave, onPublish, onBack, existingProgram }) => {
                 className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
                   currentDayIndex === i
                     ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/25'
-                    : 'bg-white/5 text-slate-400 hover:bg-white/10'
+                    : 'bg-white/[0.05] text-slate-400 hover:bg-white/[0.08]'
                 }`}
               >
                 {d.name}
@@ -256,7 +256,7 @@ const ProgramBuilder = ({ onSave, onPublish, onBack, existingProgram }) => {
                       <select
                         value={ex.sets}
                         onChange={(e) => updateExercise(currentDayIndex, exIdx, 'sets', Number(e.target.value))}
-                        className="w-full px-2 py-1.5 bg-black/20 text-white rounded-lg text-sm border border-white/10 outline-none"
+                        className="w-full px-2 py-1.5 bg-black/20 text-white rounded-lg text-sm border border-white/[0.08] outline-none"
                       >
                         {[1, 2, 3, 4, 5, 6].map(s => (
                           <option key={s} value={s}>{s}</option>
@@ -269,7 +269,7 @@ const ProgramBuilder = ({ onSave, onPublish, onBack, existingProgram }) => {
                         type="text"
                         value={ex.reps}
                         onChange={(e) => updateExercise(currentDayIndex, exIdx, 'reps', e.target.value)}
-                        className="w-full px-2 py-1.5 bg-black/20 text-white rounded-lg text-sm border border-white/10 outline-none"
+                        className="w-full px-2 py-1.5 bg-black/20 text-white rounded-lg text-sm border border-white/[0.08] outline-none"
                         placeholder="e.g., 8-12"
                       />
                     </div>
@@ -279,7 +279,7 @@ const ProgramBuilder = ({ onSave, onPublish, onBack, existingProgram }) => {
 
               <button
                 onClick={() => setShowExerciseLibrary(true)}
-                className="w-full py-3 glass-card-interactive text-blue-400 font-semibold flex items-center justify-center gap-2 border-2 border-dashed border-white/10"
+                className="w-full py-3 glass-card-interactive text-blue-400 font-semibold flex items-center justify-center gap-2 border-2 border-dashed border-white/[0.08]"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="12" y1="5" x2="12" y2="19" />
@@ -351,7 +351,7 @@ const ProgramBuilder = ({ onSave, onPublish, onBack, existingProgram }) => {
           <button
             onClick={() => setStep(step + 1)}
             disabled={!canProceed()}
-            className="flex-1 py-3 btn-primary disabled:bg-slate-600 disabled:text-slate-400 disabled:shadow-none"
+            className="flex-1 py-3 btn-primary disabled:bg-app-surface-light disabled:text-slate-400 disabled:shadow-none"
           >
             Next
           </button>

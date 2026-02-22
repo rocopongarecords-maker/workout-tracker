@@ -11,13 +11,13 @@ const MigrationBanner = ({ onMigrate, onDismiss, syncing }) => {
         <button
           onClick={onMigrate}
           disabled={syncing}
-          className="flex-1 py-2 bg-blue-500 text-white rounded-lg text-sm font-semibold hover:bg-blue-600 disabled:bg-slate-600 transition-colors"
+          className="flex-1 py-2 bg-blue-500 text-white rounded-lg text-sm font-semibold hover:bg-blue-600 disabled:bg-app-surface-light transition-colors"
         >
           {syncing ? 'Uploading...' : 'Upload Data'}
         </button>
         <button
           onClick={onDismiss}
-          className="px-4 py-2 bg-slate-700 text-slate-300 rounded-lg text-sm hover:bg-slate-600 transition-colors"
+          className="px-4 py-2 bg-app-surface-light text-slate-300 rounded-lg text-sm hover:bg-app-surface-light/80 transition-colors"
         >
           Skip
         </button>

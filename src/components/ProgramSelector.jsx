@@ -175,7 +175,7 @@ const ProgramSelector = ({
               <span className="text-[10px] text-slate-400">{activeDetails.weeks} weeks</span>
               <span className="text-[10px] text-slate-400">{activeDetails.daysPerWeek || activeDetails.workoutDays?.length || '?'} days/week</span>
               <span className="text-[10px] text-slate-400">
-                {activeDetails.isBuiltIn ? 'by ZWAR' : activeDetails.isCustom ? 'by you' : ''}
+                {activeDetails.isBuiltIn ? 'by ZWAR' : activeDetails.isCoached ? `by ${activeDetails.coachName || 'Coach'}` : activeDetails.isCustom ? 'by you' : ''}
               </span>
             </div>
           </div>
@@ -192,7 +192,7 @@ const ProgramSelector = ({
           value={searchQuery}
           onChange={(e) => handleSearchChange(e.target.value)}
           placeholder="Search programs..."
-          className="w-full bg-slate-800/50 border border-slate-700/50 rounded-xl pl-10 pr-4 py-3 text-white text-sm placeholder-slate-500 focus:outline-none focus:border-blue-500/50"
+          className="w-full bg-app-surface/50 border border-white/[0.08] rounded-xl pl-10 pr-4 py-3 text-white text-sm placeholder-slate-500 focus:outline-none focus:border-blue-500/50"
         />
       </div>
 
@@ -205,7 +205,7 @@ const ProgramSelector = ({
             className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${
               selectedCategory === category
                 ? 'bg-blue-600 text-white'
-                : 'bg-slate-800/50 text-slate-400 hover:text-white'
+                : 'bg-app-surface/50 text-slate-400 hover:text-white'
             }`}
           >
             {category}
@@ -222,7 +222,7 @@ const ProgramSelector = ({
             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
               selectedDifficulty === difficulty
                 ? 'bg-blue-600 text-white'
-                : 'bg-slate-800/50 text-slate-400 hover:text-white'
+                : 'bg-app-surface/50 text-slate-400 hover:text-white'
             }`}
           >
             {difficulty}
@@ -260,8 +260,8 @@ const ProgramSelector = ({
             isActive={activeProgramId === program.id}
             onSelect={() => onSelectProgram(program.id)}
             onDelete={() => onDeleteProgram(program.id)}
-            tag="My Program"
-            tagColor="text-blue-400"
+            tag={program.isCoached ? `${program.coachName || 'Coach'}'s Plan` : 'My Program'}
+            tagColor={program.isCoached ? 'text-emerald-400' : 'text-blue-400'}
           />
         ))}
 
@@ -293,7 +293,7 @@ const ProgramSelector = ({
       {/* Create custom program */}
       <button
         onClick={onCreateProgram}
-        className="w-full py-4 glass-card-interactive text-blue-400 font-semibold flex items-center justify-center gap-2 border-2 border-dashed border-white/10"
+        className="w-full py-4 glass-card-interactive text-blue-400 font-semibold flex items-center justify-center gap-2 border-2 border-dashed border-white/[0.08]"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <line x1="12" y1="5" x2="12" y2="19" />
@@ -353,12 +353,12 @@ const ProgramCard = ({ program, isActive, onSelect, onDelete, onViewDetail, tag,
         {/* Metadata row */}
         <div className="flex flex-wrap items-center gap-2 mt-2">
           {program.category && (
-            <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${CATEGORY_COLORS[categoryKey] || 'bg-slate-700/50 text-slate-300'}`}>
+            <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${CATEGORY_COLORS[categoryKey] || 'bg-app-surface-light/50 text-slate-300'}`}>
               {program.category}
             </span>
           )}
           {program.difficulty && (
-            <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${DIFFICULTY_COLORS[difficultyKey] || 'bg-slate-700/50 text-slate-300'}`}>
+            <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${DIFFICULTY_COLORS[difficultyKey] || 'bg-app-surface-light/50 text-slate-300'}`}>
               {program.difficulty}
             </span>
           )}

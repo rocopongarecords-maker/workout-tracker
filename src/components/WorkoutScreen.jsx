@@ -97,6 +97,22 @@ const WorkoutScreen = ({ dayNumber, workoutType, block, editing, onSave, onCompl
   useEffect(() => {
     const exerciseList = getExercisesForDay(dayNumber);
     if (exerciseList) {
+      // Check for work-in-progress data
+      const wipKey = 'workout_in_progress';
+      const wipRaw = localStorage.getItem(wipKey);
+      if (wipRaw && !editing) {
+        try {
+          const wip = JSON.parse(wipRaw);
+          if (wip.dayNumber === dayNumber && Date.now() - wip.timestamp < 24 * 60 * 60 * 1000) {
+            setExercises(wip.exercises);
+            if (wip.notes) setWorkoutNotes(wip.notes);
+            const lastCompleted = getLastCompletedWorkoutForType(workoutType, workoutHistory, completedWorkouts);
+            setLastWorkout(lastCompleted);
+            return;
+          }
+        } catch (e) { /* ignore corrupt WIP */ }
+      }
+
       const savedHistory = editing ? workoutHistory[dayNumber] : null;
 
       const initialExercises = exerciseList.map(ex => {
@@ -116,6 +132,20 @@ const WorkoutScreen = ({ dayNumber, workoutType, block, editing, onSave, onCompl
       setLastWorkout(lastCompleted);
     }
   }, [dayNumber, workoutType, block, editing]);
+
+  // Auto-save workout-in-progress when exercises change (even unsaved sets)
+  useEffect(() => {
+    if (exercises.length > 0) {
+      localStorage.setItem('workout_in_progress', JSON.stringify({
+        dayNumber,
+        workoutType,
+        block,
+        exercises,
+        notes: workoutNotes,
+        timestamp: Date.now()
+      }));
+    }
+  }, [exercises, workoutNotes]);
 
   const handleExerciseChange = (exerciseName, newSets) => {
     setExercises(prev => prev.map(ex =>
@@ -197,6 +227,7 @@ const WorkoutScreen = ({ dayNumber, workoutType, block, editing, onSave, onCompl
 
   const handleComplete = () => {
     handleSave();
+    localStorage.removeItem('workout_in_progress');
     haptic.workoutComplete();
     onComplete(dayNumber);
   };
@@ -227,7 +258,7 @@ const WorkoutScreen = ({ dayNumber, workoutType, block, editing, onSave, onCompl
 
       {/* Sticky progress bar */}
       {totalSets > 0 && (
-        <div className="sticky top-0 z-30 -mx-4 px-4 py-2.5 bg-slate-950/80 backdrop-blur-xl border-b border-white/5">
+        <div className="sticky top-0 z-30 -mx-4 px-4 py-2.5 bg-app-bg/80 backdrop-blur-xl border-b border-white/5">
           <div className="flex items-center justify-between text-xs text-slate-400 mb-1.5">
             <span className="font-medium">{workoutName}</span>
             <span className="stat-number text-white text-sm">{completedSets}/{totalSets}</span>
@@ -353,7 +384,7 @@ const WorkoutScreen = ({ dayNumber, workoutType, block, editing, onSave, onCompl
       </div>
 
       {/* Workout Notes */}
-      <div className="bg-slate-800 rounded-xl p-4">
+      <div className="bg-app-surface rounded-xl p-4">
         <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 block">
           Workout Notes
         </label>
@@ -361,13 +392,13 @@ const WorkoutScreen = ({ dayNumber, workoutType, block, editing, onSave, onCompl
           value={workoutNotes}
           onChange={(e) => setWorkoutNotes(e.target.value)}
           placeholder="How did it feel? Any adjustments?"
-          className="w-full bg-black/20 text-white p-3 rounded-lg text-sm border border-white/10 focus:border-blue-500/50 outline-none resize-none placeholder-slate-600"
+          className="w-full bg-black/20 text-white p-3 rounded-lg text-sm border border-white/[0.08] focus:border-blue-500/50 outline-none resize-none placeholder-slate-600"
           rows={2}
         />
       </div>
 
       {/* Bottom action bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-slate-950/80 backdrop-blur-xl border-t border-white/10 p-4 safe-area-bottom">
+      <div className="fixed bottom-0 left-0 right-0 bg-app-bg/80 backdrop-blur-xl border-t border-white/[0.08] p-4 safe-area-bottom">
         <div className="flex gap-3 max-w-lg mx-auto">
           <button
             onClick={handleSave}
@@ -405,7 +436,7 @@ const WorkoutScreen = ({ dayNumber, workoutType, block, editing, onSave, onCompl
                 Stay
               </button>
               <button
-                onClick={() => { setShowBackGuard(false); onCancel(); }}
+                onClick={() => { setShowBackGuard(false); localStorage.removeItem('workout_in_progress'); onCancel(); }}
                 className="flex-1 py-3 btn-danger"
               >
                 Leave

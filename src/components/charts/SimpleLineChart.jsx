@@ -12,8 +12,13 @@ const SimpleLineChart = ({ data, width = 320, height = 180, color = '#3b82f6', l
   const chartH = height - padding.top - padding.bottom;
 
   const values = data.map(d => d.value);
-  const minVal = Math.min(...values);
-  const maxVal = Math.max(...values);
+  const dataMin = Math.min(...values);
+  const dataMax = Math.max(...values);
+  const dataRange = dataMax - dataMin;
+  // Tight scaling: at least 1 unit of padding so small changes are visible
+  const pad = Math.max(dataRange * 0.15, 1);
+  const minVal = dataMin - pad;
+  const maxVal = dataMax + pad;
   const range = maxVal - minVal || 1;
 
   const scaleX = (i) => padding.left + (i / (data.length - 1)) * chartW;
@@ -30,8 +35,9 @@ const SimpleLineChart = ({ data, width = 320, height = 180, color = '#3b82f6', l
 
   const gradientId = `gradient-${label?.replace(/\s+/g, '-') || 'default'}`;
 
-  // Y-axis labels (3 ticks)
-  const yTicks = [minVal, minVal + range / 2, maxVal];
+  // Y-axis labels (5 ticks for better granularity)
+  const yTicks = Array.from({ length: 5 }, (_, i) => minVal + (range * i) / 4);
+  const useDecimal = dataRange < 5;
 
   return (
     <svg viewBox={`0 0 ${width} ${height}`} className="w-full" preserveAspectRatio="xMidYMid meet">
@@ -54,7 +60,7 @@ const SimpleLineChart = ({ data, width = 320, height = 180, color = '#3b82f6', l
             x={padding.left - 5} y={scaleY(tick) + 4}
             textAnchor="end" fill="#64748b" fontSize="10"
           >
-            {Math.round(tick)}
+            {useDecimal ? tick.toFixed(1) : Math.round(tick)}
           </text>
         </g>
       ))}

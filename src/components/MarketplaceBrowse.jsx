@@ -75,7 +75,7 @@ const MarketplaceBrowse = ({ marketplace, onSelectProgram, onViewCreatorDashboar
       {/* My Programs / Creator Dashboard card */}
       <button
         onClick={onViewCreatorDashboard}
-        className="w-full bg-slate-800/50 border border-slate-700/50 rounded-2xl p-4 flex items-center justify-between hover:border-blue-500/30 transition-colors"
+        className="w-full bg-app-surface/50 border border-white/[0.08] rounded-2xl p-4 flex items-center justify-between hover:border-blue-500/30 transition-colors"
       >
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
@@ -101,7 +101,7 @@ const MarketplaceBrowse = ({ marketplace, onSelectProgram, onViewCreatorDashboar
           value={searchQuery}
           onChange={(e) => handleSearchChange(e.target.value)}
           placeholder="Search programs..."
-          className="w-full bg-slate-800/50 border border-slate-700/50 rounded-xl pl-10 pr-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500/50"
+          className="w-full bg-app-surface/50 border border-white/[0.08] rounded-xl pl-10 pr-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500/50"
         />
       </div>
 
@@ -114,7 +114,7 @@ const MarketplaceBrowse = ({ marketplace, onSelectProgram, onViewCreatorDashboar
             className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
               selectedCategory === category
                 ? 'bg-blue-600 text-white'
-                : 'bg-slate-800/50 text-slate-400 hover:text-white'
+                : 'bg-app-surface/50 text-slate-400 hover:text-white'
             }`}
           >
             {category}
@@ -131,7 +131,7 @@ const MarketplaceBrowse = ({ marketplace, onSelectProgram, onViewCreatorDashboar
             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
               selectedDifficulty === difficulty
                 ? 'bg-blue-600 text-white'
-                : 'bg-slate-800/50 text-slate-400 hover:text-white'
+                : 'bg-app-surface/50 text-slate-400 hover:text-white'
             }`}
           >
             {difficulty}
@@ -168,7 +168,7 @@ const MarketplaceBrowse = ({ marketplace, onSelectProgram, onViewCreatorDashboar
               <button
                 key={program.id}
                 onClick={() => onSelectProgram(program)}
-                className="w-full bg-slate-800/50 border border-slate-700/50 rounded-2xl p-4 text-left hover:border-blue-500/30 transition-colors"
+                className="w-full bg-app-surface/50 border border-white/[0.08] rounded-2xl p-4 text-left hover:border-blue-500/30 transition-colors"
               >
                 {/* Header: Name + Author */}
                 <div className="flex items-start justify-between mb-2">
@@ -200,12 +200,12 @@ const MarketplaceBrowse = ({ marketplace, onSelectProgram, onViewCreatorDashboar
                 {/* Pills + Details */}
                 <div className="flex flex-wrap items-center gap-2">
                   {program.category && (
-                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${CATEGORY_COLORS[categoryKey] || 'bg-slate-700/50 text-slate-300'}`}>
+                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${CATEGORY_COLORS[categoryKey] || 'bg-app-surface-light/50 text-slate-300'}`}>
                       {program.category}
                     </span>
                   )}
                   {program.difficulty && (
-                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${DIFFICULTY_COLORS[difficultyKey] || 'bg-slate-700/50 text-slate-300'}`}>
+                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${DIFFICULTY_COLORS[difficultyKey] || 'bg-app-surface-light/50 text-slate-300'}`}>
                       {program.difficulty}
                     </span>
                   )}

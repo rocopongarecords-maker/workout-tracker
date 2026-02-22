@@ -1,5 +1,5 @@
 const Bone = ({ className = '' }) => (
-  <div className={`bg-white/5 rounded-lg animate-shimmer ${className}`} />
+  <div className={`bg-white/[0.05] rounded-lg animate-shimmer ${className}`} />
 );
 
 const LoadingSkeleton = () => {

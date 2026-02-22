@@ -1,13 +1,18 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { calculate1RM } from '../utils/calculate1RM';
 import { calculateWorkoutVolume } from '../utils/calculateVolume';
 import { calculateStreakWithFreeze } from '../utils/checkBadges';
+import { exerciseLibrary } from '../data/exerciseLibrary';
 import SimpleLineChart from './charts/SimpleLineChart';
 import SimpleBarChart from './charts/SimpleBarChart';
+
+const ANALYTICS_TABS = ['Volume', 'Weight', 'PRs', 'Frequency', 'Muscles'];
 
 const LIFT_COLORS = ['#ef4444', '#3b82f6', '#22c55e', '#a855f7', '#f59e0b', '#ec4899', '#14b8a6', '#f97316'];
 
 const AnalyticsScreen = ({ workoutHistory, completedWorkouts, onBack, schedule, weightLog }) => {
+  const [selectedTab, setSelectedTab] = useState(0);
+
   // ── Dynamic Lift Detection ──
   const trackedLifts = useMemo(() => {
     const exerciseCounts = {};
@@ -153,160 +158,264 @@ const AnalyticsScreen = ({ workoutHistory, completedWorkouts, onBack, schedule, 
     }));
   }, [weightLog]);
 
+  // ── Muscle Distribution ──
+  const muscleDistribution = useMemo(() => {
+    const muscleCounts = {};
+
+    for (const day of completedWorkouts) {
+      const workout = workoutHistory[day];
+      if (!workout?.exercises) continue;
+
+      for (const ex of workout.exercises) {
+        const libraryEntry = exerciseLibrary.find(e => e.name === ex.name);
+        if (!libraryEntry) continue;
+
+        const completedSets = (ex.userSets || []).filter(s => s.completed).length;
+        for (const muscle of libraryEntry.muscles) {
+          muscleCounts[muscle] = (muscleCounts[muscle] || 0) + completedSets;
+        }
+      }
+    }
+
+    return Object.entries(muscleCounts)
+      .map(([muscle, count]) => ({ muscle, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 10);
+  }, [workoutHistory, completedWorkouts]);
+
+  // Max count for muscle distribution bar scaling
+  const maxMuscleCount = muscleDistribution.length > 0 ? muscleDistribution[0].count : 1;
+
   return (
     <div className="space-y-6 pb-8">
-      <div className="flex items-center justify-between">
-        <button onClick={onBack} className="btn-back">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="m15 18-6-6 6-6" />
-          </svg>
-          Back
-        </button>
-      </div>
-
       <div className="text-center">
         <h1 className="text-2xl font-bold text-white mb-1">Analytics</h1>
         <p className="text-slate-400 text-sm">Track your progress over time</p>
       </div>
 
-      {/* Consistency Stats */}
-      <div className="grid grid-cols-2 gap-3">
-        <div className="glass-card p-4 text-center animate-fade-in-up">
-          <div className="stat-number text-3xl">{consistency.currentStreak}</div>
-          <div className="text-[10px] text-slate-500 uppercase tracking-wider mt-1">Current Streak</div>
-        </div>
-        <div className="glass-card p-4 text-center animate-fade-in-up stagger-1">
-          <div className="stat-number text-3xl">{consistency.longestStreak}</div>
-          <div className="text-[10px] text-slate-500 uppercase tracking-wider mt-1">Longest Streak</div>
-        </div>
-        <div className="glass-card p-4 text-center animate-fade-in-up stagger-2">
-          <div className="stat-number text-3xl">{consistency.perfectWeeks}</div>
-          <div className="text-[10px] text-slate-500 uppercase tracking-wider mt-1">Perfect Weeks</div>
-        </div>
-        <div className="glass-card p-4 text-center animate-fade-in-up stagger-3">
-          <div className="stat-number text-3xl">{consistency.totalWorkouts}</div>
-          <div className="text-[10px] text-slate-500 uppercase tracking-wider mt-1">Total Workouts</div>
-        </div>
+      {/* Tab Selector */}
+      <div
+        className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide"
+        style={{ WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+      >
+        {ANALYTICS_TABS.map((tab, index) => (
+          <button
+            key={tab}
+            onClick={() => setSelectedTab(index)}
+            className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 ${
+              selectedTab === index ? 'text-white' : 'text-slate-400'
+            }`}
+            style={
+              selectedTab === index
+                ? { background: 'linear-gradient(to right, rgb(var(--color-primary)), rgb(var(--color-primary-dark)))' }
+                : { backgroundColor: 'rgb(var(--bg-surface-light))' }
+            }
+          >
+            {tab}
+          </button>
+        ))}
       </div>
 
-      {/* Streak freeze info */}
-      {consistency.freezesUsed > 0 && (
-        <div className="flex items-center justify-center gap-2 text-xs text-amber-400/80 animate-fade-in-up stagger-3">
-          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-          </svg>
-          {consistency.freezesUsed} streak freeze{consistency.freezesUsed !== 1 ? 's' : ''} used
-        </div>
+      {/* ── Volume Tab ── */}
+      {selectedTab === 0 && (
+        <>
+          {/* Consistency Stats */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="glass-card p-4 text-center animate-fade-in-up">
+              <div className="stat-number text-3xl">{consistency.totalWorkouts}</div>
+              <div className="text-[10px] text-slate-500 uppercase tracking-wider mt-1">Total Workouts</div>
+            </div>
+            <div className="glass-card p-4 text-center animate-fade-in-up stagger-1">
+              <div className="stat-number text-3xl">{consistency.perfectWeeks}</div>
+              <div className="text-[10px] text-slate-500 uppercase tracking-wider mt-1">Perfect Weeks</div>
+            </div>
+          </div>
+
+          {/* Weekly Volume */}
+          <div className="glass-card p-4 animate-fade-in-up stagger-2">
+            <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Weekly Volume</h2>
+            <div className="text-xs text-slate-500 mb-2">
+              <span className="inline-block w-2 h-2 rounded-full bg-blue-500 mr-1"></span> Block 1
+              <span className="inline-block w-2 h-2 rounded-full bg-purple-500 mr-1 ml-3"></span> Block 2
+            </div>
+            <SimpleBarChart
+              data={weeklyVolume}
+              label="Total Volume (kg)"
+              height={160}
+            />
+          </div>
+        </>
       )}
 
-      {/* Calendar Heatmap */}
-      <div className="glass-card p-4 animate-fade-in-up stagger-4">
-        <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Activity Map</h2>
-        <div className="overflow-x-auto">
-          <div className="flex gap-[3px]">
-            {heatmapWeeks.map((week, wIdx) => (
-              <div key={wIdx} className="flex flex-col gap-[3px]">
-                {week.map((day) => {
-                  let color = 'bg-white/5';
-                  if (!day.rest) {
-                    color = day.completed ? 'bg-green-500 shadow-sm shadow-green-500/30' : 'bg-white/10';
-                  }
-                  return (
-                    <div
-                      key={day.day}
-                      className={`w-3 h-3 rounded-sm ${color}`}
-                      title={`Day ${day.day} — ${day.rest ? 'Rest' : day.type}${day.completed ? ' (done)' : ''}`}
-                    />
-                  );
-                })}
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="flex items-center gap-4 mt-3 text-xs text-slate-500">
-          <span className="flex items-center gap-1">
-            <div className="w-3 h-3 rounded-sm bg-green-500" /> Done
-          </span>
-          <span className="flex items-center gap-1">
-            <div className="w-3 h-3 rounded-sm bg-white/10" /> Pending
-          </span>
-          <span className="flex items-center gap-1">
-            <div className="w-3 h-3 rounded-sm bg-white/5" /> Rest
-          </span>
-        </div>
-      </div>
-
-      {/* Body Weight Trend */}
-      {weightTrendData.length >= 2 && (
-        <div className="glass-card p-4 animate-fade-in-up stagger-5">
-          <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Body Weight Trend</h2>
-          <SimpleLineChart
-            data={weightTrendData}
-            color="#f59e0b"
-            label="Body Weight (kg)"
-            height={140}
-          />
-        </div>
-      )}
-
-      {/* 1RM Trends */}
-      <div className="glass-card p-4 animate-fade-in-up stagger-6">
-        <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Estimated 1RM Trends</h2>
-
-        {trackedLifts.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-4">
-            {trackedLifts.map(lift => {
-              const hasData = rmTrends[lift.name]?.length >= 2;
-              return (
-                <span
-                  key={lift.name}
-                  className={`text-xs px-2.5 py-1 rounded-full font-semibold ${
-                    hasData ? 'opacity-100' : 'opacity-40'
-                  }`}
-                  style={{ backgroundColor: `${lift.color}15`, color: lift.color }}
-                >
-                  {lift.name.replace('Barbell ', '')}
-                  {hasData && ` ${rmTrends[lift.name][rmTrends[lift.name].length - 1].value}kg`}
-                </span>
-              );
-            })}
-          </div>
-        )}
-
-        {trackedLifts.map(lift => {
-          if (!rmTrends[lift.name] || rmTrends[lift.name].length < 2) return null;
-          return (
-            <div key={lift.name} className="mb-4 last:mb-0">
+      {/* ── Weight Tab ── */}
+      {selectedTab === 1 && (
+        <>
+          {weightTrendData.length >= 2 ? (
+            <div className="glass-card p-4 animate-fade-in-up">
+              <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Body Weight Trend</h2>
               <SimpleLineChart
-                data={rmTrends[lift.name]}
-                color={lift.color}
-                label={lift.name}
+                data={weightTrendData}
+                color="#f59e0b"
+                label="Body Weight (kg)"
                 height={140}
               />
             </div>
-          );
-        })}
+          ) : (
+            <div className="glass-card p-6 animate-fade-in-up">
+              <div className="text-center text-slate-500 text-sm">
+                Log at least 2 weight entries to see your trend
+              </div>
+            </div>
+          )}
+        </>
+      )}
 
-        {trackedLifts.length === 0 && (
-          <div className="text-center text-slate-500 text-sm py-6">
-            Complete more workouts to see 1RM trends
-          </div>
-        )}
-      </div>
+      {/* ── PRs Tab ── */}
+      {selectedTab === 2 && (
+        <div className="glass-card p-4 animate-fade-in-up">
+          <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Estimated 1RM Trends</h2>
 
-      {/* Weekly Volume */}
-      <div className="glass-card p-4 animate-fade-in-up stagger-7">
-        <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Weekly Volume</h2>
-        <div className="text-xs text-slate-500 mb-2">
-          <span className="inline-block w-2 h-2 rounded-full bg-blue-500 mr-1"></span> Block 1
-          <span className="inline-block w-2 h-2 rounded-full bg-purple-500 mr-1 ml-3"></span> Block 2
+          {trackedLifts.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-4">
+              {trackedLifts.map(lift => {
+                const hasData = rmTrends[lift.name]?.length >= 2;
+                return (
+                  <span
+                    key={lift.name}
+                    className={`text-xs px-2.5 py-1 rounded-full font-semibold ${
+                      hasData ? 'opacity-100' : 'opacity-40'
+                    }`}
+                    style={{ backgroundColor: `${lift.color}15`, color: lift.color }}
+                  >
+                    {lift.name.replace('Barbell ', '')}
+                    {hasData && ` ${rmTrends[lift.name][rmTrends[lift.name].length - 1].value}kg`}
+                  </span>
+                );
+              })}
+            </div>
+          )}
+
+          {trackedLifts.map(lift => {
+            if (!rmTrends[lift.name] || rmTrends[lift.name].length < 2) return null;
+            return (
+              <div key={lift.name} className="mb-4 last:mb-0">
+                <SimpleLineChart
+                  data={rmTrends[lift.name]}
+                  color={lift.color}
+                  label={lift.name}
+                  height={140}
+                />
+              </div>
+            );
+          })}
+
+          {trackedLifts.length === 0 && (
+            <div className="text-center text-slate-500 text-sm py-6">
+              Complete more workouts to see 1RM trends
+            </div>
+          )}
         </div>
-        <SimpleBarChart
-          data={weeklyVolume}
-          label="Total Volume (kg)"
-          height={160}
-        />
-      </div>
+      )}
+
+      {/* ── Frequency Tab ── */}
+      {selectedTab === 3 && (
+        <>
+          {/* Streak Stats */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="glass-card p-4 text-center animate-fade-in-up">
+              <div className="stat-number text-3xl">{consistency.currentStreak}</div>
+              <div className="text-[10px] text-slate-500 uppercase tracking-wider mt-1">Current Streak</div>
+            </div>
+            <div className="glass-card p-4 text-center animate-fade-in-up stagger-1">
+              <div className="stat-number text-3xl">{consistency.longestStreak}</div>
+              <div className="text-[10px] text-slate-500 uppercase tracking-wider mt-1">Longest Streak</div>
+            </div>
+          </div>
+
+          {/* Streak freeze info */}
+          {consistency.freezesUsed > 0 && (
+            <div className="flex items-center justify-center gap-2 text-xs text-amber-400/80 animate-fade-in-up stagger-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              </svg>
+              {consistency.freezesUsed} streak freeze{consistency.freezesUsed !== 1 ? 's' : ''} used
+            </div>
+          )}
+
+          {/* Calendar Heatmap */}
+          <div className="glass-card p-4 animate-fade-in-up stagger-3">
+            <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Activity Map</h2>
+            <div className="overflow-x-auto">
+              <div className="flex gap-[3px]">
+                {heatmapWeeks.map((week, wIdx) => (
+                  <div key={wIdx} className="flex flex-col gap-[3px]">
+                    {week.map((day) => {
+                      let color = 'bg-white/[0.05]';
+                      if (!day.rest) {
+                        color = day.completed ? 'bg-green-500 shadow-sm shadow-green-500/30' : 'bg-white/10';
+                      }
+                      return (
+                        <div
+                          key={day.day}
+                          className={`w-3 h-3 rounded-sm ${color}`}
+                          title={`Day ${day.day} — ${day.rest ? 'Rest' : day.type}${day.completed ? ' (done)' : ''}`}
+                        />
+                      );
+                    })}
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="flex items-center gap-4 mt-3 text-xs text-slate-500">
+              <span className="flex items-center gap-1">
+                <div className="w-3 h-3 rounded-sm bg-green-500" /> Done
+              </span>
+              <span className="flex items-center gap-1">
+                <div className="w-3 h-3 rounded-sm bg-white/10" /> Pending
+              </span>
+              <span className="flex items-center gap-1">
+                <div className="w-3 h-3 rounded-sm bg-white/[0.05]" /> Rest
+              </span>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* ── Muscles Tab ── */}
+      {selectedTab === 4 && (
+        <div className="glass-card p-4 animate-fade-in-up">
+          <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Muscle Group Distribution</h2>
+
+          {muscleDistribution.length > 0 ? (
+            <div className="space-y-3">
+              {muscleDistribution.map((entry, i) => (
+                <div key={entry.muscle} className="animate-fade-in-up" style={{ animationDelay: `${i * 0.05}s` }}>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-sm text-slate-300">{entry.muscle}</span>
+                    <span className="text-xs text-slate-500">{entry.count} sets</span>
+                  </div>
+                  <div
+                    className="h-2.5 rounded-full overflow-hidden"
+                    style={{ backgroundColor: 'rgb(var(--bg-surface-light))' }}
+                  >
+                    <div
+                      className="h-full rounded-full transition-all duration-500"
+                      style={{
+                        width: `${(entry.count / maxMuscleCount) * 100}%`,
+                        background: 'linear-gradient(to right, rgb(var(--color-primary)), rgb(var(--color-primary-dark)))',
+                      }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center text-slate-500 text-sm py-6">
+              Complete workouts to see muscle distribution
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

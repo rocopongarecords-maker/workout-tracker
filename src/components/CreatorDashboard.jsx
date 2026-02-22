@@ -63,17 +63,17 @@ const CreatorDashboard = ({ marketplace, onSelectProgram, onBack }) => {
 
       {/* Stats cards */}
       <div className="grid grid-cols-3 gap-3">
-        <div className="bg-slate-800/50 border border-slate-700/50 rounded-2xl p-4 text-center">
+        <div className="bg-app-surface/50 border border-white/[0.08] rounded-2xl p-4 text-center">
           <Users size={20} className="mx-auto text-blue-400 mb-2" />
           <p className="text-2xl font-bold text-white">{totalSubscribers}</p>
           <p className="text-xs text-slate-400 mt-1">Total Subscribers</p>
         </div>
-        <div className="bg-slate-800/50 border border-slate-700/50 rounded-2xl p-4 text-center">
+        <div className="bg-app-surface/50 border border-white/[0.08] rounded-2xl p-4 text-center">
           <BarChart3 size={20} className="mx-auto text-purple-400 mb-2" />
           <p className="text-2xl font-bold text-white">{totalRatings}</p>
           <p className="text-xs text-slate-400 mt-1">Total Ratings</p>
         </div>
-        <div className="bg-slate-800/50 border border-slate-700/50 rounded-2xl p-4 text-center">
+        <div className="bg-app-surface/50 border border-white/[0.08] rounded-2xl p-4 text-center">
           <Star size={20} className="mx-auto text-yellow-400 mb-2" />
           <p className="text-2xl font-bold text-white">{avgRating ? avgRating.toFixed(1) : '--'}</p>
           <p className="text-xs text-slate-400 mt-1">Avg Rating</p>
@@ -85,8 +85,8 @@ const CreatorDashboard = ({ marketplace, onSelectProgram, onBack }) => {
         <h3 className="text-white font-semibold mb-3">Your Published Programs</h3>
 
         {published.length === 0 ? (
-          <div className="bg-slate-800/50 border border-slate-700/50 rounded-2xl p-8 text-center">
-            <BookOpen size={40} className="mx-auto text-slate-600 mb-3" />
+          <div className="bg-app-surface/50 border border-white/[0.08] rounded-2xl p-8 text-center">
+            <BookOpen size={40} className="mx-auto text-slate-500 mb-3" />
             <h4 className="text-white font-semibold mb-1">No Published Programs</h4>
             <p className="text-sm text-slate-400">
               Create a custom program and publish it to the marketplace to start building your audience.
@@ -101,7 +101,7 @@ const CreatorDashboard = ({ marketplace, onSelectProgram, onBack }) => {
                 <button
                   key={program.id}
                   onClick={() => onSelectProgram(program)}
-                  className="w-full bg-slate-800/50 border border-slate-700/50 rounded-2xl p-4 text-left hover:border-blue-500/30 transition-colors"
+                  className="w-full bg-app-surface/50 border border-white/[0.08] rounded-2xl p-4 text-left hover:border-blue-500/30 transition-colors"
                 >
                   <div className="flex items-center justify-between mb-2">
                     <h4 className="text-white font-semibold truncate flex-1 mr-2">{program.name}</h4>
@@ -114,7 +114,7 @@ const CreatorDashboard = ({ marketplace, onSelectProgram, onBack }) => {
                       <span className="text-slate-400">Subscribers</span>
                       <span className="text-white font-medium">{program.subscriber_count || 0}</span>
                     </div>
-                    <div className="w-full h-2 bg-slate-700/50 rounded-full overflow-hidden">
+                    <div className="w-full h-2 bg-app-surface-light/50 rounded-full overflow-hidden">
                       <div
                         className="h-full bg-gradient-to-r from-blue-600 to-blue-400 rounded-full transition-all duration-500"
                         style={{ width: `${subPercent}%` }}
@@ -125,7 +125,7 @@ const CreatorDashboard = ({ marketplace, onSelectProgram, onBack }) => {
                   {/* Rating + Info */}
                   <div className="flex items-center gap-3 text-xs text-slate-400">
                     <div className="flex items-center gap-1">
-                      <Star size={12} className={program.avg_rating ? 'text-yellow-400 fill-yellow-400' : 'text-slate-600'} />
+                      <Star size={12} className={program.avg_rating ? 'text-yellow-400 fill-yellow-400' : 'text-slate-500'} />
                       <span>{program.avg_rating ? program.avg_rating.toFixed(1) : '--'}</span>
                       {program.rating_count > 0 && (
                         <span>({program.rating_count})</span>

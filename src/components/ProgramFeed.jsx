@@ -107,8 +107,8 @@ const ProgramFeed = ({ programId, programName, marketplace, userId, onBack }) =>
         {!loading && posts.map((post, index) => (
           <div
             key={post.id || index}
-            className={`bg-slate-800/50 border rounded-2xl p-4 ${
-              post.is_pinned ? 'border-amber-500/30 bg-amber-500/5' : 'border-slate-700/50'
+            className={`bg-app-surface/50 border rounded-2xl p-4 ${
+              post.is_pinned ? 'border-amber-500/30 bg-amber-500/5' : 'border-white/[0.08]'
             }`}
           >
             {/* Pinned badge */}
@@ -135,7 +135,7 @@ const ProgramFeed = ({ programId, programName, marketplace, userId, onBack }) =>
       </div>
 
       {/* Bottom input bar */}
-      <div className="sticky bottom-0 pt-3 pb-2 bg-slate-950">
+      <div className="sticky bottom-0 pt-3 pb-2 bg-app-bg">
         <div className="flex items-center gap-2">
           <input
             type="text"
@@ -143,7 +143,7 @@ const ProgramFeed = ({ programId, programName, marketplace, userId, onBack }) =>
             onChange={(e) => setMessage(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Write a message..."
-            className="flex-1 bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-3 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-blue-500/50"
+            className="flex-1 bg-app-surface/50 border border-white/[0.08] rounded-xl px-4 py-3 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-blue-500/50"
           />
           <button
             onClick={handleSend}
@@ -151,7 +151,7 @@ const ProgramFeed = ({ programId, programName, marketplace, userId, onBack }) =>
             className={`p-3 rounded-xl transition-colors ${
               message.trim() && !sending
                 ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white'
-                : 'bg-slate-800 text-slate-500 cursor-not-allowed'
+                : 'bg-app-surface text-slate-500 cursor-not-allowed'
             }`}
           >
             {sending ? (

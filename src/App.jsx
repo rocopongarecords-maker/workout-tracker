@@ -31,6 +31,13 @@ import ProgramFeed from './components/ProgramFeed';
 import CreatorDashboard from './components/CreatorDashboard';
 import InviteJoin from './components/InviteJoin';
 import { useMarketplace } from './hooks/useMarketplace';
+import { useCoach } from './hooks/useCoach';
+import CoachDiscovery from './components/CoachDiscovery';
+import CoachProfile from './components/CoachProfile';
+import CoachChat from './components/CoachChat';
+import CoachQuestionnaire from './components/CoachQuestionnaire';
+import CoachDashboard from './components/CoachDashboard';
+import TabBar from './components/TabBar';
 import './styles/globals.css';
 
 function App() {
@@ -45,14 +52,17 @@ function App() {
   const [newBadges, setNewBadges] = useState([]);
 
   const storage = useWorkoutStorage(auth.user);
-  const { data, saveWorkout, markComplete, isCompleted, getWorkoutHistory, resetData, importData, addBadges, incrementPRs, saveWeight, saveSkinfold, saveCustomProgram, deleteCustomProgram, setActiveProgram, markOnboardingComplete, saveFreeWorkout, syncing, migrationNeeded, migrateLocalData, dismissMigration } = storage;
+  const { data, saveWorkout, markComplete, isCompleted, getWorkoutHistory, resetData, importData, addBadges, incrementPRs, saveWeight, saveSkinfold, saveMood, saveCustomProgram, deleteCustomProgram, setActiveProgram, markOnboardingComplete, saveFreeWorkout, syncing, migrationNeeded, migrateLocalData, dismissMigration } = storage;
 
   const marketplace = useMarketplace(auth.user);
+  const coach = useCoach(auth.user);
   const [marketplaceProgram, setMarketplaceProgram] = useState(null);
   const [publishProgram, setPublishProgram] = useState(null);
   const [feedProgramId, setFeedProgramId] = useState(null);
   const [feedProgramName, setFeedProgramName] = useState('');
   const [inviteToken, setInviteToken] = useState(null);
+  const [selectedCoachId, setSelectedCoachId] = useState(null);
+  const [selectedRelationshipId, setSelectedRelationshipId] = useState(null);
 
   const program = useActiveProgram(data.activeProgram, data.customPrograms);
   const { schedule, getExercisesForDay, getWorkoutName } = program;
@@ -73,7 +83,7 @@ function App() {
   // Show auth screen if Supabase is configured, user is not logged in, and not in guest mode
   if (auth.isConfigured && !auth.user && !guestMode && !auth.loading) {
     return (
-      <div className="min-h-screen bg-slate-950 text-white">
+      <div className="min-h-screen bg-app-bg text-white">
         <AuthScreen
           onSignIn={auth.signIn}
           onSignUp={auth.signUp}
@@ -89,7 +99,7 @@ function App() {
   // Loading state — show skeleton matching dashboard layout
   if (auth.loading) {
     return (
-      <div className="min-h-screen bg-slate-950 text-white">
+      <div className="min-h-screen bg-app-bg text-white">
         <div className="max-w-lg mx-auto px-4 py-8">
           <LoadingSkeleton />
         </div>
@@ -101,7 +111,7 @@ function App() {
   const isNewUser = !data.onboardingComplete && data.completedWorkouts.length === 0;
   if (isNewUser && currentView === 'dashboard') {
     return (
-      <div className="min-h-screen bg-slate-950 text-white">
+      <div className="min-h-screen bg-app-bg text-white">
         <div className="max-w-lg mx-auto px-4 py-8">
           <OnboardingScreen
             onComplete={markOnboardingComplete}
@@ -173,12 +183,32 @@ function App() {
     setCurrentView('dashboard');
   };
 
+  // Views that hide the tab bar (full-screen experiences with their own bottom bars)
+  const hideTabBarViews = ['workout', 'summary', 'free-workout'];
+  const showTabBar = !hideTabBarViews.includes(currentView);
+
+  const handleTabSelect = (tabId) => {
+    setCurrentView(tabId);
+  };
+
   return (
-    <div className="min-h-screen bg-slate-950 text-white">
+    <div className="min-h-screen bg-app-bg text-white">
       {/* Offline banner */}
       {!isOnline && <OfflineBanner />}
 
-      <div className={`max-w-lg mx-auto px-4 py-8 ${!isOnline ? 'pt-16' : ''}`}>
+      {/* Global brand bar — hidden during active workout and summary */}
+      {!['workout', 'summary', 'free-workout'].includes(currentView) && (
+        <div className="flex items-center gap-2 max-w-lg mx-auto px-4 py-2">
+          <img
+            src={`${import.meta.env.BASE_URL}icons/icon-192.png`}
+            className="w-5 h-5 rounded-md opacity-70"
+            alt="ZW"
+          />
+          <span className="text-[10px] font-bold text-white/20 tracking-[0.2em] uppercase">ZeroWait</span>
+        </div>
+      )}
+
+      <div className={`max-w-lg mx-auto px-4 ${['workout', 'summary', 'free-workout'].includes(currentView) ? 'pt-6' : 'pt-2'} ${showTabBar ? 'pb-24' : 'pb-8'} ${!isOnline ? 'pt-16' : ''}`}>
         {/* Migration banner */}
         {migrationNeeded && (
           <MigrationBanner
@@ -231,6 +261,7 @@ function App() {
             currentView={currentView}
             setCurrentView={setCurrentView}
             getWorkoutName={getWorkoutName}
+            programName={program.programName}
           />
         )}
 
@@ -300,6 +331,8 @@ function App() {
             skinfoldLog={data.skinfoldLog}
             onSaveWeight={saveWeight}
             onSaveSkinfold={saveSkinfold}
+            moodLog={data.moodLog}
+            onSaveMood={saveMood}
             onBack={handleBackToDashboard}
           />
         )}
@@ -422,7 +455,90 @@ function App() {
             }}
           />
         )}
+
+        {currentView === 'coach-discovery' && (
+          <CoachDiscovery
+            coach={coach}
+            onSelectCoach={(coachId) => {
+              setSelectedCoachId(coachId);
+              setCurrentView('coach-profile');
+            }}
+            onOpenChat={(relationshipId) => {
+              setSelectedRelationshipId(relationshipId);
+              setCurrentView('coach-chat');
+            }}
+            onBack={handleBackToDashboard}
+          />
+        )}
+
+        {currentView === 'coach-profile' && selectedCoachId && (
+          <CoachProfile
+            coachId={selectedCoachId}
+            coach={coach}
+            userId={auth.user?.id}
+            onOpenQuestionnaire={(coachId, relationshipId) => {
+              setSelectedCoachId(coachId);
+              setSelectedRelationshipId(relationshipId);
+              setCurrentView('coach-questionnaire');
+            }}
+            onOpenChat={(relationshipId) => {
+              setSelectedRelationshipId(relationshipId);
+              setCurrentView('coach-chat');
+            }}
+            onBack={() => setCurrentView('coach-discovery')}
+          />
+        )}
+
+        {currentView === 'coach-chat' && selectedRelationshipId && (
+          <CoachChat
+            relationshipId={selectedRelationshipId}
+            coach={coach}
+            userId={auth.user?.id}
+            onBack={() => setCurrentView('coach-discovery')}
+          />
+        )}
+
+        {currentView === 'coach-questionnaire' && selectedCoachId && selectedRelationshipId && (
+          <CoachQuestionnaire
+            coachId={selectedCoachId}
+            relationshipId={selectedRelationshipId}
+            coach={coach}
+            onProgramCreated={(program) => {
+              saveCustomProgram(program);
+              setActiveProgram(program.id);
+            }}
+            onComplete={() => {
+              if (selectedCoachId?.startsWith('demo-')) {
+                setCurrentView('programs');
+              } else {
+                setCurrentView('coach-discovery');
+              }
+            }}
+            onBack={() => setCurrentView('coach-profile')}
+          />
+        )}
+
+        {currentView === 'coach-dashboard' && (
+          <CoachDashboard
+            coach={coach}
+            userId={auth.user?.id}
+            onOpenChat={(relationshipId) => {
+              setSelectedRelationshipId(relationshipId);
+              setCurrentView('coach-chat');
+            }}
+            onBuildProgram={() => setCurrentView('program-builder')}
+            onBack={handleBackToDashboard}
+          />
+        )}
       </div>
+
+      {/* Tab Bar */}
+      {showTabBar && (
+        <TabBar
+          currentView={currentView}
+          onSelectTab={handleTabSelect}
+        />
+      )}
 
       {newBadges.length > 0 && currentView === 'summary' && (
         <BadgeAward

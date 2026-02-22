@@ -54,7 +54,7 @@ const AuthScreen = ({ onSignIn, onSignUp, onGoogleSignIn, onResetPassword, onCon
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Email"
                 required
-                className="w-full bg-black/20 text-white p-3 rounded-xl border border-white/10 focus:border-blue-500/50 outline-none transition-colors"
+                className="w-full bg-black/20 text-white p-3 rounded-xl border border-white/[0.08] focus:border-blue-500/50 outline-none transition-colors"
               />
             </div>
 
@@ -67,7 +67,7 @@ const AuthScreen = ({ onSignIn, onSignUp, onGoogleSignIn, onResetPassword, onCon
                   placeholder="Password"
                   required
                   minLength={6}
-                  className="w-full bg-black/20 text-white p-3 rounded-xl border border-white/10 focus:border-blue-500/50 outline-none transition-colors"
+                  className="w-full bg-black/20 text-white p-3 rounded-xl border border-white/[0.08] focus:border-blue-500/50 outline-none transition-colors"
                 />
               </div>
             )}
@@ -75,7 +75,7 @@ const AuthScreen = ({ onSignIn, onSignUp, onGoogleSignIn, onResetPassword, onCon
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 btn-primary disabled:bg-slate-600 disabled:text-slate-400 disabled:shadow-none"
+              className="w-full py-3 btn-primary disabled:bg-app-surface-light disabled:text-slate-400 disabled:shadow-none"
             >
               {loading ? 'Loading...' : (
                 mode === 'login' ? 'Sign In' :
@@ -96,7 +96,7 @@ const AuthScreen = ({ onSignIn, onSignUp, onGoogleSignIn, onResetPassword, onCon
           {/* Google sign in */}
           <div className="relative my-4">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-white/10" />
+              <div className="w-full border-t border-white/[0.08]" />
             </div>
             <div className="relative flex justify-center text-sm">
               <span className="bg-transparent px-3 text-slate-500">or</span>
@@ -105,7 +105,7 @@ const AuthScreen = ({ onSignIn, onSignUp, onGoogleSignIn, onResetPassword, onCon
 
           <button
             onClick={onGoogleSignIn}
-            className="w-full py-3 bg-white/5 border border-white/10 text-white rounded-xl font-semibold hover:bg-white/10 transition-colors flex items-center justify-center gap-3"
+            className="w-full py-3 bg-white/[0.05] border border-white/[0.08] text-white rounded-xl font-semibold hover:bg-white/[0.08] transition-colors flex items-center justify-center gap-3"
           >
             <svg width="18" height="18" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" />

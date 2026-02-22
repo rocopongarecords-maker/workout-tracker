@@ -45,7 +45,7 @@ const ExerciseLibrary = ({ onBack, onSelectExercise }) => {
         placeholder="Search exercises..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="w-full px-4 py-3 bg-black/20 text-white rounded-xl border border-white/10 focus:border-blue-500/50 outline-none"
+        className="w-full px-4 py-3 bg-black/20 text-white rounded-xl border border-white/[0.08] focus:border-blue-500/50 outline-none"
       />
 
       {/* Muscle filter chips */}
@@ -53,7 +53,7 @@ const ExerciseLibrary = ({ onBack, onSelectExercise }) => {
         <button
           onClick={() => setMuscleFilter(null)}
           className={`px-3 py-1 rounded-full text-xs font-semibold transition-all ${
-            !muscleFilter ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-sm shadow-blue-500/25' : 'bg-white/5 text-slate-300 hover:bg-white/10'
+            !muscleFilter ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-sm shadow-blue-500/25' : 'bg-white/[0.05] text-slate-300 hover:bg-white/[0.08]'
           }`}
         >
           All
@@ -63,7 +63,7 @@ const ExerciseLibrary = ({ onBack, onSelectExercise }) => {
             key={m}
             onClick={() => setMuscleFilter(muscleFilter === m ? null : m)}
             className={`px-3 py-1 rounded-full text-xs font-semibold transition-all ${
-              muscleFilter === m ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-sm shadow-blue-500/25' : 'bg-white/5 text-slate-300 hover:bg-white/10'
+              muscleFilter === m ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-sm shadow-blue-500/25' : 'bg-white/[0.05] text-slate-300 hover:bg-white/[0.08]'
             }`}
           >
             {m}
@@ -135,7 +135,7 @@ const ExerciseLibrary = ({ onBack, onSelectExercise }) => {
                     <div className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Muscles</div>
                     <div className="flex flex-wrap gap-1">
                       {exercise.muscles.map(m => (
-                        <span key={m} className="px-2 py-0.5 bg-white/5 text-slate-300 text-xs rounded-full border border-white/10">
+                        <span key={m} className="px-2 py-0.5 bg-white/[0.05] text-slate-300 text-xs rounded-full border border-white/[0.08]">
                           {m}
                         </span>
                       ))}

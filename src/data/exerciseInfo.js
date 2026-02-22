@@ -1,6 +1,7 @@
 export const exerciseInfo = {
   // ========== BLOCK 1 — LEGS #1 ==========
   "Back Squat": {
+    imageUrl: "https://media.musclewiki.com/media/uploads/videos/branded/male-Barbell-barbell-squat-front.mp4#t=0.001",
     muscles: ["Quadriceps", "Glutes", "Core"],
     tips: [
       "Brace your core hard before descending and maintain tightness throughout",
@@ -13,6 +14,7 @@ export const exerciseInfo = {
     ]
   },
   "Deadlift": {
+    imageUrl: "https://media.musclewiki.com/media/uploads/videos/branded/male-Barbell-deadlift-front.mp4#t=0.001",
     muscles: ["Hamstrings", "Glutes", "Lower Back", "Traps"],
     tips: [
       "Set up with the bar over mid-foot, shins nearly touching the bar",
@@ -25,6 +27,7 @@ export const exerciseInfo = {
     ]
   },
   "Barbell Hip Thrust": {
+    imageUrl: "https://media.musclewiki.com/media/uploads/videos/branded/male-Barbell-barbell-hip-thrust-front.mp4",
     muscles: ["Glutes", "Hamstrings"],
     tips: [
       "Position your upper back on the bench at the bottom of your shoulder blades",
@@ -49,6 +52,7 @@ export const exerciseInfo = {
     ]
   },
   "Leg Extension": {
+    imageUrl: "https://media.musclewiki.com/media/uploads/videos/branded/male-Machine-leg-extension-front.mp4",
     muscles: ["Quadriceps"],
     tips: [
       "Adjust the pad so it sits just above your ankles",
@@ -61,6 +65,7 @@ export const exerciseInfo = {
     ]
   },
   "Seated Leg Curl": {
+    imageUrl: "https://media.musclewiki.com/media/uploads/videos/branded/male-Machine-seated-leg-curl-front.mp4",
     muscles: ["Hamstrings"],
     tips: [
       "Adjust the machine so the pad sits just above your heels",
@@ -87,6 +92,7 @@ export const exerciseInfo = {
 
   // ========== BLOCK 1 — LEGS #2 ==========
   "Front Squat": {
+    imageUrl: "https://media.musclewiki.com/media/uploads/videos/branded/male-Barbell-front-squat-front.mp4",
     muscles: ["Quadriceps", "Glutes", "Core", "Upper Back"],
     tips: [
       "Keep your elbows high and parallel to the floor throughout",
@@ -149,6 +155,7 @@ export const exerciseInfo = {
 
   // ========== BLOCK 1 — PUSH #1 ==========
   "Barbell Bench Press": {
+    imageUrl: "https://media.musclewiki.com/media/uploads/videos/branded/male-Barbell-bench-press-front.mp4",
     muscles: ["Chest", "Triceps", "Front Delts"],
     tips: [
       "Retract and depress your shoulder blades before unracking",
@@ -173,6 +180,7 @@ export const exerciseInfo = {
     ]
   },
   "Weighted Dip": {
+    imageUrl: "https://media.musclewiki.com/media/uploads/videos/branded/male-Bodyweight-dips-front.mp4",
     muscles: ["Chest", "Triceps", "Front Delts"],
     tips: [
       "Lean your torso slightly forward to emphasize the chest",
@@ -209,6 +217,7 @@ export const exerciseInfo = {
     ]
   },
   "Dumbbell Lateral Raise": {
+    imageUrl: "https://media.musclewiki.com/media/uploads/videos/branded/male-Dumbbell-dumbbell-lateral-raise-front.mp4",
     muscles: ["Lateral Delts"],
     tips: [
       "Lead with your elbows, not your hands — think about pouring water from a pitcher",
@@ -247,6 +256,7 @@ export const exerciseInfo = {
     ]
   },
   "Military Press": {
+    imageUrl: "https://media.musclewiki.com/media/uploads/videos/branded/male-Barbell-military-press-front.mp4",
     muscles: ["Front Delts", "Lateral Delts", "Triceps", "Core"],
     tips: [
       "Start with the bar resting on your front delts at collarbone height",
@@ -333,6 +343,7 @@ export const exerciseInfo = {
     ]
   },
   "Pull-Up": {
+    imageUrl: "https://media.musclewiki.com/media/uploads/videos/branded/male-Bodyweight-pull-up-front.mp4",
     muscles: ["Lats", "Biceps", "Rhomboids", "Core"],
     tips: [
       "Start from a dead hang with shoulders engaged — don't just hang passively",
@@ -369,6 +380,7 @@ export const exerciseInfo = {
     ]
   },
   "Seated Face Pull": {
+    imageUrl: "https://media.musclewiki.com/media/uploads/videos/branded/male-Cable-face-pull-front.mp4",
     muscles: ["Rear Delts", "Rotator Cuff", "Traps"],
     tips: [
       "Use a rope attachment and pull toward your forehead",
@@ -419,6 +431,7 @@ export const exerciseInfo = {
 
   // ========== BLOCK 1 — PULL #2 ==========
   "Neutral-Grip Pulldown": {
+    imageUrl: "https://media.musclewiki.com/media/uploads/videos/branded/male-Cable-lat-pulldown-front.mp4",
     muscles: ["Lats", "Biceps", "Rhomboids"],
     tips: [
       "Use a V-bar or neutral-grip attachment and lean back slightly",
@@ -529,6 +542,7 @@ export const exerciseInfo = {
     ]
   },
   "Romanian Deadlift": {
+    imageUrl: "https://media.musclewiki.com/media/uploads/videos/branded/male-Barbell-romanian-deadlift-front.mp4",
     muscles: ["Hamstrings", "Glutes", "Lower Back"],
     tips: [
       "Push your hips back while keeping a slight knee bend",

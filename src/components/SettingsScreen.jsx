@@ -138,7 +138,7 @@ const SettingsScreen = ({ data, user, onSignOut, onReset, onImport, onBack }) =>
               className={`relative p-3 rounded-xl border-2 transition-all ${
                 currentTheme === theme.id
                   ? 'border-white/40 bg-white/10'
-                  : 'border-white/5 bg-white/5 hover:bg-white/10'
+                  : 'border-white/5 bg-white/[0.05] hover:bg-white/[0.08]'
               }`}
             >
               <div
@@ -168,7 +168,7 @@ const SettingsScreen = ({ data, user, onSignOut, onReset, onImport, onBack }) =>
               className={`w-full flex items-center justify-between p-3 rounded-xl border transition-all ${
                 currentFont === font.id
                   ? 'border-white/30 bg-white/10'
-                  : 'border-white/5 bg-white/5 hover:bg-white/10'
+                  : 'border-white/5 bg-white/[0.05] hover:bg-white/[0.08]'
               }`}
             >
               <span className="text-sm text-white" style={{ fontFamily: font.family }}>
@@ -187,11 +187,11 @@ const SettingsScreen = ({ data, user, onSignOut, onReset, onImport, onBack }) =>
       <div className="glass-card p-5 space-y-4 animate-fade-in-up stagger-2">
         <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Your Data</h3>
         <div className="grid grid-cols-2 gap-3">
-          <div className="bg-white/5 rounded-xl p-3 text-center">
+          <div className="bg-white/[0.05] rounded-xl p-3 text-center">
             <div className="stat-number text-xl">{completedCount}</div>
             <div className="text-[10px] text-slate-500 uppercase tracking-wider mt-1">Workouts Done</div>
           </div>
-          <div className="bg-white/5 rounded-xl p-3 text-center">
+          <div className="bg-white/[0.05] rounded-xl p-3 text-center">
             <div className="stat-number text-xl">{historyCount}</div>
             <div className="text-[10px] text-slate-500 uppercase tracking-wider mt-1">With Data</div>
           </div>

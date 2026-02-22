@@ -30,7 +30,7 @@ const OnboardingScreen = ({ onComplete, onSelectProgram, programs }) => {
           <div
             key={i}
             className={`w-2 h-2 rounded-full transition-all ${
-              i <= step ? 'bg-blue-500 shadow-sm shadow-blue-500/50' : 'bg-white/10'
+              i <= step ? 'bg-blue-500 shadow-sm shadow-blue-500/50' : 'bg-white/[0.08]'
             }`}
           />
         ))}
@@ -147,7 +147,7 @@ const OnboardingScreen = ({ onComplete, onSelectProgram, programs }) => {
               className="w-full p-4 rounded-2xl glass-card-interactive text-left"
             >
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center text-xl text-slate-400">+</div>
+                <div className="w-10 h-10 rounded-lg bg-white/[0.08] flex items-center justify-center text-xl text-slate-400">+</div>
                 <div>
                   <div className="font-semibold text-white">Create Custom Program</div>
                   <div className="text-sm text-slate-400">Build your own training plan</div>

@@ -157,7 +157,7 @@ const WorkoutReview = ({ dayNumber, workoutHistory, completedWorkouts, onBack, o
                     <div
                       key={sIdx}
                       className={`flex items-center justify-between text-sm px-3 py-2 rounded-lg ${
-                        set.completed ? 'bg-teal-900/30 text-white' : 'bg-white/5 text-slate-500'
+                        set.completed ? 'bg-teal-900/30 text-white' : 'bg-white/[0.05] text-slate-500'
                       }`}
                     >
                       <span className="text-slate-400 text-xs w-12">Set {set.setNumber || sIdx + 1}</span>

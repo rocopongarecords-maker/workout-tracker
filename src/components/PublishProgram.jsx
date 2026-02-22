@@ -79,7 +79,7 @@ const PublishProgram = ({ program, marketplace, onBack, onPublished }) => {
       </div>
 
       {/* Program info card */}
-      <div className="bg-slate-800/50 border border-slate-700/50 rounded-2xl p-4">
+      <div className="bg-app-surface/50 border border-white/[0.08] rounded-2xl p-4">
         <h3 className="text-white font-semibold text-lg">{program.name}</h3>
         <div className="flex items-center gap-4 mt-2">
           <div className="flex items-center gap-1.5 text-sm text-slate-400">
@@ -101,7 +101,7 @@ const PublishProgram = ({ program, marketplace, onBack, onPublished }) => {
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Describe your program - goals, structure, who it's for..."
           rows={4}
-          className="w-full bg-slate-800/50 border border-slate-700/50 rounded-xl p-3 text-white placeholder-slate-500 text-sm resize-none focus:outline-none focus:border-blue-500/50"
+          className="w-full bg-app-surface/50 border border-white/[0.08] rounded-xl p-3 text-white placeholder-slate-500 text-sm resize-none focus:outline-none focus:border-blue-500/50"
         />
         <p className="text-xs text-slate-500 mt-1">{description.length}/500 characters</p>
       </div>
@@ -117,7 +117,7 @@ const PublishProgram = ({ program, marketplace, onBack, onPublished }) => {
               className={`px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
                 category === cat.value
                   ? 'bg-blue-600 text-white border border-blue-500'
-                  : 'bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:text-white'
+                  : 'bg-app-surface/50 text-slate-400 border border-white/[0.08] hover:text-white'
               }`}
             >
               {cat.label}
@@ -133,9 +133,9 @@ const PublishProgram = ({ program, marketplace, onBack, onPublished }) => {
           {DIFFICULTIES.map((diff) => {
             const isSelected = difficulty === diff.value;
             const colorMap = {
-              green: isSelected ? 'bg-green-600 text-white border-green-500' : 'bg-slate-800/50 text-slate-400 border-slate-700/50 hover:text-green-400',
-              yellow: isSelected ? 'bg-yellow-600 text-white border-yellow-500' : 'bg-slate-800/50 text-slate-400 border-slate-700/50 hover:text-yellow-400',
-              red: isSelected ? 'bg-red-600 text-white border-red-500' : 'bg-slate-800/50 text-slate-400 border-slate-700/50 hover:text-red-400',
+              green: isSelected ? 'bg-green-600 text-white border-green-500' : 'bg-app-surface/50 text-slate-400 border-white/[0.08] hover:text-green-400',
+              yellow: isSelected ? 'bg-yellow-600 text-white border-yellow-500' : 'bg-app-surface/50 text-slate-400 border-white/[0.08] hover:text-yellow-400',
+              red: isSelected ? 'bg-red-600 text-white border-red-500' : 'bg-app-surface/50 text-slate-400 border-white/[0.08] hover:text-red-400',
             };
             return (
               <button
@@ -164,7 +164,7 @@ const PublishProgram = ({ program, marketplace, onBack, onPublished }) => {
                 className={`w-full flex items-start gap-3 p-4 rounded-xl border transition-colors text-left ${
                   isSelected
                     ? 'bg-blue-500/10 border-blue-500/30'
-                    : 'bg-slate-800/50 border-slate-700/50 hover:border-slate-600'
+                    : 'bg-app-surface/50 border-white/[0.08] hover:border-white/[0.08]'
                 }`}
               >
                 <Icon size={20} className={`mt-0.5 ${isSelected ? 'text-blue-400' : option.iconColor}`} />
@@ -177,7 +177,7 @@ const PublishProgram = ({ program, marketplace, onBack, onPublished }) => {
                 {/* Radio indicator */}
                 <div className="ml-auto mt-0.5">
                   <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                    isSelected ? 'border-blue-500' : 'border-slate-600'
+                    isSelected ? 'border-blue-500' : 'border-white/[0.08]'
                   }`}>
                     {isSelected && <div className="w-2.5 h-2.5 rounded-full bg-blue-500" />}
                   </div>
@@ -202,7 +202,7 @@ const PublishProgram = ({ program, marketplace, onBack, onPublished }) => {
         className={`w-full px-6 py-3 rounded-xl font-semibold transition-colors flex items-center justify-center gap-2 ${
           canPublish && !publishing
             ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white'
-            : 'bg-slate-700 text-slate-500 cursor-not-allowed'
+            : 'bg-app-surface-light text-slate-500 cursor-not-allowed'
         }`}
       >
         {publishing ? (

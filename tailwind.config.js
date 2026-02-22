@@ -11,7 +11,12 @@ export default {
         slate: {
           850: '#1e293b',
           950: '#0f172a',
-        }
+        },
+        app: {
+          bg: 'rgb(5, 10, 23)',
+          surface: 'rgb(15, 23, 41)',
+          'surface-light': 'rgb(26, 36, 59)',
+        },
       },
       boxShadow: {
         'glow-blue': '0 0 20px rgba(59, 130, 246, 0.15)',

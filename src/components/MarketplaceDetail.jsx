@@ -24,6 +24,8 @@ const MarketplaceDetail = ({ program, marketplace, saveCustomProgram, userId, on
   const [submittingRating, setSubmittingRating] = useState(false);
   const [subscribing, setSubscribing] = useState(false);
   const [unpublishing, setUnpublishing] = useState(false);
+  const [showDisclaimer, setShowDisclaimer] = useState(false);
+  const [disclaimerChecked, setDisclaimerChecked] = useState(false);
 
   const isSubscribed = (marketplace.mySubscriptions || []).some(
     (sub) => sub.program_id === program.id || sub.id === program.id
@@ -135,22 +137,22 @@ const MarketplaceDetail = ({ program, marketplace, saveCustomProgram, userId, on
 
       {/* Stats row */}
       <div className="grid grid-cols-4 gap-3">
-        <div className="bg-slate-800/50 border border-slate-700/50 rounded-2xl p-4 text-center">
+        <div className="bg-app-surface/50 border border-white/[0.08] rounded-2xl p-4 text-center">
           <Calendar size={18} className="mx-auto text-blue-400 mb-1" />
           <p className="text-white font-bold">{program.weeks || '?'}</p>
           <p className="text-xs text-slate-400">Weeks</p>
         </div>
-        <div className="bg-slate-800/50 border border-slate-700/50 rounded-2xl p-4 text-center">
+        <div className="bg-app-surface/50 border border-white/[0.08] rounded-2xl p-4 text-center">
           <Dumbbell size={18} className="mx-auto text-purple-400 mb-1" />
           <p className="text-white font-bold">{program.days_per_week || '?'}</p>
           <p className="text-xs text-slate-400">Days/wk</p>
         </div>
-        <div className="bg-slate-800/50 border border-slate-700/50 rounded-2xl p-4 text-center">
+        <div className="bg-app-surface/50 border border-white/[0.08] rounded-2xl p-4 text-center">
           <Users size={18} className="mx-auto text-green-400 mb-1" />
           <p className="text-white font-bold">{program.subscriber_count || 0}</p>
           <p className="text-xs text-slate-400">Subs</p>
         </div>
-        <div className="bg-slate-800/50 border border-slate-700/50 rounded-2xl p-4 text-center">
+        <div className="bg-app-surface/50 border border-white/[0.08] rounded-2xl p-4 text-center">
           <Star size={18} className="mx-auto text-yellow-400 mb-1" />
           <p className="text-white font-bold">{program.avg_rating ? program.avg_rating.toFixed(1) : '--'}</p>
           <p className="text-xs text-slate-400">Rating</p>
@@ -160,12 +162,12 @@ const MarketplaceDetail = ({ program, marketplace, saveCustomProgram, userId, on
       {/* Category + Difficulty pills */}
       <div className="flex gap-2">
         {program.category && (
-          <span className={`px-3 py-1 rounded-full text-sm font-medium ${CATEGORY_COLORS[categoryKey] || 'bg-slate-700/50 text-slate-300'}`}>
+          <span className={`px-3 py-1 rounded-full text-sm font-medium ${CATEGORY_COLORS[categoryKey] || 'bg-app-surface-light/50 text-slate-300'}`}>
             {program.category}
           </span>
         )}
         {program.difficulty && (
-          <span className={`px-3 py-1 rounded-full text-sm font-medium ${DIFFICULTY_COLORS[difficultyKey] || 'bg-slate-700/50 text-slate-300'}`}>
+          <span className={`px-3 py-1 rounded-full text-sm font-medium ${DIFFICULTY_COLORS[difficultyKey] || 'bg-app-surface-light/50 text-slate-300'}`}>
             {program.difficulty}
           </span>
         )}
@@ -173,13 +175,13 @@ const MarketplaceDetail = ({ program, marketplace, saveCustomProgram, userId, on
 
       {/* Workout schedule preview */}
       {workoutDays.length > 0 && (
-        <div className="bg-slate-800/50 border border-slate-700/50 rounded-2xl p-4">
+        <div className="bg-app-surface/50 border border-white/[0.08] rounded-2xl p-4">
           <h3 className="text-white font-semibold mb-3">Workout Schedule</h3>
           <div className="space-y-2">
             {workoutDays.map((day, index) => (
               <div
                 key={index}
-                className="flex items-center justify-between py-2 border-b border-slate-700/30 last:border-0"
+                className="flex items-center justify-between py-2 border-b border-white/[0.06] last:border-0"
               >
                 <div className="flex items-center gap-3">
                   <span className="w-7 h-7 rounded-lg bg-blue-500/20 text-blue-400 text-xs font-bold flex items-center justify-center">
@@ -199,11 +201,11 @@ const MarketplaceDetail = ({ program, marketplace, saveCustomProgram, userId, on
       {/* Subscribe / Unsubscribe button */}
       {!isAuthor && (
         <button
-          onClick={isSubscribed ? handleUnsubscribe : handleSubscribe}
+          onClick={isSubscribed ? handleUnsubscribe : () => { setDisclaimerChecked(false); setShowDisclaimer(true); }}
           disabled={subscribing}
           className={`w-full px-6 py-3 rounded-xl font-semibold transition-colors flex items-center justify-center gap-2 ${
             isSubscribed
-              ? 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+              ? 'bg-app-surface-light text-slate-300 hover:bg-app-surface-light/80'
               : 'bg-gradient-to-r from-blue-600 to-blue-500 text-white'
           }`}
         >
@@ -217,19 +219,77 @@ const MarketplaceDetail = ({ program, marketplace, saveCustomProgram, userId, on
         </button>
       )}
 
+      {/* Disclaimer modal */}
+      {showDisclaimer && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center" onClick={() => setShowDisclaimer(false)}>
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+          <div
+            className="relative w-full max-w-lg bg-[rgb(15,23,41)] border border-white/[0.08] rounded-t-2xl p-6 pb-10 animate-slide-up"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-lg font-bold text-white mb-1">Before you subscribe</h3>
+            <p className="text-slate-400 text-sm mb-5">Please read and agree to continue.</p>
+
+            <ul className="space-y-3 mb-6">
+              {[
+                'This program is user-generated content and has not been reviewed by a certified professional.',
+                'Results vary based on individual effort, nutrition, recovery, and health status.',
+                'This is not medical advice. Consult a physician before starting any new exercise program.',
+                'You remain solely responsible for your health and safety during all training.',
+              ].map((item, i) => (
+                <li key={i} className="flex gap-3 text-sm text-slate-300">
+                  <span className="text-blue-400 mt-0.5 shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                  </span>
+                  {item}
+                </li>
+              ))}
+            </ul>
+
+            <label className="flex items-start gap-3 cursor-pointer mb-6">
+              <input
+                type="checkbox"
+                checked={disclaimerChecked}
+                onChange={(e) => setDisclaimerChecked(e.target.checked)}
+                className="mt-0.5 w-4 h-4 accent-blue-500 cursor-pointer"
+              />
+              <span className="text-sm text-slate-300">I understand and accept these terms</span>
+            </label>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowDisclaimer(false)}
+                className="flex-1 py-3 rounded-xl font-semibold text-slate-400 bg-white/[0.05] hover:bg-white/[0.08] transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => { setShowDisclaimer(false); handleSubscribe(); }}
+                disabled={!disclaimerChecked}
+                className="flex-1 py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-blue-600 to-blue-500 disabled:opacity-40 disabled:cursor-not-allowed transition-opacity"
+              >
+                Confirm & Subscribe
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Author actions */}
       {isAuthor && (
         <div className="flex gap-3">
           <button
             onClick={() => onShare?.(program)}
-            className="flex-1 bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-3 text-white font-semibold flex items-center justify-center gap-2 hover:border-blue-500/30 transition-colors"
+            className="flex-1 bg-app-surface/50 border border-white/[0.08] rounded-xl px-4 py-3 text-white font-semibold flex items-center justify-center gap-2 hover:border-blue-500/30 transition-colors"
           >
             <Pencil size={16} /> Edit
           </button>
           <button
             onClick={handleUnpublish}
             disabled={unpublishing}
-            className="flex-1 bg-slate-800/50 border border-red-500/30 rounded-xl px-4 py-3 text-red-400 font-semibold flex items-center justify-center gap-2 hover:bg-red-500/10 transition-colors"
+            className="flex-1 bg-app-surface/50 border border-red-500/30 rounded-xl px-4 py-3 text-red-400 font-semibold flex items-center justify-center gap-2 hover:bg-red-500/10 transition-colors"
           >
             {unpublishing ? <Loader2 size={16} className="animate-spin" /> : <EyeOff size={16} />}
             Unpublish
@@ -238,7 +298,7 @@ const MarketplaceDetail = ({ program, marketplace, saveCustomProgram, userId, on
       )}
 
       {/* Rating section */}
-      <div className="bg-slate-800/50 border border-slate-700/50 rounded-2xl p-4">
+      <div className="bg-app-surface/50 border border-white/[0.08] rounded-2xl p-4">
         <h3 className="text-white font-semibold mb-3">Rate this Program</h3>
 
         {/* Star picker */}
@@ -269,7 +329,7 @@ const MarketplaceDetail = ({ program, marketplace, saveCustomProgram, userId, on
           onChange={(e) => setReviewText(e.target.value)}
           placeholder="Write a review (optional)..."
           rows={3}
-          className="w-full bg-slate-900/50 border border-slate-700/50 rounded-xl p-3 text-white placeholder-slate-500 text-sm resize-none focus:outline-none focus:border-blue-500/50 mb-3"
+          className="w-full bg-app-bg/50 border border-white/[0.08] rounded-xl p-3 text-white placeholder-slate-500 text-sm resize-none focus:outline-none focus:border-blue-500/50 mb-3"
         />
 
         {/* Submit button */}
@@ -279,7 +339,7 @@ const MarketplaceDetail = ({ program, marketplace, saveCustomProgram, userId, on
           className={`w-full px-6 py-3 rounded-xl font-semibold transition-colors flex items-center justify-center gap-2 ${
             userRating
               ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white'
-              : 'bg-slate-700 text-slate-500 cursor-not-allowed'
+              : 'bg-app-surface-light text-slate-500 cursor-not-allowed'
           }`}
         >
           {submittingRating ? <Loader2 size={18} className="animate-spin" /> : 'Submit Rating'}
@@ -291,9 +351,9 @@ const MarketplaceDetail = ({ program, marketplace, saveCustomProgram, userId, on
         <div className="space-y-3">
           <h3 className="text-white font-semibold">Reviews ({ratings.length})</h3>
           {ratings.map((rating, index) => (
-            <div key={index} className="bg-slate-800/50 border border-slate-700/50 rounded-2xl p-4">
+            <div key={index} className="bg-app-surface/50 border border-white/[0.08] rounded-2xl p-4">
               <div className="flex items-center gap-3 mb-2">
-                <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-sm">
+                <div className="w-8 h-8 rounded-full bg-app-surface-light flex items-center justify-center text-sm">
                   {rating.authorEmoji || '👤'}
                 </div>
                 <div className="flex-1">
@@ -328,13 +388,13 @@ const MarketplaceDetail = ({ program, marketplace, saveCustomProgram, userId, on
       <div className="flex gap-3">
         <button
           onClick={() => onViewFeed?.(program)}
-          className="flex-1 bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-3 text-white font-semibold flex items-center justify-center gap-2 hover:border-blue-500/30 transition-colors"
+          className="flex-1 bg-app-surface/50 border border-white/[0.08] rounded-xl px-4 py-3 text-white font-semibold flex items-center justify-center gap-2 hover:border-blue-500/30 transition-colors"
         >
           <MessageSquare size={16} /> View Feed
         </button>
         <button
           onClick={() => onShare?.(program)}
-          className="flex-1 bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-3 text-white font-semibold flex items-center justify-center gap-2 hover:border-blue-500/30 transition-colors"
+          className="flex-1 bg-app-surface/50 border border-white/[0.08] rounded-xl px-4 py-3 text-white font-semibold flex items-center justify-center gap-2 hover:border-blue-500/30 transition-colors"
         >
           <Share2 size={16} /> Share
         </button>

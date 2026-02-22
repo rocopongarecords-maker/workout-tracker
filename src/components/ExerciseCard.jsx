@@ -176,8 +176,18 @@ const ExerciseCard = ({ exercise, exerciseIndex, onChange, previousWorkout, onSa
     onSave(exercise.name, updatedSets);
     haptic.medium();
 
-    // Auto-start rest timer on the completed set
-    setTimeout(() => startTimer(setNumber), 50);
+    // Auto-start rest timer on the completed set (unless it's the last set)
+    const isLastSet = setNumber >= setsCount;
+    if (isLastSet) {
+      // Stop all running timers — no rest needed after the final set
+      Object.keys(timerIntervals.current).forEach(key => {
+        clearInterval(timerIntervals.current[key]);
+        delete timerIntervals.current[key];
+      });
+      setUserSets(prev => prev.map(s => ({ ...s, timerRunning: false, restTime: 0 })));
+    } else {
+      setTimeout(() => startTimer(setNumber), 50);
+    }
 
     // Check for PR
     if (workoutHistory && currentSetData?.weight && currentSetData?.reps) {
@@ -201,7 +211,7 @@ const ExerciseCard = ({ exercise, exerciseIndex, onChange, previousWorkout, onSa
   // If exercise is skipped, show collapsed state
   if (exercise.skipped) {
     return (
-      <div className="bg-slate-800/50 rounded-xl p-4 mb-4 border border-amber-500/20" id={`exercise-${exercise.name.replace(/\s+/g, '-')}`}>
+      <div className="bg-app-surface/50 rounded-xl p-4 mb-4 border border-amber-500/20" id={`exercise-${exercise.name.replace(/\s+/g, '-')}`}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-amber-500/10 rounded-lg flex items-center justify-center">
@@ -226,7 +236,7 @@ const ExerciseCard = ({ exercise, exerciseIndex, onChange, previousWorkout, onSa
   }
 
   return (
-    <div className="bg-slate-800 rounded-xl p-4 mb-4" id={`exercise-${exercise.name.replace(/\s+/g, '-')}`}>
+    <div className="bg-app-surface rounded-xl p-4 mb-4" id={`exercise-${exercise.name.replace(/\s+/g, '-')}`}>
       <div className="flex items-center justify-between mb-3">
         <div className="flex-1 min-w-0">
           <h3 className="text-lg font-semibold text-white">
@@ -294,7 +304,7 @@ const ExerciseCard = ({ exercise, exerciseIndex, onChange, previousWorkout, onSa
         {(previousWorkout?.weight || bestSet) && (
           <div className="flex items-center gap-2">
             {previousWorkout?.weight && (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-white/5 rounded-md text-[11px] text-slate-400 border border-white/5">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-white/[0.05] rounded-md text-[11px] text-slate-400 border border-white/5">
                 <span className="text-slate-500">Last</span>
                 <span className="text-white font-semibold tabular-nums">{previousWorkout.weight}</span>
                 <span className="text-slate-600">kg ×</span>
@@ -328,7 +338,7 @@ const ExerciseCard = ({ exercise, exerciseIndex, onChange, previousWorkout, onSa
               className={`rounded-lg p-4 border-2 transition-all ${
                 set.completed
                   ? 'bg-teal-900/50 border-green-500'
-                  : 'bg-slate-700/50 border-slate-600'
+                  : 'bg-app-surface-light/50 border-white/[0.08]'
               }`}
             >
               <div className="flex items-center justify-between mb-3">
@@ -369,7 +379,7 @@ const ExerciseCard = ({ exercise, exerciseIndex, onChange, previousWorkout, onSa
                         onChange={(e) => handleSetChange(set.setNumber, 'reps', e.target.value)}
                         disabled={set.completed}
                         placeholder={exercise.repType === 'distance' ? 'e.g. 50m' : 'e.g. 2:00'}
-                        className="w-full bg-black/20 text-white p-2.5 rounded-lg text-center font-semibold border border-white/10 focus:border-blue-500/50 outline-none text-sm disabled:opacity-50"
+                        className="w-full bg-black/20 text-white p-2.5 rounded-lg text-center font-semibold border border-white/[0.08] focus:border-blue-500/50 outline-none text-sm disabled:opacity-50"
                       />
                     </div>
                     <NumberStepper
@@ -411,8 +421,8 @@ const ExerciseCard = ({ exercise, exerciseIndex, onChange, previousWorkout, onSa
               {/* Rest Timer — auto-starts on save, no manual Start button */}
               {(set.restTime > 0 || set.timerRunning) && (
                 <div className={`rounded-lg p-3 mb-3 border transition-all ${
-                  getTimerBorderClass(set.restTime, set.timerRunning) || 'border-transparent bg-slate-800/50'
-                } ${!getTimerBorderClass(set.restTime, set.timerRunning) ? 'bg-slate-800/50' : 'bg-black/20'}`}>
+                  getTimerBorderClass(set.restTime, set.timerRunning) || 'border-transparent bg-app-surface/50'
+                } ${!getTimerBorderClass(set.restTime, set.timerRunning) ? 'bg-app-surface/50' : 'bg-black/20'}`}>
                   <div className="flex items-center justify-between mb-2">
                     <div className="text-slate-400 text-xs">Rest Timer</div>
                     {set.timerRunning && (
@@ -451,7 +461,7 @@ const ExerciseCard = ({ exercise, exerciseIndex, onChange, previousWorkout, onSa
                         </button>
                         <button
                           onClick={() => resetTimer(set.setNumber)}
-                          className="flex-1 py-2 bg-slate-600 hover:bg-slate-500 text-slate-300 rounded-lg font-semibold transition-all"
+                          className="flex-1 py-2 bg-app-surface-light hover:bg-white/[0.08] text-slate-300 rounded-lg font-semibold transition-all"
                         >
                           Reset
                         </button>
@@ -468,7 +478,7 @@ const ExerciseCard = ({ exercise, exerciseIndex, onChange, previousWorkout, onSa
                   className={`w-full py-3 rounded-xl font-semibold transition-all ${
                     (exercise.repType ? set.reps : (set.weight && set.reps))
                       ? 'btn-primary'
-                      : 'bg-slate-600 text-slate-400 cursor-not-allowed'
+                      : 'bg-app-surface-light text-slate-400 cursor-not-allowed'
                   }`}
                 >
                   Save Set
@@ -521,14 +531,14 @@ const ExerciseCard = ({ exercise, exerciseIndex, onChange, previousWorkout, onSa
         }}
       />
 
-      <div className="mt-4 pt-3 border-t border-slate-700">
+      <div className="mt-4 pt-3 border-t border-white/[0.08]">
         <div className="flex items-center justify-between text-sm">
           <span className="text-slate-400">Sets Completed</span>
           <span className="text-white font-semibold">
             {userSets.filter(s => s.completed).length}/{setsCount}
           </span>
         </div>
-        <div className="w-full bg-slate-700 rounded-full h-2 mt-2">
+        <div className="w-full bg-app-surface-light rounded-full h-2 mt-2">
           <div
             className="bg-green-500 h-2 rounded-full transition-all"
             style={{ width: `${(userSets.filter(s => s.completed).length / setsCount) * 100}%` }}
@@ -541,7 +551,7 @@ const ExerciseCard = ({ exercise, exerciseIndex, onChange, previousWorkout, onSa
         <div className="fixed inset-0 z-50 flex items-end justify-center" onClick={() => setShowSubstitutes(false)}>
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
           <div
-            className="relative w-full max-w-lg bg-slate-900/95 backdrop-blur-xl border-t border-white/10 rounded-t-2xl p-6 pb-8 max-h-[60vh] overflow-y-auto animate-slide-up"
+            className="relative w-full max-w-lg bg-slate-900/95 backdrop-blur-xl border-t border-white/[0.08] rounded-t-2xl p-6 pb-8 max-h-[60vh] overflow-y-auto animate-slide-up"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between mb-4">
@@ -565,7 +575,7 @@ const ExerciseCard = ({ exercise, exerciseIndex, onChange, previousWorkout, onSa
                     setShowSubstitutes(false);
                     haptic.light();
                   }}
-                  className="w-full text-left p-3 bg-white/5 hover:bg-white/10 rounded-xl border border-white/5 transition-all"
+                  className="w-full text-left p-3 bg-white/[0.05] hover:bg-white/[0.08] rounded-xl border border-white/5 transition-all"
                 >
                   <div className="text-sm font-semibold text-white">{sub.name}</div>
                   {sub.muscles && (

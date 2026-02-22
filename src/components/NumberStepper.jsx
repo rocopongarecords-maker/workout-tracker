@@ -62,7 +62,7 @@ const NumberStepper = ({ value, onChange, min = 0, max = 300, step = 1, label, u
 
   const startEditing = () => {
     if (disabled) return;
-    setInputValue(numValue !== null ? String(numValue) : '');
+    setInputValue('');
     setEditing(true);
     setTimeout(() => inputRef.current?.focus(), 10);
   };
@@ -70,7 +70,7 @@ const NumberStepper = ({ value, onChange, min = 0, max = 300, step = 1, label, u
   const finishEditing = () => {
     setEditing(false);
     if (inputValue === '') {
-      onChange('');
+      // User didn't type anything — keep original value
       return;
     }
     const parsed = parseFloat(inputValue);
@@ -107,8 +107,8 @@ const NumberStepper = ({ value, onChange, min = 0, max = 300, step = 1, label, u
           onTouchMove={handleTouchMove}
           className={`w-11 h-11 flex items-center justify-center rounded-xl text-lg font-bold transition-all duration-150
             ${disabled
-              ? 'bg-white/5 text-slate-600 cursor-not-allowed'
-              : 'bg-white/5 border border-white/10 text-slate-300 hover:bg-white/10 active:scale-95 active:bg-white/15'
+              ? 'bg-white/[0.05] text-slate-500 cursor-not-allowed'
+              : 'bg-white/[0.05] border border-white/[0.08] text-slate-300 hover:bg-white/[0.08] active:scale-95 active:bg-white/15'
             }`}
           style={{ touchAction: 'manipulation' }}
         >
@@ -137,8 +137,8 @@ const NumberStepper = ({ value, onChange, min = 0, max = 300, step = 1, label, u
             disabled={disabled}
             className={`flex-1 h-11 rounded-xl text-center font-bold text-lg transition-all duration-150
               ${disabled
-                ? 'bg-white/5 text-slate-500 cursor-not-allowed'
-                : 'bg-black/20 border border-white/10 text-white hover:border-white/20'
+                ? 'bg-white/[0.05] text-slate-500 cursor-not-allowed'
+                : 'bg-black/20 border border-white/[0.08] text-white hover:border-white/20'
               }`}
             style={{ fontVariantNumeric: 'tabular-nums' }}
           >
@@ -161,8 +161,8 @@ const NumberStepper = ({ value, onChange, min = 0, max = 300, step = 1, label, u
           onTouchMove={handleTouchMove}
           className={`w-11 h-11 flex items-center justify-center rounded-xl text-lg font-bold transition-all duration-150
             ${disabled
-              ? 'bg-white/5 text-slate-600 cursor-not-allowed'
-              : 'bg-white/5 border border-white/10 text-slate-300 hover:bg-white/10 active:scale-95 active:bg-white/15'
+              ? 'bg-white/[0.05] text-slate-500 cursor-not-allowed'
+              : 'bg-white/[0.05] border border-white/[0.08] text-slate-300 hover:bg-white/[0.08] active:scale-95 active:bg-white/15'
             }`}
           style={{ touchAction: 'manipulation' }}
         >

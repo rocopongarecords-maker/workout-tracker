@@ -19,6 +19,7 @@ const initialData = {
   skinfoldLog: [],
   customPrograms: [],
   freeWorkoutLog: [],
+  moodLog: [],
   onboardingComplete: false,
   schemaVersion: 2
 };
@@ -42,6 +43,7 @@ const migrateSchema = (stored) => {
   }
   if (!stored.customPrograms) stored.customPrograms = [];
   if (!stored.freeWorkoutLog) stored.freeWorkoutLog = [];
+  if (!stored.moodLog) stored.moodLog = [];
   if (!stored.activeProgram) stored.activeProgram = 'jeff_nippard_lpp';
   return stored;
 };
@@ -135,6 +137,13 @@ const mergeLocalAndRemote = (local, remote) => {
     )],
     customPrograms: mergedCustomPrograms,
     freeWorkoutLog: [...(remote.freeWorkoutLog || []), ...(local.freeWorkoutLog || [])],
+    moodLog: (() => {
+      const remoteDates = new Set((remote.moodLog || []).map(m => m.date));
+      return [
+        ...(remote.moodLog || []),
+        ...(local.moodLog || []).filter(m => !remoteDates.has(m.date))
+      ].sort((a, b) => a.date.localeCompare(b.date));
+    })(),
     onboardingComplete: remote.onboardingComplete || local.onboardingComplete,
     schemaVersion: 2
   };
@@ -270,6 +279,7 @@ export const useWorkoutStorage = (user) => {
       totalPRs: migrated.totalPRs || 0,
       weightLog: migrated.weightLog || [],
       skinfoldLog: migrated.skinfoldLog || [],
+      moodLog: migrated.moodLog || [],
       customPrograms: migrated.customPrograms || [],
       schemaVersion: 2
     };
@@ -324,6 +334,13 @@ export const useWorkoutStorage = (user) => {
       db.insertSkinfold(user.id, entry).catch(console.error);
     }
   }, [user?.id, isOnline]);
+
+  const saveMood = useCallback((entry) => {
+    setRawData(prev => ({
+      ...prev,
+      moodLog: [...(prev.moodLog || []), entry]
+    }));
+  }, []);
 
   const saveCustomProgram = useCallback((program) => {
     setRawData(prev => {
@@ -405,6 +422,7 @@ export const useWorkoutStorage = (user) => {
     incrementPRs,
     saveWeight,
     saveSkinfold,
+    saveMood,
     saveCustomProgram,
     deleteCustomProgram,
     setActiveProgram,

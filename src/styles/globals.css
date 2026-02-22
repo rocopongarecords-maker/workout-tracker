@@ -2,32 +2,45 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ─── Theme System ─── */
+/* ─── Theme System (iOS-matching) ─── */
 :root {
-  /* Ocean theme (default) */
-  --color-primary: 59, 130, 246;      /* #3b82f6 blue-500 */
-  --color-primary-light: 96, 165, 250; /* #60a5fa blue-400 */
-  --color-primary-dark: 37, 99, 235;   /* #2563eb blue-600 */
-  --font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  /* iOS semantic colors */
+  --bg-background: 5, 10, 23;         /* #050A17 */
+  --bg-surface: 15, 23, 41;           /* #0F1729 */
+  --bg-surface-light: 26, 36, 59;     /* #1A243B */
+  --border-color: 255, 255, 255;      /* used at 8% opacity */
+  --text-secondary: 148, 163, 187;    /* #94A3BB */
+  --text-tertiary: 107, 120, 143;     /* #6B788F */
+  --color-success: 52, 211, 153;      /* #34D399 */
+  --color-warning: 250, 204, 21;      /* #FACC15 */
+  --color-error: 248, 113, 113;       /* #F87171 */
+
+  /* Ocean theme (default — iOS values) */
+  --color-primary: 61, 143, 227;      /* #3D8FE3 */
+  --color-primary-light: 94, 173, 245; /* #5EADF5 */
+  --color-primary-dark: 47, 120, 200;  /* #2F78C8 */
+
+  --font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', system-ui, sans-serif;
 }
 
 [data-theme="ember"] {
-  --color-primary: 249, 115, 22;       /* #f97316 orange-500 */
-  --color-primary-light: 251, 146, 60; /* #fb923c orange-400 */
-  --color-primary-dark: 234, 88, 12;   /* #ea580c orange-600 */
+  --color-primary: 245, 102, 51;      /* #F56633 */
+  --color-primary-light: 255, 140, 90; /* #FF8C5A */
+  --color-primary-dark: 220, 80, 30;   /* #DC501E */
 }
 
 [data-theme="violet"] {
-  --color-primary: 139, 92, 246;       /* #8b5cf6 violet-500 */
-  --color-primary-light: 167, 139, 250;/* #a78bfa violet-400 */
-  --color-primary-dark: 124, 58, 237;  /* #7c3aed violet-600 */
+  --color-primary: 148, 87, 235;      /* #9457EB */
+  --color-primary-light: 184, 128, 250;/* #B880FA */
+  --color-primary-dark: 124, 58, 237;  /* #7C3AED */
 }
 
 body {
   margin: 0;
   min-height: 100vh;
   font-family: var(--font-family);
-  @apply bg-slate-950 text-white antialiased;
+  background-color: rgb(var(--bg-background));
+  @apply text-white antialiased;
 }
 
 input[type="number"]::-webkit-inner-spin-button,
@@ -40,19 +53,33 @@ input[type="number"] {
   -moz-appearance: textfield;
 }
 
-/* ─── Design System: Glass Dark ─── */
+/* ─── Design System: Solid Dark (iOS-matching) ─── */
 
 @layer components {
-  /* Glass Cards */
+  /* Solid Cards (matching iOS .solidCard()) */
   .glass-card {
-    @apply bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl;
+    background-color: rgb(var(--bg-surface));
+    border: 1px solid rgba(var(--border-color), 0.08);
+    border-radius: 16px;
   }
   .glass-card-elevated {
-    @apply bg-white/[0.08] backdrop-blur-xl border border-white/10 rounded-2xl shadow-lg shadow-black/20;
+    background-color: rgb(var(--bg-surface));
+    border: 1px solid rgba(var(--border-color), 0.08);
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   }
   .glass-card-interactive {
-    @apply bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl
-           hover:bg-white/[0.08] hover:border-white/[0.15] active:scale-[0.98] transition-all duration-200;
+    background-color: rgb(var(--bg-surface));
+    border: 1px solid rgba(var(--border-color), 0.08);
+    border-radius: 16px;
+    transition: all 0.2s;
+  }
+  .glass-card-interactive:hover {
+    background-color: rgb(var(--bg-surface-light));
+    border-color: rgba(var(--border-color), 0.15);
+  }
+  .glass-card-interactive:active {
+    transform: scale(0.98);
   }
 
   /* Buttons — using CSS custom properties for theme colors */
@@ -66,22 +93,38 @@ input[type="number"] {
     box-shadow: 0 10px 15px -3px rgba(var(--color-primary), 0.4);
   }
   .btn-secondary {
-    @apply bg-white/5 border border-white/10 text-white rounded-xl font-semibold
-           hover:bg-white/10 active:scale-[0.98] transition-all duration-200;
+    background-color: rgb(var(--bg-surface));
+    border: 1px solid rgba(var(--border-color), 0.08);
+    @apply text-white rounded-xl font-semibold active:scale-[0.98] transition-all duration-200;
+  }
+  .btn-secondary:hover {
+    background-color: rgb(var(--bg-surface-light));
   }
   .btn-danger {
     @apply bg-red-500/20 border border-red-500/30 text-red-400 rounded-xl font-semibold
            hover:bg-red-500/30 shadow-lg shadow-red-500/10 active:scale-[0.98] transition-all duration-200;
   }
   .btn-back {
-    @apply flex items-center gap-2 text-slate-400 hover:text-white transition-colors
-           px-2 py-1 -ml-2 rounded-lg hover:bg-white/5;
+    @apply flex items-center gap-2 transition-colors px-2 py-1 -ml-2 rounded-lg;
+    color: rgb(var(--text-secondary));
+  }
+  .btn-back:hover {
+    @apply text-white;
+    background-color: rgba(var(--border-color), 0.05);
   }
 
   /* Typography */
   .stat-number {
     @apply font-bold text-white;
     font-variant-numeric: tabular-nums;
+  }
+
+  /* iOS-matching text colors */
+  .text-secondary {
+    color: rgb(var(--text-secondary));
+  }
+  .text-tertiary {
+    color: rgb(var(--text-tertiary));
   }
 }
 
@@ -119,15 +162,16 @@ input[type="number"] {
 .stagger-9 { animation-delay: 0.45s; }
 .stagger-10 { animation-delay: 0.5s; }
 
-/* ─── Backdrop-blur fallback for older devices ─── */
-@supports not (backdrop-filter: blur(1px)) {
-  .glass-card {
-    @apply bg-slate-800/90 border-slate-700;
-  }
-  .glass-card-elevated {
-    @apply bg-slate-800/95 border-slate-700 shadow-lg shadow-black/30;
-  }
-  .glass-card-interactive {
-    @apply bg-slate-800/90 border-slate-700 hover:bg-slate-700/90;
-  }
+/* ─── Hide scrollbar utility ─── */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* ─── Safe area for notched phones ─── */
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0);
 }

@@ -89,7 +89,7 @@ const WorkoutSummary = ({ dayNumber, workoutHistory, completedWorkouts, prsHit, 
               const badge = getBadge(id);
               if (!badge) return null;
               return (
-                <div key={id} className="flex items-center gap-2 bg-white/5 rounded-lg px-3 py-2 border border-white/10">
+                <div key={id} className="flex items-center gap-2 bg-white/[0.05] rounded-lg px-3 py-2 border border-white/[0.08]">
                   <span className="text-xl">{badge.icon}</span>
                   <span className="text-sm font-semibold text-white">{badge.name}</span>
                 </div>

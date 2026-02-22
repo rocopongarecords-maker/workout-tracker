@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { calculateStreakWithFreeze } from '../utils/checkBadges';
 import { getPendingWorkouts } from '../utils/getNextWorkout';
 
-const WorkoutDaySelector = ({ schedule, completedWorkouts, nextDay, onSelectDay, onReviewDay, currentView, setCurrentView, getWorkoutName }) => {
+const WorkoutDaySelector = ({ schedule, completedWorkouts, nextDay, onSelectDay, onReviewDay, currentView, setCurrentView, getWorkoutName, programName }) => {
   const [showPending, setShowPending] = useState(false);
   const { frozenDays } = useMemo(
     () => calculateStreakWithFreeze(completedWorkouts, schedule),
@@ -12,11 +12,11 @@ const WorkoutDaySelector = ({ schedule, completedWorkouts, nextDay, onSelectDay,
   const pendingGroups = useMemo(() => getPendingWorkouts(completedWorkouts, schedule), [completedWorkouts, schedule]);
 
   const getStatusColor = (day) => {
-    if (day.rest) return 'bg-white/5 text-slate-500';
+    if (day.rest) return 'bg-white/[0.05] text-slate-500';
     if (frozenSet.has(day.day)) return 'bg-amber-500/10 text-amber-400 border border-amber-500/30';
     if (completedWorkouts.includes(day.day)) return 'bg-green-500/20 text-green-400 border border-green-500/30';
     if (day.day === nextDay) return 'bg-blue-500/20 text-blue-400 border-2 border-blue-500 shadow-glow-blue';
-    return 'bg-white/10 text-slate-400';
+    return 'bg-white/[0.08] text-slate-400';
   };
 
   const getWorkoutLabel = (type) => {
@@ -66,7 +66,15 @@ const WorkoutDaySelector = ({ schedule, completedWorkouts, nextDay, onSelectDay,
           Back
         </button>
         <h2 className="text-xl font-bold text-white">All Workouts</h2>
-        <div className="w-16" />
+        <button
+          onClick={() => setCurrentView('programs')}
+          className="flex items-center gap-1 text-xs font-semibold text-slate-300 bg-white/[0.08] hover:bg-white/[0.12] border border-white/[0.08] px-3 py-1.5 rounded-full transition-all max-w-[120px]"
+        >
+          <span className="truncate">{programName || 'Program'}</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+            <path d="m6 9 6 6 6-6" />
+          </svg>
+        </button>
       </div>
 
       {/* Pending workouts toggle */}
@@ -74,7 +82,7 @@ const WorkoutDaySelector = ({ schedule, completedWorkouts, nextDay, onSelectDay,
         <button
           onClick={() => setShowPending(false)}
           className={`flex-1 py-2 rounded-xl text-xs font-semibold transition-all ${
-            !showPending ? 'btn-primary' : 'bg-white/5 text-slate-400'
+            !showPending ? 'btn-primary' : 'bg-white/[0.05] text-slate-400'
           }`}
         >
           Calendar View
@@ -82,7 +90,7 @@ const WorkoutDaySelector = ({ schedule, completedWorkouts, nextDay, onSelectDay,
         <button
           onClick={() => setShowPending(true)}
           className={`flex-1 py-2 rounded-xl text-xs font-semibold transition-all ${
-            showPending ? 'btn-primary' : 'bg-white/5 text-slate-400'
+            showPending ? 'btn-primary' : 'bg-white/[0.05] text-slate-400'
           }`}
         >
           Pending ({pendingGroups.reduce((s, g) => s + g.days.length, 0)})
@@ -113,7 +121,7 @@ const WorkoutDaySelector = ({ schedule, completedWorkouts, nextDay, onSelectDay,
                         </span>
                         <span className="text-xs text-slate-500 ml-2">Day {day.day}</span>
                         {day.block && (
-                          <span className="text-xs text-slate-600 ml-1">· Block {day.block}</span>
+                          <span className="text-xs text-slate-500 ml-1">· Block {day.block}</span>
                         )}
                       </div>
                       <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-slate-500">
@@ -159,7 +167,7 @@ const WorkoutDaySelector = ({ schedule, completedWorkouts, nextDay, onSelectDay,
                   )}
                   <div className="grid grid-cols-[2rem_repeat(7,1fr)] gap-1.5">
                     <div className="flex items-center justify-center">
-                      <span className="text-[9px] font-bold text-slate-600 leading-none">
+                      <span className="text-[9px] font-bold text-slate-500 leading-none">
                         {group.week}
                       </span>
                     </div>
@@ -216,7 +224,7 @@ const WorkoutDaySelector = ({ schedule, completedWorkouts, nextDay, onSelectDay,
               <span className="text-slate-400">Next</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-white/10 rounded-lg"></div>
+              <div className="w-4 h-4 bg-white/[0.08] rounded-lg"></div>
               <span className="text-slate-400">Upcoming</span>
             </div>
             {frozenDays.length > 0 && (

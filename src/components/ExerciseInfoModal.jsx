@@ -7,7 +7,7 @@ const ExerciseInfoModal = ({ exerciseName, onClose }) => {
     <div className="fixed inset-0 z-40 flex items-end justify-center" onClick={onClose}>
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
       <div
-        className="relative w-full max-w-lg bg-slate-900/95 backdrop-blur-xl border-t border-white/10 rounded-t-2xl p-6 pb-8 max-h-[80vh] overflow-y-auto animate-slide-up"
+        className="relative w-full max-w-lg bg-slate-900/95 backdrop-blur-xl border-t border-white/[0.08] rounded-t-2xl p-6 pb-8 max-h-[80vh] overflow-y-auto animate-slide-up"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-4">
@@ -26,13 +26,25 @@ const ExerciseInfoModal = ({ exerciseName, onClose }) => {
         {info ? (
           <div className="space-y-5">
             {info.imageUrl && (
-              <div className="rounded-xl overflow-hidden bg-slate-800">
-                <img
-                  src={`${import.meta.env.BASE_URL}${info.imageUrl}`}
-                  alt={exerciseName}
-                  className="w-full h-48 object-contain"
-                  onError={(e) => { e.target.parentElement.style.display = 'none'; }}
-                />
+              <div className="rounded-xl overflow-hidden bg-app-surface">
+                {/\.(mp4|webm|ogg)(\?|#|$)/i.test(info.imageUrl) ? (
+                  <video
+                    src={info.imageUrl}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="w-full h-48 object-contain"
+                    onError={(e) => { e.target.parentElement.style.display = 'none'; }}
+                  />
+                ) : (
+                  <img
+                    src={info.imageUrl.startsWith('http') ? info.imageUrl : `${import.meta.env.BASE_URL}${info.imageUrl}`}
+                    alt={exerciseName}
+                    className="w-full h-48 object-contain"
+                    onError={(e) => { e.target.parentElement.style.display = 'none'; }}
+                  />
+                )}
               </div>
             )}
             <div>

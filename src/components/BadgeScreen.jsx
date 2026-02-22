@@ -56,7 +56,7 @@ const BadgeScreen = ({ earnedBadges, onBack }) => {
                     className={`rounded-2xl p-3 text-center border transition-all ${
                       isEarned
                         ? `${colors.bg} ${colors.border} shadow-lg`
-                        : 'bg-white/5 border-white/5 opacity-40'
+                        : 'bg-white/[0.05] border-white/5 opacity-40'
                     }`}
                   >
                     <div className={`text-3xl mb-2 ${isEarned ? '' : 'grayscale'}`}>
