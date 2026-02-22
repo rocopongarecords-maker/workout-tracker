@@ -188,7 +188,12 @@ function App() {
   const showTabBar = !hideTabBarViews.includes(currentView);
 
   const handleTabSelect = (tabId) => {
-    setCurrentView(tabId);
+    // 'community' tab maps to the coach discovery view
+    if (tabId === 'community') {
+      setCurrentView('coach-discovery');
+    } else {
+      setCurrentView(tabId);
+    }
   };
 
   return (
@@ -198,13 +203,13 @@ function App() {
 
       {/* Global brand bar — hidden during active workout and summary */}
       {!['workout', 'summary', 'free-workout'].includes(currentView) && (
-        <div className="flex items-center gap-2 max-w-lg mx-auto px-4 py-2 border-b border-white/[0.05]">
+        <div className="flex items-center gap-2 max-w-lg mx-auto px-4 py-2.5 border-b border-white/[0.07]">
           <img
             src={`${import.meta.env.BASE_URL}icons/icon-192.png`}
-            className="w-5 h-5 rounded-md"
+            className="w-6 h-6 rounded-lg"
             alt="ZW"
           />
-          <span className="text-[10px] font-bold text-white/50 tracking-[0.2em] uppercase">ZeroWait</span>
+          <span className="text-xs font-bold text-white/60 tracking-widest uppercase">ZeroWait</span>
         </div>
       )}
 
