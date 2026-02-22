@@ -91,18 +91,19 @@ const CoachDiscovery = ({ coach, onSelectCoach, onOpenChat, onBack }) => {
         </button>
       )}
 
-      {/* Results */}
-      {coach.loading ? (
-        <div className="flex items-center justify-center py-12">
-          <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-        </div>
-      ) : filteredCoaches.length === 0 ? (
+      {/* Results — demos always show; spinner only during Supabase load */}
+      {filteredCoaches.length === 0 && !coach.loading ? (
         <div className="text-center py-12 text-slate-500">
           <div className="text-3xl mb-2">🔍</div>
           <p className="text-sm">No coaches found</p>
         </div>
       ) : (
         <div className="space-y-3">
+          {coach.loading && filteredCoaches.length === 0 && (
+            <div className="flex items-center justify-center py-12">
+              <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+            </div>
+          )}
           {filteredCoaches.map(c => (
             <button
               key={c.id}
