@@ -127,10 +127,10 @@ const Dashboard = ({ stats, completedWorkouts, onStartWorkout, onViewAllWorkouts
       {/* 1. Program Header Card */}
       <div className="glass-card p-4">
         <div className="flex items-center gap-3">
-          <img src={`${import.meta.env.BASE_URL}icons/icon-192.png`} alt="ZW Logo" className="w-9 h-9 rounded-lg" />
+          <img src={`${import.meta.env.BASE_URL}icons/icon-192.png`} alt="ZWAR" className="w-9 h-9 rounded-lg" />
           <div className="flex-1 min-w-0">
             <h1 className="text-lg font-bold text-white truncate">
-              {programName || "Legs-Push-Pull Tracker"}
+              {programName || "ZWAR"}
             </h1>
             <p className="text-sm text-slate-400">
               Week {stats.currentWeek} of {totalWeeks || 16}

@@ -2,7 +2,7 @@ import { Home, Users, Play, BarChart3, User } from 'lucide-react';
 
 const tabs = [
   { id: 'dashboard', label: 'Home', icon: Home, views: ['dashboard'] },
-  { id: 'community', label: 'Community', icon: Users, views: ['coach-discovery', 'coach-profile', 'coach-chat', 'coach-questionnaire', 'coach-dashboard'] },
+  { id: 'community', label: 'Community', icon: Users, views: ['coach-discovery', 'coach-profile', 'coach-chat', 'coach-questionnaire', 'coach-dashboard', 'social', 'add-friend', 'friend-profile', 'notifications', 'gym', 'gym-detail'] },
   { id: 'selector', label: 'Start', icon: Play, views: ['selector', 'workout', 'review', 'summary', 'free-workout'] },
   { id: 'analytics', label: 'Progress', icon: BarChart3, views: ['analytics', 'measurements'] },
   { id: 'settings', label: 'Profile', icon: User, views: ['settings'] },

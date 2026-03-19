@@ -1,0 +1,23 @@
+[build]
+  command = "npm run build && mv dist/index.html dist/app.html"
+  publish = "dist"
+
+[build.environment]
+  VITE_BASE_PATH = "/"
+
+# Root serves landing page
+[[redirects]]
+  from = "/"
+  to = "/index-landing.html"
+  status = 200
+
+# /app and all sub-routes serve the React SPA
+[[redirects]]
+  from = "/app"
+  to = "/app.html"
+  status = 200
+
+[[redirects]]
+  from = "/app/*"
+  to = "/app.html"
+  status = 200

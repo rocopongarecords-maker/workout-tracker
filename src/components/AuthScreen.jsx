@@ -38,10 +38,10 @@ const AuthScreen = ({ onSignIn, onSignUp, onGoogleSignIn, onResetPassword, onCon
     <div className="min-h-screen flex items-center justify-center px-4">
       <div className="w-full max-w-sm space-y-6">
         <div className="text-center animate-fade-in-up">
-          <div className="text-4xl mb-3">🏋️</div>
-          <h1 className="text-2xl font-bold text-white">Workout Tracker</h1>
+          <img src="/icons/icon-192.png" alt="ZWAR" className="w-16 h-16 rounded-2xl mx-auto mb-3" />
+          <h1 className="text-2xl font-bold text-white">ZWAR</h1>
           <p className="text-slate-400 text-sm mt-1">
-            Jeff Nippard's Legs-Push-Pull Program
+            Track workouts, follow programs, train with coaches
           </p>
         </div>
 

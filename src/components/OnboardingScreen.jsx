@@ -38,10 +38,10 @@ const OnboardingScreen = ({ onComplete, onSelectProgram, programs }) => {
 
       {currentStep === 'welcome' && (
         <div className="text-center space-y-6 animate-fade-in-up">
-          <div className="text-6xl">💪</div>
-          <h1 className="text-3xl font-bold text-white">Welcome to<br />Workout Tracker</h1>
+          <img src="/icons/icon-192.png" alt="ZWAR" className="w-20 h-20 rounded-2xl mx-auto" />
+          <h1 className="text-3xl font-bold text-white">Welcome to<br />ZWAR</h1>
           <p className="text-slate-400 max-w-sm mx-auto">
-            Track your training, hit PRs, earn badges, and stay consistent with your program.
+            Track your training, hit PRs, earn badges, and train with expert coaches.
           </p>
           <button
             onClick={handleNext}
@@ -116,18 +116,35 @@ const OnboardingScreen = ({ onComplete, onSelectProgram, programs }) => {
             <p className="text-slate-400 text-sm">You can always change this later</p>
           </div>
           <div className="space-y-3">
-            <button
-              onClick={() => handleFinish('jeff_nippard_lpp')}
-              className="w-full p-4 rounded-2xl border-2 border-blue-500 bg-blue-500/10 text-left shadow-glow-blue"
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="font-semibold text-white">Jeff Nippard's Legs-Push-Pull</div>
-                  <div className="text-sm text-slate-400 mt-1">16 weeks · 6 days/week · Strength & Hypertrophy</div>
+            {[
+              { id: 'jeff_nippard_lpp', name: "Legs-Push-Pull", desc: "16 weeks · 6 days/week · Hypertrophy", recommended: true },
+              { id: 'jeff_nippard_fullbody', name: "Full Body", desc: "12 weeks · 4 days/week · Hypertrophy" },
+              { id: 'hyrox_prep', name: "Hyrox Race Prep", desc: "10 weeks · 4 days/week · Hyrox" },
+              { id: 'upper_lower_split', name: "Upper/Lower Split", desc: "10 weeks · 4 days/week · Hypertrophy" },
+              { id: 'beginner_strength', name: "Beginner Strength", desc: "8 weeks · 3 days/week · Strength" },
+              { id: 'ppl_3day', name: "Push/Pull/Legs 3-Day", desc: "10 weeks · 3 days/week · Hypertrophy" },
+              { id: '531_strength', name: "5/3/1 Strength", desc: "12 weeks · 4 days/week · Powerlifting" },
+            ].map(p => (
+              <button
+                key={p.id}
+                onClick={() => handleFinish(p.id)}
+                className={`w-full p-4 rounded-2xl text-left transition-all ${
+                  p.recommended
+                    ? 'border-2 border-blue-500 bg-blue-500/10 shadow-glow-blue'
+                    : 'glass-card-interactive'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="font-semibold text-white">{p.name}</div>
+                    <div className="text-sm text-slate-400 mt-1">{p.desc}</div>
+                  </div>
+                  {p.recommended && (
+                    <span className="text-[10px] bg-blue-500/30 text-blue-300 px-2 py-1 rounded-full font-semibold uppercase tracking-wider shrink-0 ml-2">Popular</span>
+                  )}
                 </div>
-                <span className="text-[10px] bg-blue-500/30 text-blue-300 px-2 py-1 rounded-full font-semibold uppercase tracking-wider">Recommended</span>
-              </div>
-            </button>
+              </button>
+            ))}
 
             {(programs || []).map(p => (
               <button

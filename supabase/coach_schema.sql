@@ -267,3 +267,11 @@ CREATE OR REPLACE TRIGGER trg_coach_rating
 -- Enable Realtime for coach_messages (for live chat)
 -- ============================================================
 ALTER PUBLICATION supabase_realtime ADD TABLE coach_messages;
+
+-- ============================================================
+-- Schema Update: Coach philosophy, approach, data consent
+-- Run in Supabase SQL editor to apply to existing deployments
+-- ============================================================
+ALTER TABLE coach_profiles ADD COLUMN IF NOT EXISTS philosophy TEXT DEFAULT '';
+ALTER TABLE coach_profiles ADD COLUMN IF NOT EXISTS coaching_approach TEXT DEFAULT '';
+ALTER TABLE coach_clients ADD COLUMN IF NOT EXISTS data_consent JSONB;

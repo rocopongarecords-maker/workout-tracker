@@ -6,6 +6,14 @@ import { fullBodyData } from '../data/fullBodyData';
 import { fullBodySchedule } from '../data/fullBodySchedule';
 import { hyroxData } from '../data/hyroxData';
 import { hyroxSchedule } from '../data/hyroxSchedule';
+import { upperLowerData } from '../data/upperLowerData';
+import { upperLowerSchedule } from '../data/upperLowerSchedule';
+import { beginnerStrengthData } from '../data/beginnerStrengthData';
+import { beginnerStrengthSchedule } from '../data/beginnerStrengthSchedule';
+import { ppl3DayData } from '../data/ppl3DayData';
+import { ppl3DaySchedule } from '../data/ppl3DaySchedule';
+import { fiveThreeOneData } from '../data/fiveThreeOneData';
+import { fiveThreeOneSchedule } from '../data/fiveThreeOneSchedule';
 
 /**
  * Helper to create resolvers for a built-in program with block-based data.
@@ -72,6 +80,58 @@ export const useActiveProgram = (activeProgram, customPrograms) => {
         programName: "Hyrox Race Prep",
         isCustom: false,
         totalWeeks: 10
+      };
+    }
+
+    // Upper/Lower Split program
+    if (programId === 'upper_lower_split') {
+      const { getExercisesForDay, getWorkoutName } = createBuiltInResolvers(upperLowerSchedule, upperLowerData);
+      return {
+        schedule: upperLowerSchedule,
+        getExercisesForDay,
+        getWorkoutName,
+        programName: "Upper/Lower Split",
+        isCustom: false,
+        totalWeeks: 10
+      };
+    }
+
+    // Beginner Strength program
+    if (programId === 'beginner_strength') {
+      const { getExercisesForDay, getWorkoutName } = createBuiltInResolvers(beginnerStrengthSchedule, beginnerStrengthData);
+      return {
+        schedule: beginnerStrengthSchedule,
+        getExercisesForDay,
+        getWorkoutName,
+        programName: "Beginner Strength",
+        isCustom: false,
+        totalWeeks: 8
+      };
+    }
+
+    // Push/Pull/Legs 3-Day program
+    if (programId === 'ppl_3day') {
+      const { getExercisesForDay, getWorkoutName } = createBuiltInResolvers(ppl3DaySchedule, ppl3DayData);
+      return {
+        schedule: ppl3DaySchedule,
+        getExercisesForDay,
+        getWorkoutName,
+        programName: "Push/Pull/Legs 3-Day",
+        isCustom: false,
+        totalWeeks: 10
+      };
+    }
+
+    // 5/3/1 Strength program
+    if (programId === '531_strength') {
+      const { getExercisesForDay, getWorkoutName } = createBuiltInResolvers(fiveThreeOneSchedule, fiveThreeOneData);
+      return {
+        schedule: fiveThreeOneSchedule,
+        getExercisesForDay,
+        getWorkoutName,
+        programName: "5/3/1 Strength",
+        isCustom: false,
+        totalWeeks: 12
       };
     }
 

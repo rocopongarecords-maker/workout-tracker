@@ -33,6 +33,50 @@ const BUILT_IN_PROGRAMS = [
     difficulty: 'Intermediate',
     isDefault: true,
     isBuiltIn: true
+  },
+  {
+    id: 'upper_lower_split',
+    name: "Upper/Lower Split",
+    description: '10-week upper/lower program, 4 days per week. Block 1: hypertrophy (8-10 reps), Block 2: strength (5-6 reps). Horizontal and vertical upper days, quad and hip lower days.',
+    weeks: 10,
+    daysPerWeek: 4,
+    category: 'Hypertrophy',
+    difficulty: 'Intermediate',
+    isDefault: true,
+    isBuiltIn: true
+  },
+  {
+    id: 'beginner_strength',
+    name: "Beginner Strength",
+    description: '8-week beginner program, 3 days per week. Block 1: learn compound movements with moderate reps. Block 2: progressive overload with heavier weights.',
+    weeks: 8,
+    daysPerWeek: 3,
+    category: 'Strength',
+    difficulty: 'Beginner',
+    isDefault: true,
+    isBuiltIn: true
+  },
+  {
+    id: 'ppl_3day',
+    name: "Push/Pull/Legs 3-Day",
+    description: '10-week push/pull/legs split, 3 days per week. Block 1: volume focus with higher reps. Block 2: intensity focus with heavier compounds.',
+    weeks: 10,
+    daysPerWeek: 3,
+    category: 'Hypertrophy',
+    difficulty: 'Intermediate',
+    isDefault: true,
+    isBuiltIn: true
+  },
+  {
+    id: '531_strength',
+    name: "5/3/1 Strength",
+    description: '12-week Wendler 5/3/1 with Boring But Big supplemental work. 4 days per week. Three 4-week phases with progressively heavier main lifts.',
+    weeks: 12,
+    daysPerWeek: 4,
+    category: 'Powerlifting',
+    difficulty: 'Intermediate',
+    isDefault: true,
+    isBuiltIn: true
   }
 ];
 

@@ -32,11 +32,21 @@ import CreatorDashboard from './components/CreatorDashboard';
 import InviteJoin from './components/InviteJoin';
 import { useMarketplace } from './hooks/useMarketplace';
 import { useCoach } from './hooks/useCoach';
+import { useSocial } from './hooks/useSocial';
+import { useLeague } from './hooks/useLeague';
+import { useGym } from './hooks/useGym';
+import { useActivityFeed } from './hooks/useActivityFeed';
 import CoachDiscovery from './components/CoachDiscovery';
 import CoachProfile from './components/CoachProfile';
 import CoachChat from './components/CoachChat';
 import CoachQuestionnaire from './components/CoachQuestionnaire';
 import CoachDashboard from './components/CoachDashboard';
+import SocialScreen from './components/SocialScreen';
+import AddFriendScreen from './components/AddFriendScreen';
+import FriendProfileScreen from './components/FriendProfileScreen';
+import NotificationsScreen from './components/NotificationsScreen';
+import GymScreen from './components/GymScreen';
+import GymDetailScreen from './components/GymDetailScreen';
 import TabBar from './components/TabBar';
 import './styles/globals.css';
 
@@ -56,6 +66,10 @@ function App() {
 
   const marketplace = useMarketplace(auth.user);
   const coach = useCoach(auth.user);
+  const social = useSocial(auth.user);
+  const league = useLeague(auth.user);
+  const gym = useGym(auth.user);
+  const feed = useActivityFeed(auth.user);
   const [marketplaceProgram, setMarketplaceProgram] = useState(null);
   const [publishProgram, setPublishProgram] = useState(null);
   const [feedProgramId, setFeedProgramId] = useState(null);
@@ -63,6 +77,8 @@ function App() {
   const [inviteToken, setInviteToken] = useState(null);
   const [selectedCoachId, setSelectedCoachId] = useState(null);
   const [selectedRelationshipId, setSelectedRelationshipId] = useState(null);
+  const [selectedFriend, setSelectedFriend] = useState(null);
+  const [selectedGymId, setSelectedGymId] = useState(null);
 
   const program = useActiveProgram(data.activeProgram, data.customPrograms);
   const { schedule, getExercisesForDay, getWorkoutName } = program;
@@ -188,9 +204,9 @@ function App() {
   const showTabBar = !hideTabBarViews.includes(currentView);
 
   const handleTabSelect = (tabId) => {
-    // 'community' tab maps to the coach discovery view
+    // 'community' tab maps to the social view (which has coaches, friends, leagues)
     if (tabId === 'community') {
-      setCurrentView('coach-discovery');
+      setCurrentView('social');
     } else {
       setCurrentView(tabId);
     }
@@ -207,7 +223,7 @@ function App() {
           <div className="w-6 h-6 rounded-lg bg-blue-600 flex items-center justify-center flex-shrink-0">
             <span className="text-white text-[11px] font-black">Z</span>
           </div>
-          <span className="text-xs font-bold text-white/70 tracking-widest uppercase">ZeroWait</span>
+          <span className="text-xs font-bold text-white/70 tracking-widest uppercase">ZWAR</span>
         </div>
       )}
 
@@ -531,6 +547,75 @@ function App() {
             }}
             onBuildProgram={() => setCurrentView('program-builder')}
             onBack={handleBackToDashboard}
+          />
+        )}
+
+        {currentView === 'social' && (
+          <SocialScreen
+            social={social}
+            league={league}
+            feed={feed}
+            user={auth.user}
+            onNavigate={(view, data) => {
+              if (view === 'add-friend') {
+                setCurrentView('add-friend');
+              } else if (view === 'friend-profile') {
+                setSelectedFriend(data);
+                setCurrentView('friend-profile');
+              } else if (view === 'notifications') {
+                setCurrentView('notifications');
+              } else if (view === 'coach-discovery') {
+                setCurrentView('coach-discovery');
+              } else if (view === 'gym') {
+                setCurrentView('gym');
+              } else {
+                setCurrentView(view);
+              }
+            }}
+            onBack={handleBackToDashboard}
+          />
+        )}
+
+        {currentView === 'add-friend' && (
+          <AddFriendScreen
+            social={social}
+            onBack={() => setCurrentView('social')}
+          />
+        )}
+
+        {currentView === 'friend-profile' && selectedFriend && (
+          <FriendProfileScreen
+            friend={selectedFriend}
+            social={social}
+            onBack={() => setCurrentView('social')}
+          />
+        )}
+
+        {currentView === 'notifications' && (
+          <NotificationsScreen
+            social={social}
+            onBack={() => setCurrentView('social')}
+          />
+        )}
+
+        {currentView === 'gym' && (
+          <GymScreen
+            gym={gym}
+            onNavigate={(view, data) => {
+              if (view === 'gym-detail') {
+                setSelectedGymId(data);
+                setCurrentView('gym-detail');
+              }
+            }}
+            onBack={() => setCurrentView('social')}
+          />
+        )}
+
+        {currentView === 'gym-detail' && selectedGymId && (
+          <GymDetailScreen
+            gymData={gym}
+            gymId={selectedGymId}
+            onBack={() => setCurrentView('gym')}
           />
         )}
       </div>

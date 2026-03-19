@@ -2,8 +2,8 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
-// Use '/workout-tracker/' for GitHub Pages, '/' for Vercel/custom domain
-const base = process.env.VITE_BASE_PATH || '/workout-tracker/'
+// Use '/' for custom domain (zwar.app), '/workout-tracker/' for GitHub Pages
+const base = process.env.VITE_BASE_PATH || '/'
 
 export default defineConfig({
   plugins: [
@@ -12,13 +12,15 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'icons/*.png'],
       manifest: {
-        name: 'Workout Tracker - Legs-Push-Pull',
-        short_name: 'Workout Tracker',
-        description: 'Track Jeff Nippard\'s 16-week Legs-Push-Pull program',
-        theme_color: '#0f172a',
-        background_color: '#0f172a',
+        name: 'ZWAR - Workout Tracker',
+        short_name: 'ZWAR',
+        description: 'Track workouts, follow structured programs, and train with expert coaches',
+        theme_color: '#050A17',
+        background_color: '#050A17',
         display: 'standalone',
         orientation: 'portrait',
+        scope: '/app/',
+        start_url: '/app/',
         icons: [
           {
             src: `${base}icons/icon-192.png`,
@@ -74,6 +76,13 @@ export default defineConfig({
     })
   ],
   base,
+  build: {
+    rollupOptions: {
+      input: {
+        app: 'index.html'
+      }
+    }
+  },
   server: {
     port: 3000
   }
