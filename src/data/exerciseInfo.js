@@ -1,7 +1,7 @@
 export const exerciseInfo = {
   // ========== BLOCK 1 — LEGS #1 ==========
   "Back Squat": {
-    imageUrl: "https://media.musclewiki.com/media/uploads/videos/branded/male-Barbell-barbell-squat-front.mp4#t=0.001",
+    imageUrl: "exercise-images/back_squat_1.png",
     muscles: ["Quadriceps", "Glutes", "Core"],
     tips: [
       "Brace your core hard before descending and maintain tightness throughout",
@@ -14,7 +14,7 @@ export const exerciseInfo = {
     ]
   },
   "Deadlift": {
-    imageUrl: "https://media.musclewiki.com/media/uploads/videos/branded/male-Barbell-deadlift-front.mp4#t=0.001",
+    imageUrl: "exercise-images/deadlift_1.png",
     muscles: ["Hamstrings", "Glutes", "Lower Back", "Traps"],
     tips: [
       "Set up with the bar over mid-foot, shins nearly touching the bar",
@@ -27,7 +27,7 @@ export const exerciseInfo = {
     ]
   },
   "Barbell Hip Thrust": {
-    imageUrl: "https://media.musclewiki.com/media/uploads/videos/branded/male-Barbell-barbell-hip-thrust-front.mp4",
+    imageUrl: "exercise-images/barbell_hip_thrust_1.png",
     muscles: ["Glutes", "Hamstrings"],
     tips: [
       "Position your upper back on the bench at the bottom of your shoulder blades",
@@ -40,6 +40,7 @@ export const exerciseInfo = {
     ]
   },
   "Dumbbell Walking Lunge": {
+    imageUrl: "exercise-images/dumbbell_walking_lunge_1.png",
     muscles: ["Quadriceps", "Glutes", "Hamstrings"],
     tips: [
       "Take a long enough stride so your front knee stays over the ankle",
@@ -52,7 +53,7 @@ export const exerciseInfo = {
     ]
   },
   "Leg Extension": {
-    imageUrl: "https://media.musclewiki.com/media/uploads/videos/branded/male-Machine-leg-extension-front.mp4",
+    imageUrl: "exercise-images/leg_extension_1.png",
     muscles: ["Quadriceps"],
     tips: [
       "Adjust the pad so it sits just above your ankles",
@@ -65,7 +66,7 @@ export const exerciseInfo = {
     ]
   },
   "Seated Leg Curl": {
-    imageUrl: "https://media.musclewiki.com/media/uploads/videos/branded/male-Machine-seated-leg-curl-front.mp4",
+    imageUrl: "exercise-images/seated_leg_curl_1.png",
     muscles: ["Hamstrings"],
     tips: [
       "Adjust the machine so the pad sits just above your heels",
@@ -78,6 +79,7 @@ export const exerciseInfo = {
     ]
   },
   "Standing Calf Raise": {
+    imageUrl: "exercise-images/standing_calf_raise_1.png",
     muscles: ["Calves"],
     tips: [
       "Get a full stretch at the bottom by letting your heels drop below the platform",
@@ -92,7 +94,7 @@ export const exerciseInfo = {
 
   // ========== BLOCK 1 — LEGS #2 ==========
   "Front Squat": {
-    imageUrl: "https://media.musclewiki.com/media/uploads/videos/branded/male-Barbell-front-squat-front.mp4",
+    imageUrl: "exercise-images/front_squat_1.png",
     muscles: ["Quadriceps", "Glutes", "Core", "Upper Back"],
     tips: [
       "Keep your elbows high and parallel to the floor throughout",
@@ -105,6 +107,7 @@ export const exerciseInfo = {
     ]
   },
   "Cable Pull Through": {
+    imageUrl: "exercise-images/cable_pull_through_1.png",
     muscles: ["Glutes", "Hamstrings"],
     tips: [
       "Hinge at the hips and push them back, keeping a soft knee bend",
@@ -117,6 +120,7 @@ export const exerciseInfo = {
     ]
   },
   "Single-Leg Leg Press": {
+    imageUrl: "exercise-images/single_leg_leg_press_1.png",
     muscles: ["Quadriceps", "Glutes"],
     tips: [
       "Place your foot in the center of the platform at a comfortable height",
@@ -129,6 +133,7 @@ export const exerciseInfo = {
     ]
   },
   "Single-Leg Leg Extension": {
+    imageUrl: "exercise-images/single_leg_leg_extension_1.png",
     muscles: ["Quadriceps"],
     tips: [
       "Use a lighter load than bilateral and focus on peak contraction",
@@ -141,6 +146,7 @@ export const exerciseInfo = {
     ]
   },
   "Swiss Ball Single-Leg Leg Curl": {
+    imageUrl: "exercise-images/swiss_ball_single_leg_leg_curl_1.png",
     muscles: ["Hamstrings", "Glutes", "Core"],
     tips: [
       "Dig your heel into the ball and lift your hips into a bridge before curling",
@@ -155,7 +161,7 @@ export const exerciseInfo = {
 
   // ========== BLOCK 1 — PUSH #1 ==========
   "Barbell Bench Press": {
-    imageUrl: "https://media.musclewiki.com/media/uploads/videos/branded/male-Barbell-bench-press-front.mp4",
+    imageUrl: "exercise-images/barbell_bench_press_1.png",
     muscles: ["Chest", "Triceps", "Front Delts"],
     tips: [
       "Retract and depress your shoulder blades before unracking",
@@ -168,6 +174,7 @@ export const exerciseInfo = {
     ]
   },
   "Dumbbell Seated Shoulder Press": {
+    imageUrl: "exercise-images/dumbbell_seated_shoulder_press_1.png",
     muscles: ["Front Delts", "Lateral Delts", "Triceps"],
     tips: [
       "Start with the dumbbells at ear height, palms facing forward",
@@ -180,7 +187,7 @@ export const exerciseInfo = {
     ]
   },
   "Weighted Dip": {
-    imageUrl: "https://media.musclewiki.com/media/uploads/videos/branded/male-Bodyweight-dips-front.mp4",
+    imageUrl: "exercise-images/weighted_dip_1.png",
     muscles: ["Chest", "Triceps", "Front Delts"],
     tips: [
       "Lean your torso slightly forward to emphasize the chest",
@@ -193,6 +200,7 @@ export const exerciseInfo = {
     ]
   },
   "Low-to-High Cable Flye": {
+    imageUrl: "exercise-images/low_to_high_cable_flye_1.png",
     muscles: ["Upper Chest"],
     tips: [
       "Set the pulleys to the lowest position and step forward for tension",
@@ -205,6 +213,7 @@ export const exerciseInfo = {
     ]
   },
   "Dumbbell Isolateral Skull Crusher": {
+    imageUrl: "exercise-images/dumbbell_isolateral_skull_crusher_1.png",
     muscles: ["Triceps"],
     tips: [
       "Work one arm at a time to maximize the mind-muscle connection",
@@ -217,7 +226,7 @@ export const exerciseInfo = {
     ]
   },
   "Dumbbell Lateral Raise": {
-    imageUrl: "https://media.musclewiki.com/media/uploads/videos/branded/male-Dumbbell-dumbbell-lateral-raise-front.mp4",
+    imageUrl: "exercise-images/dumbbell_lateral_raise_1.png",
     muscles: ["Lateral Delts"],
     tips: [
       "Lead with your elbows, not your hands — think about pouring water from a pitcher",
@@ -244,6 +253,7 @@ export const exerciseInfo = {
 
   // ========== BLOCK 1 — PUSH #2 ==========
   "Close-Grip Bench Press": {
+    imageUrl: "exercise-images/close_grip_bench_press_1.png",
     muscles: ["Triceps", "Chest", "Front Delts"],
     tips: [
       "Use a shoulder-width grip — hands don't need to be touching",
@@ -256,7 +266,7 @@ export const exerciseInfo = {
     ]
   },
   "Military Press": {
-    imageUrl: "https://media.musclewiki.com/media/uploads/videos/branded/male-Barbell-military-press-front.mp4",
+    imageUrl: "exercise-images/military_press_1.png",
     muscles: ["Front Delts", "Lateral Delts", "Triceps", "Core"],
     tips: [
       "Start with the bar resting on your front delts at collarbone height",
@@ -269,6 +279,7 @@ export const exerciseInfo = {
     ]
   },
   "Dumbbell Incline Press": {
+    imageUrl: "exercise-images/dumbbell_incline_press_1.png",
     muscles: ["Upper Chest", "Front Delts", "Triceps"],
     tips: [
       "Set the bench to approximately 30-45 degrees",
@@ -281,6 +292,7 @@ export const exerciseInfo = {
     ]
   },
   "Pec Deck": {
+    imageUrl: "exercise-images/pec_deck_1.png",
     muscles: ["Chest"],
     tips: [
       "Adjust the seat so your arms are at chest height when gripping the pads",
@@ -293,6 +305,7 @@ export const exerciseInfo = {
     ]
   },
   "Cable Lateral Raise": {
+    imageUrl: "exercise-images/cable_lateral_raise_1.png",
     muscles: ["Lateral Delts"],
     tips: [
       "Stand sideways to the cable with the handle in the far hand",
@@ -305,6 +318,7 @@ export const exerciseInfo = {
     ]
   },
   "Cable Triceps Kickback": {
+    imageUrl: "exercise-images/cable_triceps_kickback_1.png",
     muscles: ["Triceps"],
     tips: [
       "Hinge forward and pin your upper arm to your side",
@@ -317,6 +331,7 @@ export const exerciseInfo = {
     ]
   },
   "Bicycle Crunch": {
+    imageUrl: "exercise-images/bicycle_crunch_1.png",
     muscles: ["Rectus Abdominis", "Obliques"],
     tips: [
       "Rotate your torso — bring the shoulder toward the opposite knee, not just the elbow",
@@ -331,6 +346,7 @@ export const exerciseInfo = {
 
   // ========== BLOCK 1 — PULL #1 ==========
   "1-Arm Lat Pull-In": {
+    imageUrl: "exercise-images/1_arm_lat_pull_in_1.png",
     muscles: ["Lats"],
     tips: [
       "Use a cable set to about head height and step back for tension",
@@ -343,7 +359,7 @@ export const exerciseInfo = {
     ]
   },
   "Pull-Up": {
-    imageUrl: "https://media.musclewiki.com/media/uploads/videos/branded/male-Bodyweight-pull-up-front.mp4",
+    imageUrl: "exercise-images/pull_up_1.png",
     muscles: ["Lats", "Biceps", "Rhomboids", "Core"],
     tips: [
       "Start from a dead hang with shoulders engaged — don't just hang passively",
@@ -356,6 +372,7 @@ export const exerciseInfo = {
     ]
   },
   "Pendlay Row": {
+    imageUrl: "exercise-images/pendlay_row_1.png",
     muscles: ["Upper Back", "Lats", "Rear Delts", "Biceps"],
     tips: [
       "Reset the bar on the floor between every rep — each rep starts from a dead stop",
@@ -368,6 +385,7 @@ export const exerciseInfo = {
     ]
   },
   "Machine High Row": {
+    imageUrl: "exercise-images/machine_high_row_1.png",
     muscles: ["Upper Back", "Lats", "Rear Delts"],
     tips: [
       "Adjust the chest pad and pull toward your upper chest or neck",
@@ -380,7 +398,7 @@ export const exerciseInfo = {
     ]
   },
   "Seated Face Pull": {
-    imageUrl: "https://media.musclewiki.com/media/uploads/videos/branded/male-Cable-face-pull-front.mp4",
+    imageUrl: "exercise-images/seated_face_pull_1.png",
     muscles: ["Rear Delts", "Rotator Cuff", "Traps"],
     tips: [
       "Use a rope attachment and pull toward your forehead",
@@ -417,6 +435,7 @@ export const exerciseInfo = {
     ]
   },
   "Dumbbell Preacher Curl": {
+    imageUrl: "exercise-images/dumbbell_preacher_curl_1.png",
     muscles: ["Biceps", "Brachialis"],
     tips: [
       "Press the back of your arm flat against the pad — no gap",
@@ -431,7 +450,7 @@ export const exerciseInfo = {
 
   // ========== BLOCK 1 — PULL #2 ==========
   "Neutral-Grip Pulldown": {
-    imageUrl: "https://media.musclewiki.com/media/uploads/videos/branded/male-Cable-lat-pulldown-front.mp4",
+    imageUrl: "exercise-images/neutral_grip_pulldown_1.png",
     muscles: ["Lats", "Biceps", "Rhomboids"],
     tips: [
       "Use a V-bar or neutral-grip attachment and lean back slightly",
@@ -468,6 +487,7 @@ export const exerciseInfo = {
     ]
   },
   "Kneeling Straight-Arm Cable Pull-Over": {
+    imageUrl: "exercise-images/kneeling_straight_arm_cable_pull_over_1.png",
     muscles: ["Lats", "Teres Major"],
     tips: [
       "Kneel facing a high cable and keep your arms nearly straight throughout",
@@ -480,6 +500,7 @@ export const exerciseInfo = {
     ]
   },
   "Snatch-Grip Barbell Shrug": {
+    imageUrl: "exercise-images/snatch_grip_barbell_shrug_1.png",
     muscles: ["Traps", "Upper Back"],
     tips: [
       "Use a wide snatch grip — roughly double your shoulder-width",
@@ -492,6 +513,7 @@ export const exerciseInfo = {
     ]
   },
   "Cable Reverse Flye": {
+    imageUrl: "exercise-images/cable_reverse_flye_1.png",
     muscles: ["Rear Delts", "Rhomboids"],
     tips: [
       "Set the cables at shoulder height and cross-grip the handles",
@@ -504,6 +526,7 @@ export const exerciseInfo = {
     ]
   },
   "Single-Arm Cable Curl": {
+    imageUrl: "exercise-images/single_arm_cable_curl_1.png",
     muscles: ["Biceps"],
     tips: [
       "Stand sideways to a low cable and curl with one arm at a time",
@@ -516,6 +539,7 @@ export const exerciseInfo = {
     ]
   },
   "Hammer Curl": {
+    imageUrl: "exercise-images/hammer_curl_1.png",
     muscles: ["Brachioradialis", "Biceps", "Brachialis"],
     tips: [
       "Keep a neutral grip with your palms facing each other throughout",
@@ -530,6 +554,7 @@ export const exerciseInfo = {
 
   // ========== BLOCK 2 — LEGS #1 ==========
   "Tempo Back Squat": {
+    imageUrl: "exercise-images/tempo_back_squat_1.png",
     muscles: ["Quadriceps", "Glutes", "Core"],
     tips: [
       "Use a controlled 3-4 second eccentric on the way down",
@@ -542,7 +567,7 @@ export const exerciseInfo = {
     ]
   },
   "Romanian Deadlift": {
-    imageUrl: "https://media.musclewiki.com/media/uploads/videos/branded/male-Barbell-romanian-deadlift-front.mp4",
+    imageUrl: "exercise-images/romanian_deadlift_1.png",
     muscles: ["Hamstrings", "Glutes", "Lower Back"],
     tips: [
       "Push your hips back while keeping a slight knee bend",
@@ -555,6 +580,7 @@ export const exerciseInfo = {
     ]
   },
   "Pause Barbell Hip Thrust": {
+    imageUrl: "exercise-images/pause_barbell_hip_thrust_1.png",
     muscles: ["Glutes", "Hamstrings"],
     tips: [
       "Pause for 2 seconds at the top with a hard glute squeeze",
@@ -567,6 +593,7 @@ export const exerciseInfo = {
     ]
   },
   "Reverse Lunge": {
+    imageUrl: "exercise-images/reverse_lunge_1.png",
     muscles: ["Quadriceps", "Glutes", "Hamstrings"],
     tips: [
       "Step back far enough so your front shin stays vertical at the bottom",
@@ -579,6 +606,7 @@ export const exerciseInfo = {
     ]
   },
   "Enhanced-Eccentric Leg Extension": {
+    imageUrl: "exercise-images/enhanced_eccentric_leg_extension_1.png",
     muscles: ["Quadriceps"],
     tips: [
       "Extend with both legs, then lower with only one leg for a slow eccentric",
@@ -591,6 +619,7 @@ export const exerciseInfo = {
     ]
   },
   "Lying Leg Curl": {
+    imageUrl: "exercise-images/lying_leg_curl_1.png",
     muscles: ["Hamstrings"],
     tips: [
       "Adjust the pad to sit just above your Achilles tendon",
@@ -605,6 +634,7 @@ export const exerciseInfo = {
 
   // ========== BLOCK 2 — LEGS #2 (new exercise) ==========
   "Round-Back 45° Hyperextension": {
+    imageUrl: "exercise-images/round_back_45_degree_hyperextension_1.png",
     muscles: ["Glutes", "Hamstrings"],
     tips: [
       "Intentionally round your upper back to shift emphasis from the spinal erectors to the glutes",
@@ -619,6 +649,7 @@ export const exerciseInfo = {
 
   // ========== BLOCK 2 — PUSH #1 ==========
   "Pause Barbell Bench Press": {
+    imageUrl: "exercise-images/pause_barbell_bench_press_1.png",
     muscles: ["Chest", "Triceps", "Front Delts"],
     tips: [
       "Pause the bar on your chest for a full 1-2 seconds before pressing",
@@ -631,6 +662,7 @@ export const exerciseInfo = {
     ]
   },
   "Standing Dumbbell Shoulder Press": {
+    imageUrl: "exercise-images/standing_dumbbell_shoulder_press_1.png",
     muscles: ["Front Delts", "Lateral Delts", "Triceps", "Core"],
     tips: [
       "Brace your core and squeeze your glutes for a solid standing base",
@@ -643,6 +675,7 @@ export const exerciseInfo = {
     ]
   },
   "Cable Flye": {
+    imageUrl: "exercise-images/cable_flye_1.png",
     muscles: ["Chest"],
     tips: [
       "Set the cables at mid-chest height for a standard flye angle",
@@ -655,6 +688,7 @@ export const exerciseInfo = {
     ]
   },
   "Barbell Floor Skull Crusher": {
+    imageUrl: "exercise-images/barbell_floor_skull_crusher_1.png",
     muscles: ["Triceps"],
     tips: [
       "Lie on the floor and lower the bar to just above your forehead",
@@ -669,6 +703,7 @@ export const exerciseInfo = {
 
   // ========== BLOCK 2 — PUSH #2 (new exercises) ==========
   "Egyptian Lateral Raise": {
+    imageUrl: "exercise-images/egyptian_lateral_raise_1.png",
     muscles: ["Lateral Delts"],
     tips: [
       "Hold a pole or upright with one hand and lean away to increase the range of motion",
@@ -681,6 +716,7 @@ export const exerciseInfo = {
     ]
   },
   "Rope Overhead Triceps Extension": {
+    imageUrl: "exercise-images/rope_overhead_triceps_extension_1.png",
     muscles: ["Triceps"],
     tips: [
       "Face away from a high cable and hinge forward slightly at the hips",
@@ -693,6 +729,7 @@ export const exerciseInfo = {
     ]
   },
   "Hanging Leg Raise": {
+    imageUrl: "exercise-images/hanging_leg_raise_1.png",
     muscles: ["Core", "Rectus Abdominis", "Hip Flexors"],
     tips: [
       "Hang from a bar with a firm grip and engage your lats to prevent swinging",
@@ -707,6 +744,7 @@ export const exerciseInfo = {
 
   // ========== BLOCK 2 — PULL #1 (new exercises) ==========
   "Supinated Pulldown": {
+    imageUrl: "exercise-images/supinated_pulldown_1.png",
     muscles: ["Lats", "Biceps", "Lower Traps"],
     tips: [
       "Use an underhand grip slightly narrower than shoulder width",
@@ -719,6 +757,7 @@ export const exerciseInfo = {
     ]
   },
   "Chest-Supported T-Bar Row": {
+    imageUrl: "exercise-images/chest_supported_t_bar_row_1.png",
     muscles: ["Upper Back", "Lats", "Rhomboids", "Rear Delts"],
     tips: [
       "Lie face down on the pad and let your arms hang straight down to start",
@@ -731,6 +770,7 @@ export const exerciseInfo = {
     ]
   },
   "Seal Row": {
+    imageUrl: "exercise-images/seal_row_1.png",
     muscles: ["Upper Back", "Lats", "Rhomboids"],
     tips: [
       "Lie face down on an elevated bench so your arms can hang freely",
@@ -743,6 +783,7 @@ export const exerciseInfo = {
     ]
   },
   "Dumbbell One-Arm Row": {
+    imageUrl: "exercise-images/dumbbell_one_arm_row_1.png",
     muscles: ["Lats", "Rhomboids", "Biceps"],
     tips: [
       "Place one hand and knee on a bench and keep your back flat",
@@ -755,6 +796,7 @@ export const exerciseInfo = {
     ]
   },
   "Dumbbell Supinated Curl": {
+    imageUrl: "exercise-images/dumbbell_supinated_curl_1.png",
     muscles: ["Biceps"],
     tips: [
       "Start with a neutral grip and supinate (rotate palms up) as you curl",
@@ -769,7 +811,7 @@ export const exerciseInfo = {
 
   // ========== BLOCK 2 — PULL #2 (new exercises) ==========
   "Neutral-Grip Pull-Up": {
-    imageUrl: "https://media.musclewiki.com/media/uploads/videos/branded/male-Bodyweight-pull-up-front.mp4#t=0.001",
+    imageUrl: "exercise-images/neutral_grip_pull_up_1.png",
     muscles: ["Lats", "Biceps", "Brachialis", "Core"],
     tips: [
       "Use parallel handles with palms facing each other",
@@ -782,6 +824,7 @@ export const exerciseInfo = {
     ]
   },
   "Single-Arm Pulldown": {
+    imageUrl: "exercise-images/single_arm_pulldown_1.png",
     muscles: ["Lats", "Biceps"],
     tips: [
       "Use a D-handle on a high cable and pull one arm at a time",
@@ -794,6 +837,7 @@ export const exerciseInfo = {
     ]
   },
   "Low-to-High Reverse Flye": {
+    imageUrl: "exercise-images/low_to_high_reverse_flye_1.png",
     muscles: ["Rear Delts", "Rhomboids"],
     tips: [
       "Set a cable to the lowest position and pull up and out with nearly straight arms",
@@ -806,6 +850,7 @@ export const exerciseInfo = {
     ]
   },
   "Reverse Pec Deck": {
+    imageUrl: "exercise-images/reverse_pec_deck_1.png",
     muscles: ["Rear Delts", "Rhomboids"],
     tips: [
       "Sit facing the pad and adjust the handles to the widest starting position",
@@ -818,6 +863,7 @@ export const exerciseInfo = {
     ]
   },
   "Dumbbell Hammer Curl": {
+    imageUrl: "exercise-images/dumbbell_hammer_curl_1.png",
     muscles: ["Brachioradialis", "Biceps", "Brachialis"],
     tips: [
       "Keep a neutral grip with thumbs facing up throughout the curl",
@@ -830,6 +876,7 @@ export const exerciseInfo = {
     ]
   },
   "High Cable Curl": {
+    imageUrl: "exercise-images/high_cable_curl_1.png",
     muscles: ["Biceps"],
     tips: [
       "Set two cables at head height and stand in the center",
@@ -844,6 +891,7 @@ export const exerciseInfo = {
 
   // ========== FULL BODY PROGRAM — Additional Exercises ==========
   "Dumbbell Flat Bench Press": {
+    imageUrl: "exercise-images/dumbbell_flat_bench_press_1.png",
     muscles: ["Chest", "Triceps", "Front Delts"],
     tips: [
       "Retract your shoulder blades and maintain a slight arch in your upper back",
@@ -856,6 +904,7 @@ export const exerciseInfo = {
     ]
   },
   "Lat Pulldown": {
+    imageUrl: "exercise-images/lat_pulldown_1.png",
     muscles: ["Lats", "Biceps", "Rhomboids"],
     tips: [
       "Lean back slightly and pull the bar to your upper chest",
@@ -868,6 +917,7 @@ export const exerciseInfo = {
     ]
   },
   "Incline Barbell Bench Press": {
+    imageUrl: "exercise-images/incline_barbell_bench_press_1.png",
     muscles: ["Upper Chest", "Front Delts", "Triceps"],
     tips: [
       "Set the bench to 30-45 degrees and unrack with a strong shoulder retraction",
@@ -882,6 +932,7 @@ export const exerciseInfo = {
 
   // ========== HYROX PROGRAM — Station & Conditioning Exercises ==========
   "Ski Erg": {
+    imageUrl: "exercise-images/ski_erg_1.png",
     muscles: ["Lats", "Triceps", "Core", "Shoulders"],
     tips: [
       "Start with arms overhead and hinge at the hips as you pull down",
@@ -930,6 +981,7 @@ export const exerciseInfo = {
     ]
   },
   "Rowing Machine": {
+    imageUrl: "exercise-images/rowing_machine_1.png",
     muscles: ["Legs", "Back", "Biceps", "Core"],
     tips: [
       "Drive with your legs first, then lean back, then pull with arms — legs-body-arms sequence",
@@ -942,6 +994,7 @@ export const exerciseInfo = {
     ]
   },
   "Farmers Carry": {
+    imageUrl: "exercise-images/farmers_carry_1.png",
     muscles: ["Forearms", "Traps", "Core", "Glutes"],
     tips: [
       "Stand tall with shoulders back and down — don't shrug up",
@@ -954,6 +1007,7 @@ export const exerciseInfo = {
     ]
   },
   "Sandbag Lunge": {
+    imageUrl: "exercise-images/sandbag_lunge_1.png",
     muscles: ["Quadriceps", "Glutes", "Hamstrings", "Core"],
     tips: [
       "Hold the sandbag in a bear hug position tight against your chest",
@@ -966,6 +1020,7 @@ export const exerciseInfo = {
     ]
   },
   "Wall Ball": {
+    imageUrl: "exercise-images/wall_ball_1.png",
     muscles: ["Quadriceps", "Glutes", "Shoulders", "Core"],
     tips: [
       "Squat deep with the ball at your chest, then drive up explosively",
@@ -978,6 +1033,7 @@ export const exerciseInfo = {
     ]
   },
   "Running": {
+    imageUrl: "exercise-images/running_1.png",
     muscles: ["Quadriceps", "Hamstrings", "Calves", "Core"],
     tips: [
       "Maintain an upright posture with a slight forward lean from the ankles",
@@ -1014,6 +1070,7 @@ export const exerciseInfo = {
     ]
   },
   "Push-Up": {
+    imageUrl: "exercise-images/push_up_1.png",
     muscles: ["Chest", "Triceps", "Front Delts", "Core"],
     tips: [
       "Keep your body in a straight line from head to heels — squeeze your glutes",
@@ -1026,6 +1083,7 @@ export const exerciseInfo = {
     ]
   },
   "Goblet Squat": {
+    imageUrl: "exercise-images/goblet_squat_1.png",
     muscles: ["Quadriceps", "Glutes", "Core"],
     tips: [
       "Hold the dumbbell or kettlebell close to your chest with elbows pointing down",
@@ -1038,6 +1096,7 @@ export const exerciseInfo = {
     ]
   },
   "Barbell Row": {
+    imageUrl: "exercise-images/barbell_row_1.png",
     muscles: ["Upper Back", "Lats", "Biceps", "Rear Delts"],
     tips: [
       "Hinge forward at about 45 degrees and pull the bar to your lower chest",
