@@ -769,6 +769,7 @@ export const exerciseInfo = {
 
   // ========== BLOCK 2 — PULL #2 (new exercises) ==========
   "Neutral-Grip Pull-Up": {
+    imageUrl: "https://media.musclewiki.com/media/uploads/videos/branded/male-Bodyweight-pull-up-front.mp4#t=0.001",
     muscles: ["Lats", "Biceps", "Brachialis", "Core"],
     tips: [
       "Use parallel handles with palms facing each other",
