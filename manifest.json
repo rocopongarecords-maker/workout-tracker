@@ -1,13 +1,13 @@
 {
-  "name": "Workout Tracker - Legs-Push-Pull",
-  "short_name": "Workout Tracker",
-  "description": "Track Jeff Nippard's 16-week Legs-Push-Pull program",
-  "theme_color": "#0f172a",
-  "background_color": "#0f172a",
+  "name": "ZWAR - Workout Tracker",
+  "short_name": "ZWAR",
+  "description": "Track workouts, follow structured programs, and train with expert coaches",
+  "theme_color": "#050A17",
+  "background_color": "#050A17",
   "display": "standalone",
   "orientation": "portrait",
-  "scope": "/workout-tracker/",
-  "start_url": "/workout-tracker/",
+  "scope": "/",
+  "start_url": "/",
   "icons": [
     {
       "src": "icons/icon-192.png",
@@ -39,7 +39,7 @@
       "name": "Current Workout",
       "short_name": "Today",
       "description": "Start your current workout",
-      "url": "/workout-tracker/?workout=today",
+      "url": "/?workout=today",
       "icons": [
         {
           "src": "icons/icon-192.png",
@@ -51,7 +51,7 @@
       "name": "Progress",
       "short_name": "Progress",
       "description": "View your workout progress",
-      "url": "/workout-tracker/?page=progress",
+      "url": "/?page=progress",
       "icons": [
         {
           "src": "icons/icon-192.png",

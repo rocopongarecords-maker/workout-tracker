@@ -1,0 +1,5 @@
+# SPA fallback — any /app/* route that doesn't match a file serves the React app
+/app/*  /index.html  200
+
+# Landing page is served by index-landing.html at root
+/       /index-landing.html  200
